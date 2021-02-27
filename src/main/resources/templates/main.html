@@ -29,6 +29,18 @@
         </tbody>
     </table>
     <p></p>
+    <th:block th:if="${challengeCreated}">
+        <table style="width: 100%; border: 1px solid darkgreen">
+            <tbody>
+                <tr>
+                    <td>
+                        <p style="text-align: center; color: darkgreen"> Challenge created.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p></p>
+    </th:block>
     <th:block th:if="${challengeAccepted}">
         <table style="width: 100%; border: 1px solid darkgreen">
             <tbody>
@@ -41,14 +53,14 @@
         </table>
         <p></p>
     </th:block>
-    <th:block th:if="${challengeError}">
+    <th:block th:if="${error}">
         <table style="width: 100%; border: 1px solid darkred">
             <tbody>
-            <tr>
-                <td>
-                    <p style="text-align: center; color: darkred"> An error has occurred. Please try again later.
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        <p style="text-align: center; color: darkred"> An unexpected error occurred. Please try again later.
+                    </td>
+                </tr>
             </tbody>
         </table>
         <p></p>

@@ -27,8 +27,13 @@ public class GamePageController {
     private UsersDao usersDao;
 
     @GetMapping("/game")
-    public String main(Model model, @RequestParam int id) {
-        System.out.println(id);
+    public String main(Model model, @RequestParam int id,
+                       @RequestParam(defaultValue = "false", name = "legal_move") boolean legalMove,
+                       @RequestParam(defaultValue = "false", name = "illegal_move") boolean illegalMove,
+                       @RequestParam(defaultValue = "false") boolean error) {
+        model.addAttribute("legalMove", legalMove);
+        model.addAttribute("illegalMove", illegalMove);
+        model.addAttribute("error", error);
         User user = usersDao.findByLogin(OnlineChessApplication.USER_LOGIN);
         Game game = manager.find(Game.class, id);
         model.addAttribute("user", user);
@@ -48,7 +53,7 @@ public class GamePageController {
                            @RequestParam String promotion) {
         System.out.println(id);
         System.out.println(square1 + square2 + promotion);
-        return main(model, id);
+        return main(model, id, true, false, false);
     }
 
 }

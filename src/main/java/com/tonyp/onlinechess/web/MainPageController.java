@@ -31,10 +31,12 @@ public class MainPageController {
 
     @GetMapping("/main")
     public String main(Model model,
+                       @RequestParam(defaultValue = "false", name = "challenge_created") boolean challengeCreated,
                        @RequestParam(defaultValue = "false", name = "challenge_accepted") boolean challengeAccepted,
-                       @RequestParam(defaultValue = "false", name = "challenge_error") boolean challengeError) {
+                       @RequestParam(defaultValue = "false") boolean error) {
+        model.addAttribute("challengeCreated", challengeCreated);
         model.addAttribute("challengeAccepted", challengeAccepted);
-        model.addAttribute("challengeError", challengeError);
+        model.addAttribute("error", error);
         User user = usersDao.findByLogin(OnlineChessApplication.USER_LOGIN);
         model.addAttribute("user", user);
         List<Challenge> incomingChallenges = challengesDao.findIncomingChallenges(user, 0, MAIN_PAGE_RESULTS + 1);

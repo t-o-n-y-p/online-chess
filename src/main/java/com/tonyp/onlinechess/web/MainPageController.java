@@ -21,9 +21,6 @@ public class MainPageController {
     private final int MAIN_PAGE_RESULTS = 10;
 
     @Autowired
-    private EntityManager manager;
-
-    @Autowired
     private UsersDao usersDao;
 
     @Autowired
@@ -38,7 +35,7 @@ public class MainPageController {
                        @RequestParam(defaultValue = "false", name = "challenge_error") boolean challengeError) {
         model.addAttribute("challengeAccepted", challengeAccepted);
         model.addAttribute("challengeError", challengeError);
-        User user = usersDao.findByLogin("test1614438140908");
+        User user = usersDao.findByLogin(OnlineChessApplication.USER_LOGIN);
         model.addAttribute("user", user);
         List<Challenge> incomingChallenges = challengesDao.findIncomingChallenges(user, 0, MAIN_PAGE_RESULTS + 1);
         model.addAttribute("incomingChallenges",

@@ -76,7 +76,7 @@
                                             </span>
                                     </td>
                                     <td style="width: 10%; border: 1px solid black">
-                                        <form th:action="@{/accept_challenge(id=${challenge.getId()})}" method="get">
+                                        <form th:action="@{/challenge(id=${challenge.getId()})}" method="post">
                                             <p style="text-align: center">
                                                 <input type="submit" value="Accept">
                                         </form>

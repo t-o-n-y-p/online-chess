@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Main page</title>
+</head>
+<body style="background-color:antiquewhite;">
+    <table style="width: 100%; border: 1px solid black">
+        <tbody>
+            <tr>
+                <td>
+                    <p style="text-align: center">
+                        <span th:text="${game.getWhite().getLogin()}"></span>
+                        &nbsp;
+                        (<span th:text="${game.getWhite().getRating()}"></span>)
+                        &nbsp;vs&nbsp;
+                        <span th:text="${game.getBlack().getLogin()}"></span>
+                        &nbsp;
+                        (<span th:text="${game.getBlack().getRating()}"></span>)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p></p>
+    <table style="width: 100%; border: 1px solid black">
+        <tbody>
+            <tr>
+                <td style="width: 50%; border: 1px solid black; align-content: center">
+                    <p>
+                        <table style="margin: auto">
+                            <tbody>
+                                <tr th:each="line : ${board}">
+                                    <td th:each="symbol : ${line}" style="border: 1px solid black; width: 60px; height: 60px">
+                                        <p style="text-align: center">
+                                            <span th:text="${symbol}"></span>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </p>
+                </td>
+                <td style="width: 50%; border: 1px solid black; align-content: center">
+                    <p style="text-align: center" th:if="${!game.getPlayerToMove().equals(user) && !game.isCompleted()}">
+                        Opponent to move.
+                    </p>
+                    <p style="text-align: center" th:if="${game.isCompleted()}">
+                        Game is completed. <br />
+                        <span th:text="${game.getDescription()}"></span>
+                    </p>
+                    <form th:action="@{/game(id=${game.getId()})}" method="post"
+                                th:if="${game.getPlayerToMove().equals(user) && !game.isCompleted()}">
+                        <p style="text-align: center">
+                            <label for="square1">Square 1: </label>
+                            <select id="square1" name="square1">
+                                <option th:each="square : ${squares}" th:value="${square}" th:text="${square}">
+                                </option>
+                            </select>
+                        <p style="text-align: center">
+                            <label for="square2">Square 2: </label>
+                            <select id="square2" name="square2">
+                                <option th:each="square : ${squares}" th:value="${square}" th:text="${square}">
+                                </option>
+                            </select>
+                        <p style="text-align: center">
+                            <label for="promotion"> Piece for promotion <br /> (leave empty if not a pawn promotion):</label>
+                        <p style="text-align: center">
+                            <select id="promotion" name="promotion">
+                                <option></option>
+                                <option value="q">queen</option>
+                                <option value="r">rook</option>
+                                <option value="b">bishop</option>
+                                <option value="n">knight</option>
+                            </select>
+                        <p style="text-align: center">
+                            <input type="submit" value="Make a move">
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

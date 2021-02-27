@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public final class GameUtil {
 
@@ -45,6 +46,14 @@ public final class GameUtil {
             board.forEach(Collections::reverse);
         }
         return board;
+    }
+
+    public static List<String> getSquares() {
+        return IntStream.rangeClosed('a', 'h')
+                .mapToObj(file -> IntStream.rangeClosed('1', '8')
+                        .mapToObj(rank -> new String(new char[]{(char) file, (char) rank})))
+                .flatMap(e -> e)
+                .collect(Collectors.toList());
     }
 
     public static String getPositionFromFen(String fen) {

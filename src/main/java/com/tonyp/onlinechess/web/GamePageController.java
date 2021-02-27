@@ -43,10 +43,7 @@ public class GamePageController {
         model.addAttribute("board", GameUtil.getBoard(
                 game.getFen(), game.getWhite().equals(user) ? Color.WHITE : Color.BLACK
         ));
-        List<String> squares = IntStream.rangeClosed('a', 'h')
-                .mapToObj(file -> IntStream.rangeClosed('1', '8')
-                        .mapToObj(rank -> new String(new char[]{(char) file, (char) rank})))
-                .flatMap(e -> e).collect(Collectors.toList());
+        List<String> squares = GameUtil.getSquares();
         model.addAttribute("squares", squares);
         return "game";
     }

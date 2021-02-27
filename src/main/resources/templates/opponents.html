@@ -13,13 +13,13 @@
                         <table style="width: 100%">
                             <tbody>
                                 <tr>
-                                    <td style="width: 7%">
+                                    <td style="width: 8%">
                                         <p style="text-align: center"> Opponent login:
                                     </td>
-                                    <td style="width: 88%">
-                                        <p style="text-align: center">
+                                    <td style="width: 87%">
+                                        <p style="text-align: left">
                                             <label>
-                                                <input type="text" name="search" style="width: 100%" th:value="${search}">
+                                                <input type="text" name="search" style="width: 99%" th:value="${search}">
                                             </label>
                                     </td>
                                     <td style="width: 5%">
@@ -41,7 +41,7 @@
         </tbody>
     </table>
     <p></p>
-    <th:block th:if="${#lists.isEmpty(opponentsMap)}">
+    <th:block th:if="${#maps.isEmpty(opponentsMap)}">
         <p style="text-align: center">No results.
     </th:block>
     <div class="row" style="display: flex">
@@ -76,14 +76,14 @@
                     <form action="/opponents" method="get" th:if="${page > 1}">
                         <input type="hidden" name="page" th:value="${page - 1}" />
                         <p style="text-align: right; margin-right: 1%">
-                            <input type="submit" value="Previous page">
+                            <input type="submit" value="Previous page" style="width: 12%">
                     </form>
                 </td>
                 <td style="width: 50%">
                     <form action="/opponents" method="get" th:if="${nextPageAvailable}">
                         <input type="hidden" name="page" th:value="${page + 1}" />
                         <p style="text-align: left; margin-left: 1%">
-                            <input type="submit" value="Next page">
+                            <input type="submit" value="Next page" style="width: 12%">
                     </form>
                 </td>
             </tr>

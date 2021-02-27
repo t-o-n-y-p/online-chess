@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Select opponent</title>
+</head>
+<body style="background-color:antiquewhite">
+    <table style="width: 100%; border: 1px solid black">
+        <tbody>
+        <tr>
+            <td style="width: 95%">
+                <form action="/games" method="get">
+                    <table style="width: 100%">
+                        <tbody>
+                        <tr>
+                            <td style="width: 8%">
+                                <p style="text-align: center"> Opponent login:
+                            </td>
+                            <td style="width: 87%">
+                                <p style="text-align: left">
+                                    <label>
+                                        <input type="text" name="search" style="width: 99%" th:value="${search}">
+                                    </label>
+                            </td>
+                            <td style="width: 5%">
+                                <p style="text-align: center">
+                                    <input type="submit" value="Search">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </td>
+            <td style="width: 5%">
+                <form action="/main" method="get">
+                    <p style="text-align: left">
+                        <input type="submit" value="Main page">
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p></p>
+    <th:block th:if="${#maps.isEmpty(gamesMap)}">
+        <p style="text-align: center">No results.
+    </th:block>
+    <div class="row" style="display: flex">
+        <div class="column" style="width: 50%" th:each="column : ${#numbers.sequence(0, columns - 1)}">
+            <table style="width: 100%">
+                <tbody>
+                <tr th:each="game : ${gamesMap.get(column)}">
+                    <td style="width: 70%; border: 1px solid black">
+                        <p style="padding-left: 2%; text-align: left" th:if="${user.equals(game.getWhite())}">
+                            vs <span th:text="${game.getBlack().getLogin()}"></span>
+                            (<span th:text="${game.getBlack().getRating()}"></span>)
+                        <p style="padding-left: 2%; text-align: left" th:if="${user.equals(game.getBlack())}">
+                            vs <span th:text="${game.getWhite().getLogin()}"></span>
+                            (<span th:text="${game.getWhite().getRating()}"></span>)
+                    </td>
+                    <td style="width: 15%; border: 1px solid black">
+                        <p style="text-align: center">
+                            <span style="color: darkgreen" th:if="*{user.equals(game.getPlayerToMove()) && !game.isCompleted()}">
+                                ● My move
+                            </span>
+                            <span th:if="*{!user.equals(game.getPlayerToMove()) && !game.isCompleted()}">
+                                His move
+                            </span>
+                            <span style="color: dimgrey" th:if="*{game.isCompleted()}">Completed</span>
+                    </td>
+                    <td style="width: 15%; border: 1px solid black">
+                        <form action="/game" method="get">
+                            <input type="hidden" name="id" th:value="${game.getId()}" />
+                            <p style="text-align: center">
+                                <input type="submit" value="Open">
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <table style="width: 100%">
+        <tbody>
+        <tr>
+            <td style="width: 50%">
+                <form action="/opponents" method="get" th:if="${page > 1}">
+                    <input type="hidden" name="page" th:value="${page - 1}" />
+                    <p style="text-align: right; margin-right: 1%">
+                        <input type="submit" value="Previous page" style="width: 12%">
+                </form>
+            </td>
+            <td style="width: 50%">
+                <form action="/opponents" method="get" th:if="${nextPageAvailable}">
+                    <input type="hidden" name="page" th:value="${page + 1}" />
+                    <p style="text-align: left; margin-left: 1%">
+                        <input type="submit" value="Next page" style="width: 12%">
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</body>
+</html>

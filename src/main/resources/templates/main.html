@@ -110,29 +110,29 @@
                         <p style="text-align: center"> My games
                         <table style="width: 90%; margin: auto">
                             <tbody>
-                                <tr th:each="current_game : ${games}">
+                                <tr th:each="game : ${games}">
                                     <td style="width: 75%; border: 1px solid black">
-                                        <p style="padding-left: 1%; text-align: left" th:if="${user.equals(current_game.getWhite())}">
-                                            vs <span th:text="${current_game.getBlack().getLogin()}"></span>
-                                            (<span th:text="${current_game.getBlack().getRating()}"></span>)
-                                        <p style="padding-left: 1%; text-align: left" th:if="${user.equals(current_game.getBlack())}">
-                                            vs <span th:text="${current_game.getWhite().getLogin()}"></span>
-                                            (<span th:text="${current_game.getWhite().getRating()}"></span>)
+                                        <p style="padding-left: 1%; text-align: left" th:if="${user.equals(game.getWhite())}">
+                                            vs <span th:text="${game.getBlack().getLogin()}"></span>
+                                            (<span th:text="${game.getBlack().getRating()}"></span>)
+                                        <p style="padding-left: 1%; text-align: left" th:if="${user.equals(game.getBlack())}">
+                                            vs <span th:text="${game.getWhite().getLogin()}"></span>
+                                            (<span th:text="${game.getWhite().getRating()}"></span>)
                                     </td>
                                     <td style="width: 15%; border: 1px solid black">
                                         <p style="text-align: center">
                                             <span style="color: darkgreen"
-                                                  th:if="*{user.equals(current_game.getPlayerToMove()) && !current_game.isCompleted()}">
+                                                  th:if="*{user.equals(game.getPlayerToMove()) && !game.isCompleted()}">
                                                 ● My move
                                             </span>
-                                            <span th:if="*{!user.equals(current_game.getPlayerToMove()) && !current_game.isCompleted()}">
+                                            <span th:if="*{!user.equals(game.getPlayerToMove()) && !game.isCompleted()}">
                                                 His move
                                             </span>
-                                            <span style="color: dimgrey" th:if="*{current_game.isCompleted()}">Completed</span>
+                                            <span style="color: dimgrey" th:if="*{game.isCompleted()}">Completed</span>
                                     </td>
                                     <td style="width: 10%; border: 1px solid black">
                                         <form action="/game" method="get">
-                                            <input type="hidden" name="id" th:value="${current_game.getId()}" />
+                                            <input type="hidden" name="id" th:value="${game.getId()}" />
                                             <p style="text-align: center">
                                                 <input type="submit" value="Open">
                                         </form>

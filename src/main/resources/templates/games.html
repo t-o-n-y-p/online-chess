@@ -45,7 +45,7 @@
         <p style="text-align: center">No results.
     </th:block>
     <div class="row" style="display: flex">
-        <div class="column" style="width: 50%" th:each="column : ${#numbers.sequence(0, columns - 1)}">
+        <div class="column" th:style="'width: ' + 100/${columns} + '%'" th:each="column : ${#numbers.sequence(0, columns - 1)}">
             <table style="width: 100%">
                 <tbody>
                 <tr th:each="game : ${gamesMap.get(column)}">

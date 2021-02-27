@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Main page</title>
 </head>
-<body style="background-color:antiquewhite;">
+<body style="background-color:antiquewhite">
     <table style="width: 100%; border: 1px solid black">
         <tbody>
             <tr>
@@ -45,7 +45,6 @@
                         Opponent to move.
                     </p>
                     <p style="text-align: center" th:if="${game.isCompleted()}">
-                        Game is completed. <br />
                         <span th:text="${game.getDescription()}"></span>
                     </p>
                     <form th:action="@{/game(id=${game.getId()})}" method="post"

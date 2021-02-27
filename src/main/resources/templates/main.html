@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Main page</title>
 </head>
-<body style="background-color:antiquewhite;">
+<body style="background-color:antiquewhite">
     <table style="width: 100%; border: 1px solid black">
         <tbody>
             <tr>
@@ -60,23 +60,24 @@
                     <p style="text-align: center" th:if="${#lists.isEmpty(incomingChallenges)}"> No incoming challenges found.</p>
                     <th:block th:if="${!#lists.isEmpty(incomingChallenges)}">
                         <p style="text-align: center"> Incoming challenges
-                        <table style="padding-left: 5%; width: 95%">
+                        <table style="width: 90%; margin: auto">
                             <tbody>
                                 <tr th:each="challenge : ${incomingChallenges}">
-                                    <td style="width: 80%; border: 1px solid black">
+                                    <td style="width: 75%; border: 1px solid black">
                                         <p style="padding-left: 1%; text-align: left">
                                             vs <span th:text="${challenge.getFrom().getLogin()}"></span>
                                             (<span th:text="${challenge.getFrom().getRating()}"></span>)
                                     </td>
-                                    <td style="width: 10%; border: 1px solid black">
+                                    <td style="width: 15%; border: 1px solid black">
                                         <p style="text-align: center">
                                             <span th:text="*{challenge.getTargetColor().name().equals('WHITE')}
-                                                            ? '&#9812;'
-                                                            : '&#9818;'">
+                                                            ? '&#9812;&nbsp;white'
+                                                            : '&#9818;&nbsp;black'">
                                             </span>
                                     </td>
                                     <td style="width: 10%; border: 1px solid black">
-                                        <form th:action="@{/challenge(id=${challenge.getId()})}" method="post">
+                                        <form th:action="@{/challenge}" method="post">
+                                            <input type="hidden" name="id" th:value="${challenge.getId()}" />
                                             <p style="text-align: center">
                                                 <input type="submit" value="Accept">
                                         </form>
@@ -95,24 +96,31 @@
                     <p style="text-align: center" th:if="${#lists.isEmpty(games)}"> No games found.</p>
                     <th:block th:if="${!#lists.isEmpty(games)}">
                         <p style="text-align: center"> My games
-                        <table style="padding-left: 5%; width: 95%">
+                        <table style="width: 90%; margin: auto">
                             <tbody>
-                                <tr th:each="game : ${games}">
-                                    <td style="width: 80%; border: 1px solid black">
-                                        <p style="padding-left: 1%; text-align: left" th:if="${user.equals(game.getWhite())}">
-                                            vs <span th:text="${game.getBlack().getLogin()}"></span>
-                                            (<span th:text="${game.getBlack().getRating()}"></span>)
-                                        <p style="padding-left: 1%; text-align: left" th:if="${user.equals(game.getBlack())}">
-                                            vs <span th:text="${game.getWhite().getLogin()}"></span>
-                                            (<span th:text="${game.getWhite().getRating()}"></span>)
+                                <tr th:each="current_game : ${games}">
+                                    <td style="width: 75%; border: 1px solid black">
+                                        <p style="padding-left: 1%; text-align: left" th:if="${user.equals(current_game.getWhite())}">
+                                            vs <span th:text="${current_game.getBlack().getLogin()}"></span>
+                                            (<span th:text="${current_game.getBlack().getRating()}"></span>)
+                                        <p style="padding-left: 1%; text-align: left" th:if="${user.equals(current_game.getBlack())}">
+                                            vs <span th:text="${current_game.getWhite().getLogin()}"></span>
+                                            (<span th:text="${current_game.getWhite().getRating()}"></span>)
                                     </td>
-                                    <td style="width: 10%; border: 1px solid black">
+                                    <td style="width: 15%; border: 1px solid black">
                                         <p style="text-align: center">
-                                            <span style="color: darkgreen" th:if="*{user.equals(game.getPlayerToMove()) && !game.isCompleted()}">● My turn</span>
-                                            <span style="color: dimgrey" th:if="*{game.isCompleted()}">Completed</span>
+                                            <span style="color: darkgreen"
+                                                  th:if="*{user.equals(current_game.getPlayerToMove()) && !current_game.isCompleted()}">
+                                                ● My move
+                                            </span>
+                                            <span th:if="*{!user.equals(current_game.getPlayerToMove()) && !current_game.isCompleted()}">
+                                                His move
+                                            </span>
+                                            <span style="color: dimgrey" th:if="*{current_game.isCompleted()}">Completed</span>
                                     </td>
                                     <td style="width: 10%; border: 1px solid black">
-                                        <form th:action="@{/game(id=${game.getId()})}" method="get">
+                                        <form th:action="@{/game}" method="get">
+                                            <input type="hidden" name="id" th:value="${current_game.getId()}" />
                                             <p style="text-align: center">
                                                 <input type="submit" value="Open">
                                         </form>

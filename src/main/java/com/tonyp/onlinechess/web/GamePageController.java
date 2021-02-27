@@ -28,6 +28,7 @@ public class GamePageController {
 
     @GetMapping("/game")
     public String main(Model model, @RequestParam int id) {
+        System.out.println(id);
         User user = usersDao.findByLogin(OnlineChessApplication.USER_LOGIN);
         Game game = manager.find(Game.class, id);
         model.addAttribute("user", user);
@@ -45,6 +46,7 @@ public class GamePageController {
                            @RequestParam String square1,
                            @RequestParam String square2,
                            @RequestParam String promotion) {
+        System.out.println(id);
         System.out.println(square1 + square2 + promotion);
         return main(model, id);
     }

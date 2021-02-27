@@ -88,7 +88,7 @@
                                             </span>
                                     </td>
                                     <td style="width: 10%; border: 1px solid black">
-                                        <form th:action="@{/challenge}" method="post">
+                                        <form action="/challenge" method="post">
                                             <input type="hidden" name="id" th:value="${challenge.getId()}" />
                                             <p style="text-align: center">
                                                 <input type="submit" value="Accept">
@@ -131,7 +131,7 @@
                                             <span style="color: dimgrey" th:if="*{current_game.isCompleted()}">Completed</span>
                                     </td>
                                     <td style="width: 10%; border: 1px solid black">
-                                        <form th:action="@{/game}" method="get">
+                                        <form action="/game" method="get">
                                             <input type="hidden" name="id" th:value="${current_game.getId()}" />
                                             <p style="text-align: center">
                                                 <input type="submit" value="Open">

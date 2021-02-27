@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Select opponent</title>
+</head>
+<body style="background-color:antiquewhite">
+    <table style="width: 100%; border: 1px solid black">
+        <tbody>
+            <tr>
+                <td style="width: 95%">
+                    <form action="/opponents" method="get">
+                        <table style="width: 100%">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 10%">
+                                        <p style="text-align: center"> Opponent login:
+                                    </td>
+                                    <td style="width: 80%">
+                                        <p style="text-align: center">
+                                            <label>
+                                                <input type="text" name="search" style="width: 100%" th:value="${search}">
+                                            </label>
+                                    </td>
+                                    <td style="width: 5%">
+                                        <p style="text-align: center">
+                                            <input type="submit" value="Search">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </td>
+                <td style="width: 5%">
+                    <form action="/main" method="get">
+                        <p style="text-align: center">
+                            <input type="submit" value="Main page">
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p></p>
+    <th:block th:if="${#lists.isEmpty(opponentsMap)}">
+        <p style="text-align: center">No results.
+    </th:block>
+    <div class="row" style="display: flex">
+        <div class="column" style="width: 50%" th:each="number : ${#numbers.sequence(0, 1)}">
+            <table style="width: 100%">
+                <tbody>
+                    <tr th:each="opponent : ${opponentsMap.get(number)}">
+                        <td style="width: 80%; border: 1px solid black">
+                            <p style="padding-left: 1%; text-align: left">
+                                <span th:text="${opponent.getLogin()}"></span>
+                        </td>
+                        <td style="width: 10%; border: 1px solid black">
+                            <p style="text-align: center">
+                                <span th:text="${opponent.getRating()}"></span>
+                        </td>
+                        <td style="width: 10%; border: 1px solid black">
+                            <form action="/create_challenge" method="get">
+                                <input type="hidden" name="id" th:value="${opponent.getId()}" />
+                                <p style="text-align: center">
+                                    <input type="submit" value="Select">
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <table style="width: 100%">
+        <tbody>
+            <tr>
+                <td style="width: 50%">
+                    <form action="/opponents" method="get" th:if="${page > 1}">
+                        <input type="hidden" name="page" th:value="${page - 1}" />
+                        <p style="text-align: right; margin-right: 1%">
+                            <input type="submit" value="Previous page">
+                    </form>
+                </td>
+                <td style="width: 50%">
+                    <form action="/opponents" method="get" th:if="${nextPageAvailable}">
+                        <input type="hidden" name="page" th:value="${page + 1}" />
+                        <p style="text-align: left; margin-left: 1%">
+                            <input type="submit" value="Next page">
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

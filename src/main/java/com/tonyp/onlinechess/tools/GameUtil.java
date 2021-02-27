@@ -31,7 +31,7 @@ public final class GameUtil {
     );
 
     public static List<List<String>> getBoard(String fen, Color color) {
-        List<List<String>> whiteBoard = Arrays.stream(
+        List<List<String>> board = Arrays.stream(
                 Pattern.compile("[1-8]")
                         .matcher(fen.replaceAll("[\\s].*", ""))
                         .replaceAll(mr -> " ".repeat(Integer.parseInt(mr.group())))
@@ -40,11 +40,11 @@ public final class GameUtil {
                         .map(CHESS_PIECES::get)
                         .collect(Collectors.toList()))
                 .collect(Collectors.toList());
-        if (color == Color.WHITE) {
-            return whiteBoard;
+        if (color == Color.BLACK) {
+            Collections.reverse(board);
+            board.forEach(Collections::reverse);
         }
-        Collections.reverse(whiteBoard);
-        return whiteBoard.stream().peek(Collections::reverse).collect(Collectors.toList());
+        return board;
     }
 
     public static String getPositionFromFen(String fen) {

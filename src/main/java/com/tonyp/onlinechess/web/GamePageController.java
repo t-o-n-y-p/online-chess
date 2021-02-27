@@ -20,11 +20,13 @@ import java.util.stream.IntStream;
 @Controller
 public class GamePageController {
 
-    @Autowired
-    private EntityManager manager;
+    private final EntityManager manager;
+    private final UsersDao usersDao;
 
-    @Autowired
-    private UsersDao usersDao;
+    public GamePageController(@Autowired EntityManager manager, @Autowired UsersDao usersDao) {
+        this.manager = manager;
+        this.usersDao = usersDao;
+    }
 
     @GetMapping("/game")
     public String main(Model model, @RequestParam int id,
@@ -38,9 +40,12 @@ public class GamePageController {
         Game game = manager.find(Game.class, id);
         model.addAttribute("user", user);
         model.addAttribute("game", game);
-        model.addAttribute("board", GameUtil.getBoard(game.getFen(), game.getWhite().equals(user) ? Color.WHITE : Color.BLACK));
+        model.addAttribute("board", GameUtil.getBoard(
+                game.getFen(), game.getWhite().equals(user) ? Color.WHITE : Color.BLACK
+        ));
         List<String> squares = IntStream.rangeClosed('a', 'h')
-                .mapToObj(file -> IntStream.rangeClosed('1', '8').mapToObj(rank -> new String(new char[]{(char) file, (char) rank})))
+                .mapToObj(file -> IntStream.rangeClosed('1', '8')
+                        .mapToObj(rank -> new String(new char[]{(char) file, (char) rank})))
                 .flatMap(e -> e).collect(Collectors.toList());
         model.addAttribute("squares", squares);
         return "game";

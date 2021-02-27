@@ -20,14 +20,17 @@ import java.util.List;
 public class MainPageController {
     private final int MAIN_PAGE_RESULTS = 10;
 
-    @Autowired
-    private UsersDao usersDao;
+    private final UsersDao usersDao;
+    private final ChallengesDao challengesDao;
+    private final GamesDao gamesDao;
 
-    @Autowired
-    private ChallengesDao challengesDao;
-
-    @Autowired
-    private GamesDao gamesDao;
+    public MainPageController(@Autowired UsersDao usersDao,
+                              @Autowired ChallengesDao challengesDao,
+                              @Autowired GamesDao gamesDao) {
+        this.usersDao = usersDao;
+        this.challengesDao = challengesDao;
+        this.gamesDao = gamesDao;
+    }
 
     @GetMapping("/main")
     public String main(Model model,

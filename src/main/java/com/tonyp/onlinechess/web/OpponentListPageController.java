@@ -17,7 +17,8 @@ import java.util.stream.Collectors;
 @Controller
 public class OpponentListPageController {
 
-    private final int PAGE_RESULTS = 20;
+    private final int COLUMNS = 3;
+    private final int PAGE_RESULTS = 30;
     private final int RATING_THRESHOLD = 50;
 
     private final UsersDao usersDao;
@@ -32,6 +33,7 @@ public class OpponentListPageController {
                        @RequestParam(defaultValue = "") String search) {
         model.addAttribute("search", search);
         model.addAttribute("page", page);
+        model.addAttribute("columns", COLUMNS);
         User user = usersDao.findByLogin(OnlineChessApplication.USER_LOGIN);
         List<User> opponents = usersDao.findOpponentsByRatingAndLoginInput(
                     user, search, user.getRating(), RATING_THRESHOLD, (page - 1) * PAGE_RESULTS, PAGE_RESULTS + 1
@@ -39,7 +41,7 @@ public class OpponentListPageController {
         AtomicInteger counter = new AtomicInteger(0);
         Map<Integer, List<User>> opponentsMap = opponents.stream()
                 .limit(PAGE_RESULTS)
-                .collect(Collectors.groupingBy(i -> counter.getAndIncrement() % 2));
+                .collect(Collectors.groupingBy(i -> counter.getAndIncrement() % COLUMNS));
         model.addAttribute("opponentsMap", opponentsMap);
         model.addAttribute("nextPageAvailable", opponents.size() > PAGE_RESULTS);
 

@@ -13,10 +13,10 @@
                         <table style="width: 100%">
                             <tbody>
                                 <tr>
-                                    <td style="width: 10%">
+                                    <td style="width: 7%">
                                         <p style="text-align: center"> Opponent login:
                                     </td>
-                                    <td style="width: 80%">
+                                    <td style="width: 88%">
                                         <p style="text-align: center">
                                             <label>
                                                 <input type="text" name="search" style="width: 100%" th:value="${search}">
@@ -33,7 +33,7 @@
                 </td>
                 <td style="width: 5%">
                     <form action="/main" method="get">
-                        <p style="text-align: center">
+                        <p style="text-align: left">
                             <input type="submit" value="Main page">
                     </form>
                 </td>
@@ -45,19 +45,19 @@
         <p style="text-align: center">No results.
     </th:block>
     <div class="row" style="display: flex">
-        <div class="column" style="width: 50%" th:each="number : ${#numbers.sequence(0, 1)}">
+        <div class="column" style="width: 50%" th:each="column : ${#numbers.sequence(0, columns - 1)}">
             <table style="width: 100%">
                 <tbody>
-                    <tr th:each="opponent : ${opponentsMap.get(number)}">
-                        <td style="width: 80%; border: 1px solid black">
-                            <p style="padding-left: 1%; text-align: left">
+                    <tr th:each="opponent : ${opponentsMap.get(column)}">
+                        <td style="width: 70%; border: 1px solid black">
+                            <p style="padding-left: 2%; text-align: left">
                                 <span th:text="${opponent.getLogin()}"></span>
                         </td>
-                        <td style="width: 10%; border: 1px solid black">
+                        <td style="width: 15%; border: 1px solid black">
                             <p style="text-align: center">
                                 <span th:text="${opponent.getRating()}"></span>
                         </td>
-                        <td style="width: 10%; border: 1px solid black">
+                        <td style="width: 15%; border: 1px solid black">
                             <form action="/create_challenge" method="get">
                                 <input type="hidden" name="id" th:value="${opponent.getId()}" />
                                 <p style="text-align: center">

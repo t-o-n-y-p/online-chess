@@ -43,8 +43,7 @@ public class GamePageController {
         model.addAttribute("board", GameUtil.getBoard(
                 game.getFen(), game.getWhite().equals(user) ? Color.WHITE : Color.BLACK
         ));
-        List<String> squares = GameUtil.getSquares();
-        model.addAttribute("squares", squares);
+        model.addAttribute("squares", GameUtil.SQUARES);
         return "game";
     }
 

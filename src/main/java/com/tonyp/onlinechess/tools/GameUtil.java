@@ -15,6 +15,12 @@ public final class GameUtil {
     public static final String STARTING_POSITION_LEGAL_MOVES
             = "a2a3 b2b3 c2c3 d2d3 e2e3 f2f3 g2g3 h2h3 a2a4 b2b4 c2c4 d2d4 e2e4 f2f4 g2g4 h2h4 b1a3 b1c3 g1f3 g1h3";
 
+    public static final List<String> SQUARES = IntStream.rangeClosed('a', 'h')
+            .mapToObj(file -> IntStream.rangeClosed('1', '8')
+                    .mapToObj(rank -> new String(new char[]{(char) file, (char) rank})))
+            .flatMap(e -> e)
+            .collect(Collectors.toList());
+
     private static final Map<String, String> CHESS_PIECES = Map.ofEntries(
             Map.entry(" ", ""),
             Map.entry("K", "♔"),
@@ -46,14 +52,6 @@ public final class GameUtil {
             board.forEach(Collections::reverse);
         }
         return board;
-    }
-
-    public static List<String> getSquares() {
-        return IntStream.rangeClosed('a', 'h')
-                .mapToObj(file -> IntStream.rangeClosed('1', '8')
-                        .mapToObj(rank -> new String(new char[]{(char) file, (char) rank})))
-                .flatMap(e -> e)
-                .collect(Collectors.toList());
     }
 
     public static String getPositionFromFen(String fen) {

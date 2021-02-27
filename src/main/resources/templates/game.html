@@ -100,18 +100,29 @@
                     </p>
                     <form th:action="@{/game(id=${game.getId()})}" method="post"
                                 th:if="${game.getPlayerToMove().equals(user) && !game.isCompleted()}">
-                        <p style="text-align: center">
-                            <label for="square1">Square 1: </label>
-                            <select id="square1" name="square1">
-                                <option th:each="square : ${squares}" th:value="${square}" th:text="${square}">
-                                </option>
-                            </select>
-                        <p style="text-align: center">
-                            <label for="square2">Square 2: </label>
-                            <select id="square2" name="square2">
-                                <option th:each="square : ${squares}" th:value="${square}" th:text="${square}">
-                                </option>
-                            </select>
+                        <table style="width: 20%; margin: auto">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 80%">
+                                        <p style="text-align: left">
+                                            <label for="square1">From square: </label>
+                                        <p style="text-align: left">
+                                            <label for="square2">To square: </label>
+                                    </td>
+                                    <td style="width: 20%">
+                                        <select id="square1" name="square1">
+                                            <option th:each="square : ${squares}" th:value="${square}" th:text="${square}">
+                                            </option>
+                                        </select>
+                                        <p></p>
+                                        <select id="square2" name="square2">
+                                            <option th:each="square : ${squares}" th:value="${square}" th:text="${square}">
+                                            </option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                         <p style="text-align: center">
                             <label for="promotion"> Piece for promotion <br /> (leave empty if not a pawn promotion):</label>
                         <p style="text-align: center">

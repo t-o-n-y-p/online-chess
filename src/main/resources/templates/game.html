@@ -2,13 +2,16 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>Main page</title>
+    <title th:text="'Game against ' + (${game.getWhite().equals(user)}
+                                        ? ${game.getBlack().getLogin()}
+                                        : ${game.getWhite().getLogin()})">
+    </title>
 </head>
 <body style="background-color:antiquewhite">
     <table style="width: 100%; border: 1px solid black">
         <tbody>
             <tr>
-                <td>
+                <td style="width: 90%">
                     <p style="text-align: center">
                         <span th:text="${game.getWhite().getLogin()}"></span>
                         &nbsp;
@@ -17,6 +20,18 @@
                         <span th:text="${game.getBlack().getLogin()}"></span>
                         &nbsp;
                         (<span th:text="${game.getBlack().getRating()}"></span>)
+                </td>
+                <td style="width: 5%">
+                    <form action="/games" method="get">
+                        <p style="text-align: center">
+                            <input type="submit" value="All games">
+                    </form>
+                </td>
+                <td style="width: 5%">
+                    <form action="/main" method="get">
+                        <p style="text-align: center">
+                            <input type="submit" value="Main page">
+                    </form>
                 </td>
             </tr>
         </tbody>

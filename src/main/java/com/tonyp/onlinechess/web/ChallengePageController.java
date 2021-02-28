@@ -15,20 +15,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Controller
-public class OpponentListPageController {
+public class ChallengePageController {
 
     private final int COLUMNS = 2;
     private final int PAGE_RESULTS = 20;
     private final int RATING_THRESHOLD = 50;
 
+    private final EntityManager manager;
     private final UsersDao usersDao;
 
-    public OpponentListPageController(@Autowired UsersDao usersDao) {
+    public ChallengePageController(@Autowired EntityManager manager, @Autowired UsersDao usersDao) {
+        this.manager = manager;
         this.usersDao = usersDao;
     }
 
-    @GetMapping("/opponents")
-    public String opponents(Model model,
+    @GetMapping("/challenge/step1")
+    public String step1(Model model,
                        @RequestParam(defaultValue = "1") int page,
                        @RequestParam(defaultValue = "") String search) {
         model.addAttribute("search", search);
@@ -45,6 +47,13 @@ public class OpponentListPageController {
         model.addAttribute("opponentsMap", opponentsMap);
         model.addAttribute("nextPageAvailable", opponents.size() > PAGE_RESULTS);
 
-        return "opponents";
+        return "challenge/step1";
+    }
+
+    @GetMapping("/challenge/step2")
+    public String step2(Model model, @RequestParam(name = "opponent_id") int opponentId) {
+        User opponent = manager.find(User.class, opponentId);
+        model.addAttribute("opponent", opponent);
+        return "challenge/step2";
     }
 }

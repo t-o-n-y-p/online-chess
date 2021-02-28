@@ -1,5 +1,6 @@
 package com.tonyp.onlinechess.web;
 
+import com.tonyp.onlinechess.model.Color;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,4 +29,11 @@ public class ChallengeController {
         }
     }
 
+    @PostMapping("/challenge")
+    public RedirectView challenge(RedirectAttributes attributes,
+                                  @RequestParam(name = "opponent_id") int opponentId,
+                                  @RequestParam(name = "target_color") Color targetColor) {
+        attributes.addAttribute("challenge_created", true);
+        return new RedirectView("/main");
+    }
 }

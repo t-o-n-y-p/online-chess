@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Select challenge properties</title>
+</head>
+<body style="background-color:antiquewhite">
+    <table style="width: 100%; border: 1px solid black">
+        <tbody>
+        <tr>
+            <td>
+                <form action="/challenge/step1" method="get">
+                    <p style="text-align: center">Your opponent:
+                    <p style="text-align: center">
+                        <b th:text="${opponent.getLogin()}"></b>
+                    <p style="text-align: center">
+                        <input type="submit" value="Change opponent">
+                </form>
+                <form action="/challenge" method="post">
+                    <input type="hidden" name="opponent_id" th:value="${opponent.getId()}" />
+                    <p style="text-align: center">
+                        <label for="target_color">Color of your opponent pieces:</label>
+                    <p style="text-align: center">
+                        <select id="target_color" name="target_color">
+                            <option th:each="color : ${T(com.tonyp.onlinechess.model.Color).values()}"
+                                    th:value="${color}" th:text="${color.name().toLowerCase()}"></option>
+                        </select>
+                    <p style="text-align: center">
+                        <input type="submit" value="Create challenge">
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</body>
+</html>

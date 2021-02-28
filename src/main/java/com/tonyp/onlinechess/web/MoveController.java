@@ -7,7 +7,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
-public class MovePageController {
+public class MoveController {
 
     @PostMapping("/move")
     public RedirectView makeMove(RedirectAttributes attributes, @RequestParam(name = "game_id") int gameId,

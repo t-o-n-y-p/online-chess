@@ -5,6 +5,18 @@
     <title>Select opponent</title>
 </head>
 <body style="background-color:antiquewhite">
+<th:block th:if="${challengeAccepted}">
+    <table style="width: 100%; border: 1px solid darkgreen">
+        <tbody>
+        <tr>
+            <td>
+                <p style="text-align: center; color: darkgreen"> Challenge accepted.
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p></p>
+</th:block>
 <table style="width: 100%; border: 1px solid black">
     <tbody>
     <tr>
@@ -64,6 +76,8 @@
                 <td style="width: 15%; border: 1px solid black">
                     <form action="/challenge/accept" method="post">
                         <input type="hidden" name="id" th:value="${challenge.getId()}" />
+                        <input type="hidden" name="page" th:value="${page}" />
+                        <input type="hidden" name="to_previous_page" th:value="${toPreviousPage}" />
                         <input type="hidden" name="from_challenges" value="true" />
                         <p style="text-align: center">
                             <input type="submit" value="Accept">

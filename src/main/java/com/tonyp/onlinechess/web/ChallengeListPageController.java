@@ -33,8 +33,10 @@ public class ChallengeListPageController {
 
     @GetMapping("/challenges")
     public String challenges(Model model,
-                            @RequestParam(defaultValue = "1") int page,
-                            @RequestParam(defaultValue = "") String search) {
+                             @RequestParam(defaultValue = "false", name = "challenge_accepted") boolean challengeAccepted,
+                             @RequestParam(defaultValue = "1") int page,
+                             @RequestParam(defaultValue = "") String search) {
+        model.addAttribute("challengeAccepted", challengeAccepted);
         model.addAttribute("search", search);
         model.addAttribute("page", page);
         model.addAttribute("columns", COLUMNS);
@@ -49,6 +51,7 @@ public class ChallengeListPageController {
                 .collect(Collectors.groupingBy(i -> counter.getAndIncrement() % COLUMNS));
         model.addAttribute("challengesMap", challengesMap);
         model.addAttribute("nextPageAvailable", challenges.size() > PAGE_RESULTS);
+        model.addAttribute("toPreviousPage", challenges.size() == 1 && page > 1);
 
         return "challenges";
     }

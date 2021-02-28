@@ -20,6 +20,6 @@ public class TestConfiguration {
 
     @Bean
     public EntityManagerFactory entityManagerFactory() {
-        return Persistence.createEntityManagerFactory("TestDatabase");
+        return Persistence.createEntityManagerFactory("ProductionDatabase");
     }
 }

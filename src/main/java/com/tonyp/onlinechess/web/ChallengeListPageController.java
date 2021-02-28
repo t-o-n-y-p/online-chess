@@ -34,9 +34,11 @@ public class ChallengeListPageController {
     @GetMapping("/challenges")
     public String challenges(Model model,
                              @RequestParam(defaultValue = "false", name = "challenge_accepted") boolean challengeAccepted,
+                             @RequestParam(defaultValue = "false") boolean error,
                              @RequestParam(defaultValue = "1") int page,
                              @RequestParam(defaultValue = "") String search) {
         model.addAttribute("challengeAccepted", challengeAccepted);
+        model.addAttribute("error", error);
         model.addAttribute("search", search);
         model.addAttribute("page", page);
         model.addAttribute("columns", COLUMNS);

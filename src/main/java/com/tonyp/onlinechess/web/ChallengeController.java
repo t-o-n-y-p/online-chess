@@ -15,16 +15,15 @@ public class ChallengeController {
                                @RequestParam(defaultValue = "1") int page,
                                @RequestParam(defaultValue = "false", name = "to_previous_page") boolean toPreviousPage,
                                @RequestParam(defaultValue = "false", name = "from_challenges") boolean fromChallenges) {
+        attributes.addAttribute("challenge_accepted", true);
         if (fromChallenges) {
             if (toPreviousPage) {
                 attributes.addAttribute("page", page - 1);
             } else {
                 attributes.addAttribute("page", page);
             }
-            attributes.addAttribute("challenge_accepted", true);
             return new RedirectView("/challenges");
         } else {
-            attributes.addAttribute("challenge_accepted", true);
             return new RedirectView("/main");
         }
     }

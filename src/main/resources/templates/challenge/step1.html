@@ -49,7 +49,7 @@
             <table style="width: 100%">
                 <tbody>
                     <tr th:each="opponent : ${opponentsMap.get(column)}">
-                        <td style="width: 70%; border: 1px solid black">
+                        <td style="width: 75%; border: 1px solid black">
                             <p style="padding-left: 2%; text-align: left">
                                 <span th:text="${opponent.getLogin()}"></span>
                         </td>
@@ -57,7 +57,7 @@
                             <p style="text-align: center">
                                 <span th:text="${opponent.getRating()}"></span>
                         </td>
-                        <td style="width: 15%; border: 1px solid black">
+                        <td style="width: 10%; border: 1px solid black">
                             <form action="/challenge/step2" method="get">
                                 <input type="hidden" name="opponent_id" th:value="${opponent.getId()}" />
                                 <p style="text-align: center">

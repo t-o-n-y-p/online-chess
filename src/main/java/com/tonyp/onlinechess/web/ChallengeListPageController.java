@@ -1,7 +1,9 @@
 package com.tonyp.onlinechess.web;
 
+import com.tonyp.onlinechess.dao.ChallengesDao;
 import com.tonyp.onlinechess.dao.GamesDao;
 import com.tonyp.onlinechess.dao.UsersDao;
+import com.tonyp.onlinechess.model.Challenge;
 import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,21 +18,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Controller
-public class GameListPageController {
+public class ChallengeListPageController {
 
     private final int COLUMNS = 2;
     private final int PAGE_RESULTS = 20;
 
     private final UsersDao usersDao;
-    private final GamesDao gamesDao;
+    private final ChallengesDao challengesDao;
 
-    public GameListPageController(@Autowired UsersDao usersDao, @Autowired GamesDao gamesDao) {
+    public ChallengeListPageController(@Autowired UsersDao usersDao, @Autowired ChallengesDao challengesDao) {
         this.usersDao = usersDao;
-        this.gamesDao = gamesDao;
+        this.challengesDao = challengesDao;
     }
 
-    @GetMapping("/games")
-    public String games(Model model,
+    @GetMapping("/challenges")
+    public String challenges(Model model,
                             @RequestParam(defaultValue = "1") int page,
                             @RequestParam(defaultValue = "") String search) {
         model.addAttribute("search", search);
@@ -38,17 +40,18 @@ public class GameListPageController {
         model.addAttribute("columns", COLUMNS);
         User user = usersDao.findByLogin(OnlineChessApplication.USER_LOGIN);
         model.addAttribute("user", user);
-        List<Game> games = gamesDao.findByUserAndOpponentLoginInput(
+        List<Challenge> challenges = challengesDao.findIncomingChallengesByOpponentLoginInput(
                 user, search, (page - 1) * PAGE_RESULTS, PAGE_RESULTS + 1
         );
         AtomicInteger counter = new AtomicInteger(0);
-        Map<Integer, List<Game>> gamesMap = games.stream()
+        Map<Integer, List<Challenge>> challengesMap = challenges.stream()
                 .limit(PAGE_RESULTS)
                 .collect(Collectors.groupingBy(i -> counter.getAndIncrement() % COLUMNS));
-        model.addAttribute("gamesMap", gamesMap);
-        model.addAttribute("nextPageAvailable", games.size() > PAGE_RESULTS);
+        model.addAttribute("challengesMap", challengesMap);
+        model.addAttribute("nextPageAvailable", challenges.size() > PAGE_RESULTS);
 
-        return "games";
+        return "challenges";
     }
+
 
 }

@@ -9,13 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.persistence.EntityManager;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Controller
 public class GamePageController {
@@ -29,7 +25,7 @@ public class GamePageController {
     }
 
     @GetMapping("/game")
-    public String main(Model model, @RequestParam int id,
+    public String game(Model model, @RequestParam int id,
                        @RequestParam(defaultValue = "false", name = "legal_move") boolean legalMove,
                        @RequestParam(defaultValue = "false", name = "illegal_move") boolean illegalMove,
                        @RequestParam(defaultValue = "false") boolean error) {
@@ -45,16 +41,6 @@ public class GamePageController {
         ));
         model.addAttribute("squares", GameUtil.SQUARES);
         return "game";
-    }
-
-    @PostMapping("/game")
-    public String makeMove(Model model, @RequestParam int id,
-                           @RequestParam String square1,
-                           @RequestParam String square2,
-                           @RequestParam String promotion) {
-        System.out.println(id);
-        System.out.println(square1 + square2 + promotion);
-        return main(model, id, true, false, false);
     }
 
 }

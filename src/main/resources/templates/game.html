@@ -98,8 +98,8 @@
                     <p style="text-align: center" th:if="${game.isCompleted()}">
                         <span th:text="${game.getDescription()}"></span>
                     </p>
-                    <form th:action="@{/game(id=${game.getId()})}" method="post"
-                                th:if="${game.getPlayerToMove().equals(user) && !game.isCompleted()}">
+                    <form action="/move" method="post" th:if="${game.getPlayerToMove().equals(user) && !game.isCompleted()}">
+                        <input type="hidden" name="game_id" th:value="${game.getId()}" />
                         <table style="width: 20%; margin: auto">
                             <tbody>
                                 <tr>

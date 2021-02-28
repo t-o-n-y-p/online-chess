@@ -83,14 +83,14 @@
         <tbody>
         <tr>
             <td style="width: 50%">
-                <form action="/opponents" method="get" th:if="${page > 1}">
+                <form action="/games" method="get" th:if="${page > 1}">
                     <input type="hidden" name="page" th:value="${page - 1}" />
                     <p style="text-align: right; margin-right: 1%">
                         <input type="submit" value="Previous page" style="width: 12%">
                 </form>
             </td>
             <td style="width: 50%">
-                <form action="/opponents" method="get" th:if="${nextPageAvailable}">
+                <form action="/games" method="get" th:if="${nextPageAvailable}">
                     <input type="hidden" name="page" th:value="${page + 1}" />
                     <p style="text-align: left; margin-left: 1%">
                         <input type="submit" value="Next page" style="width: 12%">

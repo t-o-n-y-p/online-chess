@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <title>Main page</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.6.0/css/bootstrap.css" />
+    </head>
+    <body style="background-color:antiquewhite">
+        <div style="margin: 16px">
+            <div class="container">
+                <div class="row-fluid">
+                    <div class="col-md-6 offset-md-3">
+                        <form action="/login" method="post" style="margin-top: 8px; margin-bottom: 8px">
+                            <div class="form-group">
+                                <label for="login">Login</label>
+                                <input type="text" class="form-control" id="login" name="login" placeholder="Login">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                            </div>
+                            <button type="submit" class="btn btn-dark" style="width: 100%">Log in</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -11,12 +11,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
 @Controller
+@SessionAttributes("user-session")
 public class MainPageController {
     private final int MAIN_PAGE_RESULTS = 10;
 
@@ -36,7 +39,9 @@ public class MainPageController {
     public String main(Model model,
                        @RequestParam(defaultValue = "false", name = "challenge_created") boolean challengeCreated,
                        @RequestParam(defaultValue = "false", name = "challenge_accepted") boolean challengeAccepted,
-                       @RequestParam(defaultValue = "false") boolean error) {
+                       @RequestParam(defaultValue = "false") boolean error,
+                       @ModelAttribute("user-session") UserSession session) {
+        model.addAttribute("isNotLoggedIn", session.getLogin() == null);
         model.addAttribute("challengeCreated", challengeCreated);
         model.addAttribute("challengeAccepted", challengeAccepted);
         model.addAttribute("error", error);
@@ -50,6 +55,11 @@ public class MainPageController {
         model.addAttribute("games", games.subList(0, Integer.min(games.size(), MAIN_PAGE_RESULTS)));
         model.addAttribute("canViewAllGames", games.size() > MAIN_PAGE_RESULTS);
         return "main";
+    }
+
+    @ModelAttribute("user-session")
+    public UserSession createUserSession() {
+        return new UserSession();
     }
 
 }

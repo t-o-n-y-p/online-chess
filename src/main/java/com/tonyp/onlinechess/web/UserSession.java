@@ -4,13 +4,6 @@ public class UserSession {
 
     private String login;
 
-    public UserSession() {
-    }
-
-    public UserSession(String login) {
-        this.login = login;
-    }
-
     public String getLogin() {
         return login;
     }

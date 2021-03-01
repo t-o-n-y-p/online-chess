@@ -9,11 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import javax.persistence.EntityManager;
 
 @Controller
+@SessionAttributes("user-session")
 public class GamePageController {
 
     private final EntityManager manager;
@@ -28,11 +31,15 @@ public class GamePageController {
     public String game(Model model, @RequestParam int id,
                        @RequestParam(defaultValue = "false", name = "legal_move") boolean legalMove,
                        @RequestParam(defaultValue = "false", name = "illegal_move") boolean illegalMove,
-                       @RequestParam(defaultValue = "false") boolean error) {
+                       @RequestParam(defaultValue = "false") boolean error,
+                       @ModelAttribute("user-session") UserSession session) {
+        if (session.getLogin() == null) {
+            return "redirect:login";
+        }
         model.addAttribute("legalMove", legalMove);
         model.addAttribute("illegalMove", illegalMove);
         model.addAttribute("error", error);
-        User user = usersDao.findByLogin(OnlineChessApplication.USER_LOGIN);
+        User user = usersDao.findByLogin(session.getLogin());
         Game game = manager.find(Game.class, id);
         model.addAttribute("user", user);
         model.addAttribute("game", game);

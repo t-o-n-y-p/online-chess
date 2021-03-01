@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Controller
+@SessionAttributes("user-session")
 public class ChallengePageController {
 
     private final int COLUMNS = 2;
@@ -31,12 +34,16 @@ public class ChallengePageController {
 
     @GetMapping("/challenge/step1")
     public String step1(Model model,
-                       @RequestParam(defaultValue = "1") int page,
-                       @RequestParam(defaultValue = "") String search) {
+                        @RequestParam(defaultValue = "1") int page,
+                        @RequestParam(defaultValue = "") String search,
+                        @ModelAttribute("user-session") UserSession session) {
+        if (session.getLogin() == null) {
+            return "redirect:login";
+        }
         model.addAttribute("search", search);
         model.addAttribute("page", page);
         model.addAttribute("columns", COLUMNS);
-        User user = usersDao.findByLogin(OnlineChessApplication.USER_LOGIN);
+        User user = usersDao.findByLogin(session.getLogin());
         List<User> opponents = usersDao.findOpponentsByRatingAndLoginInput(
                     user, search, user.getRating(), RATING_THRESHOLD, (page - 1) * PAGE_RESULTS, PAGE_RESULTS + 1
         );
@@ -51,7 +58,12 @@ public class ChallengePageController {
     }
 
     @GetMapping("/challenge/step2")
-    public String step2(Model model, @RequestParam(name = "opponent_id") int opponentId) {
+    public String step2(Model model,
+                        @RequestParam(name = "opponent_id") int opponentId,
+                        @ModelAttribute("user-session") UserSession session) {
+        if (session.getLogin() == null) {
+            return "redirect:login";
+        }
         User opponent = manager.find(User.class, opponentId);
         model.addAttribute("opponent", opponent);
         return "challenge/step2";

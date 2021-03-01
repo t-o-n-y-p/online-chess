@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Controller
+@SessionAttributes("user-session")
 public class GameListPageController {
 
     private final int COLUMNS = 2;
@@ -31,12 +34,16 @@ public class GameListPageController {
 
     @GetMapping("/games")
     public String games(Model model,
-                            @RequestParam(defaultValue = "1") int page,
-                            @RequestParam(defaultValue = "") String search) {
+                        @RequestParam(defaultValue = "1") int page,
+                        @RequestParam(defaultValue = "") String search,
+                        @ModelAttribute("user-session") UserSession session) {
+        if (session.getLogin() == null) {
+            return "redirect:login";
+        }
         model.addAttribute("search", search);
         model.addAttribute("page", page);
         model.addAttribute("columns", COLUMNS);
-        User user = usersDao.findByLogin(OnlineChessApplication.USER_LOGIN);
+        User user = usersDao.findByLogin(session.getLogin());
         model.addAttribute("user", user);
         List<Game> games = gamesDao.findByUserAndOpponentLoginInput(
                 user, search, (page - 1) * PAGE_RESULTS, PAGE_RESULTS + 1

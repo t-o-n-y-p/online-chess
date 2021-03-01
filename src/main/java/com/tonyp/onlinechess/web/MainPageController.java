@@ -41,11 +41,13 @@ public class MainPageController {
                        @RequestParam(defaultValue = "false", name = "challenge_accepted") boolean challengeAccepted,
                        @RequestParam(defaultValue = "false") boolean error,
                        @ModelAttribute("user-session") UserSession session) {
-        model.addAttribute("isNotLoggedIn", session.getLogin() == null);
+        if (session.getLogin() == null) {
+            return "redirect:login";
+        }
         model.addAttribute("challengeCreated", challengeCreated);
         model.addAttribute("challengeAccepted", challengeAccepted);
         model.addAttribute("error", error);
-        User user = usersDao.findByLogin(OnlineChessApplication.USER_LOGIN);
+        User user = usersDao.findByLogin(session.getLogin());
         model.addAttribute("user", user);
         List<Challenge> incomingChallenges = challengesDao.findIncomingChallenges(user, 0, MAIN_PAGE_RESULTS + 1);
         model.addAttribute("incomingChallenges",

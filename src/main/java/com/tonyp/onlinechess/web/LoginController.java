@@ -18,7 +18,10 @@ public class LoginController {
     }
 
     @GetMapping("/login")
-    public String login() {
+    public String login(@ModelAttribute("user-session") UserSession session) {
+        if (session.getLogin() != null) {
+            return "redirect:main";
+        }
         return "login";
     }
 

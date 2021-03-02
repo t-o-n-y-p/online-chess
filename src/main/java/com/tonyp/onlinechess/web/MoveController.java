@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.persistence.EntityManager;
+import java.util.Arrays;
 
 @Controller
 @SessionAttributes("user-session")
@@ -75,7 +76,9 @@ public class MoveController {
             attributes.addAttribute("legal_move", true);
             return new RedirectView("/game");
         } catch (Throwable e) {
+            System.out.println(e.getClass().getSimpleName());
             System.out.println(e.getMessage());
+            System.out.println(Arrays.toString(e.getStackTrace()));
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("error", true);
             return new RedirectView("/game");

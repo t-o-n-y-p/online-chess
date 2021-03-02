@@ -17,6 +17,12 @@ public class UsersDao {
         this.manager = manager;
     }
 
+    public User createNewUser(String login, String password) {
+        User newUser = new User(login, password);
+        manager.persist(newUser);
+        return newUser;
+    }
+
     public User findByLogin(String login) {
         try {
             return manager.createQuery("from User where login = :login", User.class)

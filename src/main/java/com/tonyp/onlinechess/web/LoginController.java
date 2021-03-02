@@ -29,13 +29,13 @@ public class LoginController {
     public RedirectView login(@RequestParam String login,
                               @RequestParam String password,
                               @ModelAttribute("user-session") UserSession session) {
-        if (session.getLogin() != null) {
+        if (!session.getLogin().equals(login)) {
             return new RedirectView("/main");
         }
         if (usersDao.findByLoginAndPassword(login, password) != null) {
-            session.setLogin(login);
             return new RedirectView("/main");
         }
+        session.setLogin(null);
         return new RedirectView("/login");
     }
 

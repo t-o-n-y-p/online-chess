@@ -2,9 +2,7 @@ package com.tonyp.onlinechess.dao;
 
 import com.tonyp.onlinechess.TestConfiguration;
 import com.tonyp.onlinechess.model.User;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +11,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -91,53 +87,6 @@ public class UsersDaoTest {
         assertNotNull(found);
         assertEquals("login82", found.getLogin());
         assertEquals("password82", found.getPassword());
-    }
-
-    @Test
-    public void findOpponentsByRating() {
-        assertTrue(usersDao.findOpponentsByRating(highRatedUser, 5000, 50, 0, 1000).isEmpty());
-        assertTrue(usersDao.findOpponentsByRating(lowRatedUser, 0, 50, 0, 1000).isEmpty());
-
-        List<User> actualResult = usersDao.findOpponentsByRating(highRatedUser, 3000, 400, 0, 1000);
-        List<User> expectedResult = allCreatedUsers.stream()
-                .filter(u -> u.getRating() >= 2600 && u.getRating() <= 3400)
-                .sorted(Comparator.comparing(User::getRating).reversed())
-                .collect(Collectors.toList());
-        assertEquals(expectedResult, actualResult);
-        actualResult = usersDao.findOpponentsByRating(lowRatedUser, 800, 400, 0, 1000);
-        expectedResult = allCreatedUsers.stream()
-                .filter(u -> u.getRating() >= 400 && u.getRating() <= 1200)
-                .sorted(Comparator.comparing(User::getRating).reversed())
-                .collect(Collectors.toList());
-        assertEquals(expectedResult, actualResult);
-        actualResult = usersDao.findOpponentsByRating(midRatedUser2, 1900, 50, 0, 1000);
-        expectedResult = allCreatedUsers.stream()
-                .filter(u -> u.getRating() >= 1850 && u.getRating() <= 1950 && !u.equals(midRatedUser2))
-                .sorted(Comparator.comparing(User::getRating).reversed())
-                .collect(Collectors.toList());
-        assertEquals(expectedResult, actualResult);
-        actualResult = usersDao.findOpponentsByRating(midRatedUser1, 1900, 400, 0, 1000);
-        expectedResult = allCreatedUsers.stream()
-                .filter(u -> u.getRating() >= 1500 && u.getRating() <= 2300 && !u.equals(midRatedUser1))
-                .sorted(Comparator.comparing(User::getRating).reversed())
-                .collect(Collectors.toList());
-        assertEquals(expectedResult, actualResult);
-
-        List<User> result1 = usersDao.findOpponentsByRating(midRatedUser1, 1900, 400, 0, 10);
-        assertEquals(10, result1.size());
-        List<User> result2 = usersDao.findOpponentsByRating(midRatedUser1, 1900, 400, 40, 10);
-        assertEquals(10, result2.size());
-        result1.retainAll(result2);
-        assertTrue(result1.isEmpty());
-
-        assertTrue(usersDao.findOpponentsByRating(midRatedUser1, 1900, 400, 1000, 10).isEmpty());
-
-        result1 = usersDao.findOpponentsByRating(midRatedUser2, 1900, 400, 0, 20);
-        assertEquals(20, result1.size());
-        result2 = usersDao.findOpponentsByRating(midRatedUser2, 1900, 400, 100, 20);
-        assertEquals(8, result2.size());
-        result1.retainAll(result2);
-        assertTrue(result1.isEmpty());
     }
 
     @Test

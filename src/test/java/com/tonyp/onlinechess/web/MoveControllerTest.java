@@ -1,8 +1,12 @@
 package com.tonyp.onlinechess.web;
 
+import com.tonyp.onlinechess.dao.GamesDao;
+import com.tonyp.onlinechess.dao.MovesDao;
+import com.tonyp.onlinechess.dao.UsersDao;
 import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.Move;
 import com.tonyp.onlinechess.model.User;
+import com.tonyp.onlinechess.tools.GameUtil;
 import com.tonyp.onlinechess.tools.StockfishUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +15,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -19,8 +24,9 @@ import javax.persistence.EntityTransaction;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlTemplate;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -34,6 +40,15 @@ public class MoveControllerTest {
     @Autowired
     private EntityManager manager;
 
+    @MockBean
+    private UsersDao usersDao;
+
+    @MockBean
+    private GamesDao gamesDao;
+
+    @MockBean
+    private MovesDao movesDao;
+
     @Autowired
     private EntityTransaction tx;
 
@@ -44,11 +59,9 @@ public class MoveControllerTest {
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
         Move move = new Move(game, "e2e4");
-        when(manager.find(eq(Game.class), eq("1"))).thenReturn(game);
-        when(manager.merge(eq(game))).thenReturn(game);
-        when(manager.merge(eq(white))).thenReturn(white);
-        when(manager.merge(eq(black))).thenReturn(black);
+        when(manager.find(eq(Game.class), eq(1))).thenReturn(game);
         when(manager.getTransaction()).thenReturn(tx);
+        when(movesDao.createNewMove(eq(game), eq("e2e4"))).thenReturn(move);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
@@ -59,7 +72,9 @@ public class MoveControllerTest {
                 .param("promotion", "")
                 .sessionAttr("user-session", userSession)
         )
-                .andExpect(status().is3xxRedirection());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlTemplate("/game?id={id}&legal_move={legalMove}", "1", "true"));
 
+        verify(movesDao, times(1)).createNewMove(game, "e2e4");
     }
 }

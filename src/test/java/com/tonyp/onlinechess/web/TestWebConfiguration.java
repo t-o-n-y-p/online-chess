@@ -32,15 +32,6 @@ public class TestWebConfiguration {
     private EntityTransaction tx;
 
     @MockBean
-    private UsersDao usersDao;
-
-    @MockBean
     private ChallengesDao challengesDao;
-
-    @MockBean
-    private GamesDao gamesDao;
-
-    @MockBean
-    private MovesDao movesDao;
 
 }

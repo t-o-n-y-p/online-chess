@@ -17,6 +17,12 @@ public class GamesDao {
         this.manager = manager;
     }
 
+    public Game createNewGame(User white, User black) {
+        Game newGame = new Game(white, black);
+        manager.persist(newGame);
+        return newGame;
+    }
+
     public List<Game> findByUser(User user, int offset, int limit) {
         return manager.createQuery(
                 "from Game where white = :user or black = :user " +

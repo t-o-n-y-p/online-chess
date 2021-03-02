@@ -1,6 +1,7 @@
 package com.tonyp.onlinechess.dao;
 
 import com.tonyp.onlinechess.model.Challenge;
+import com.tonyp.onlinechess.model.Color;
 import com.tonyp.onlinechess.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,12 @@ public class ChallengesDao {
 
     public ChallengesDao(@Autowired EntityManager manager) {
         this.manager = manager;
+    }
+
+    public Challenge createNewChallenge(User from, User to, Color targetColor) {
+        Challenge newChallenge = new Challenge(from, to, targetColor);
+        manager.persist(newChallenge);
+        return newChallenge;
     }
 
     public List<Challenge> findIncomingChallenges(User user, int offset, int limit) {

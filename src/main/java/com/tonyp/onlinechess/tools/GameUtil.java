@@ -1,6 +1,7 @@
 package com.tonyp.onlinechess.tools;
 
 import com.tonyp.onlinechess.model.Color;
+import com.tonyp.onlinechess.model.Move;
 import com.tonyp.onlinechess.model.User;
 
 import java.util.*;
@@ -70,13 +71,23 @@ public final class GameUtil {
         return fen.contains("w");
     }
 
-    public static Result getResult(String fen, String legalMoves, List<String> positionHistory)
+    private static boolean isDrawByRepetition(String fen, List<Move> moveHistory) {
+        if (moveHistory == null || moveHistory.isEmpty()) {
+            return false;
+        }
+        List<String> positionHistory = moveHistory.stream()
+                .map(Move::getRepetitionInfo)
+                .collect(Collectors.toList());
+        return Collections.frequency(positionHistory, getPositionFromFen(fen)) >= 2;
+    }
+
+    public static Result getResult(String fen, String legalMoves, List<Move> moveHistory)
             throws ExecutionException, InterruptedException {
         if (isDrawByInsufficientMaterial(fen)) {
             return Result.DRAW_BY_INSUFFICIENT_MATERIAL;
         } else if (isDrawByFiftyMoveRule(fen)) {
             return Result.DRAW_BY_FIFTY_MOVE_RULE;
-        } else if (Collections.frequency(positionHistory, getPositionFromFen(fen)) >= 2) {
+        } else if (isDrawByRepetition(fen, moveHistory)) {
             return Result.DRAW_BY_REPETITION;
         } else if (!legalMoves.isBlank()) {
             return Result.UNDEFINED;
@@ -88,9 +99,9 @@ public final class GameUtil {
         return Result.WHITE_WON_BY_CHECKMATE;
     }
 
-    public static void updateRatings(User white, User black, Result result) {
+    public static double getRatingDifference(User white, User black, Result result) {
         if (result == Result.UNDEFINED) {
-            return;
+            return 0.0;
         }
         double actualPointsForWhite = 0.0;
         if (result.getWinningSide() == Color.WHITE) {
@@ -99,9 +110,7 @@ public final class GameUtil {
             actualPointsForWhite = 0.5;
         }
         double expectedPointsForWhite = 1 / (1 + Math.pow(10.0, (black.getRating() - white.getRating()) / 400));
-        double ratingDifference = 20 * (actualPointsForWhite - expectedPointsForWhite);
-        white.setRating(white.getRating() + ratingDifference);
-        black.setRating(black.getRating() - ratingDifference);
+        return 20 * (actualPointsForWhite - expectedPointsForWhite);
     }
 
 }

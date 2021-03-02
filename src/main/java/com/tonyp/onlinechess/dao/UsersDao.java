@@ -23,6 +23,11 @@ public class UsersDao {
         return newUser;
     }
 
+    public User updateRating(User user, double difference) {
+        user.setRating(user.getRating() + difference);
+        return manager.merge(user);
+    }
+
     public User findByLogin(String login) {
         try {
             return manager.createQuery("from User where login = :login", User.class)

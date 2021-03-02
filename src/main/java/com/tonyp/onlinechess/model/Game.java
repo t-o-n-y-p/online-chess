@@ -147,13 +147,12 @@ public class Game {
         this.lastModifiedTimestamp = lastModifiedTimestamp;
     }
 
-    public List<String> getPositionHistory() {
-        if (moves == null) {
-            return new ArrayList<>();
-        }
-        return moves.stream()
-                .map(Move::getRepetitionInfo)
-                .collect(Collectors.toList());
+    public List<Move> getMoves() {
+        return moves;
+    }
+
+    public void setMoves(List<Move> moves) {
+        this.moves = moves;
     }
 }
 

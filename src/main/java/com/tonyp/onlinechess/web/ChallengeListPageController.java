@@ -65,5 +65,8 @@ public class ChallengeListPageController {
         return "challenges";
     }
 
-
+    @ModelAttribute("user-session")
+    public UserSession createUserSession() {
+        return new UserSession();
+    }
 }

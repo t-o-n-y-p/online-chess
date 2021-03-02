@@ -44,23 +44,24 @@ public class SignupController {
         if (!password.equals(repeatPassword)) {
             return new RedirectView("/signup");
         }
-        if (usersDao.findByLogin(login) == null) {
-            try {
-                manager.getTransaction().begin();
-                usersDao.createNewUser(login, password);
-                manager.getTransaction().commit();
-            } catch (Exception e) {
-                attributes.addAttribute("error", true);
-                return new RedirectView("/signup");
-            } finally {
-                if (manager.getTransaction().isActive()) {
-                    manager.getTransaction().rollback();
-                }
-            }
-            return new RedirectView("/main");
+        if (usersDao.findByLogin(login) != null) {
+            return new RedirectView("/signup");
         }
-        session.setLogin(null);
-        return new RedirectView("/signup");
+        try {
+            manager.getTransaction().begin();
+            usersDao.createNewUser(login, password);
+            manager.getTransaction().commit();
+
+            return new RedirectView("/main");
+        } catch (Exception e) {
+            session.setLogin(null);
+            attributes.addAttribute("error", true);
+            return new RedirectView("/signup");
+        } finally {
+            if (manager.getTransaction().isActive()) {
+                manager.getTransaction().rollback();
+            }
+        }
     }
 
     @ModelAttribute("user-session")

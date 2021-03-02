@@ -70,7 +70,11 @@ public class MoveController {
                 usersDao.updateRating(game.getBlack(), -ratingDifference);
             }
             manager.getTransaction().commit();
-        } catch (Exception e) {
+
+            attributes.addAttribute("id", gameId);
+            attributes.addAttribute("legal_move", true);
+            return new RedirectView("/game");
+        } catch (Throwable e) {
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("error", true);
             return new RedirectView("/game");
@@ -79,9 +83,11 @@ public class MoveController {
                 manager.getTransaction().rollback();
             }
         }
-        attributes.addAttribute("id", gameId);
-        attributes.addAttribute("legal_move", true);
-        return new RedirectView("/game");
+    }
+
+    @ModelAttribute("user-session")
+    public UserSession createUserSession() {
+        return new UserSession();
     }
 
 }

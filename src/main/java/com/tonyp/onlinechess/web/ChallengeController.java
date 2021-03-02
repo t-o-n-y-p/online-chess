@@ -42,8 +42,8 @@ public class ChallengeController {
         if (session.getLogin() == null) {
             return new RedirectView("/login");
         }
-        Challenge acceptedChallenge = manager.find(Challenge.class, id);
         try {
+            Challenge acceptedChallenge = manager.find(Challenge.class, id);
             manager.getTransaction().begin();
             manager.remove(acceptedChallenge);
             if (acceptedChallenge.getTargetColor().equals(Color.WHITE)) {
@@ -52,7 +52,10 @@ public class ChallengeController {
                 gamesDao.createNewGame(acceptedChallenge.getFrom(), acceptedChallenge.getTo());
             }
             manager.getTransaction().commit();
-        } catch (Exception e) {
+
+            attributes.addAttribute("challenge_accepted", true);
+            return getAcceptChallengeRedirectView(attributes, page, toPreviousPage, fromChallenges);
+        } catch (Throwable e) {
             attributes.addAttribute("error", true);
             return getAcceptChallengeRedirectView(attributes, page, toPreviousPage, fromChallenges);
         } finally {
@@ -60,8 +63,6 @@ public class ChallengeController {
                 manager.getTransaction().rollback();
             }
         }
-        attributes.addAttribute("challenge_accepted", true);
-        return getAcceptChallengeRedirectView(attributes, page, toPreviousPage, fromChallenges);
     }
 
     @PostMapping("/challenge")
@@ -80,7 +81,10 @@ public class ChallengeController {
                     targetColor
             );
             manager.getTransaction().commit();
-        } catch (Exception e) {
+
+            attributes.addAttribute("challenge_created", true);
+            return new RedirectView("/main");
+        } catch (Throwable e) {
             attributes.addAttribute("error", true);
             return new RedirectView("/main");
         } finally {
@@ -88,8 +92,11 @@ public class ChallengeController {
                 manager.getTransaction().rollback();
             }
         }
-        attributes.addAttribute("challenge_created", true);
-        return new RedirectView("/main");
+    }
+
+    @ModelAttribute("user-session")
+    public UserSession createUserSession() {
+        return new UserSession();
     }
 
     private RedirectView getAcceptChallengeRedirectView

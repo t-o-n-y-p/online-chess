@@ -28,16 +28,21 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public RedirectView login(@RequestParam String login,
+    public RedirectView login(RedirectAttributes attributes,
+                              @RequestParam String login,
                               @RequestParam String password,
                               @ModelAttribute("user-session") UserSession session) {
         if (!session.getLogin().equals(login)) {
             return new RedirectView("/main");
         }
-        if (usersDao.findByLoginAndPassword(login, password) != null) {
-            return new RedirectView("/main");
+        try {
+            if (usersDao.findByLoginAndPassword(login, password) != null) {
+                return new RedirectView("/main");
+            }
+        } catch (Throwable e) {
+            session.setLogin(null);
+            attributes.addAttribute("error", true);
         }
-        session.setLogin(null);
         return new RedirectView("/login");
     }
 

@@ -50,4 +50,9 @@ public class GamePageController {
         return "game";
     }
 
+    @ModelAttribute("user-session")
+    public UserSession createUserSession() {
+        return new UserSession();
+    }
+
 }

@@ -68,4 +68,9 @@ public class ChallengePageController {
         model.addAttribute("opponent", opponent);
         return "challenge/step2";
     }
+
+    @ModelAttribute("user-session")
+    public UserSession createUserSession() {
+        return new UserSession();
+    }
 }

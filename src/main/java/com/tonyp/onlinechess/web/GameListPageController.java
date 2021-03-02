@@ -58,4 +58,9 @@ public class GameListPageController {
         return "games";
     }
 
+    @ModelAttribute("user-session")
+    public UserSession createUserSession() {
+        return new UserSession();
+    }
+
 }

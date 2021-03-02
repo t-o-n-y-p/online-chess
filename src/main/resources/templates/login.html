@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="utf-8">
         <title>Main page</title>
@@ -10,6 +10,9 @@
         <div class="container">
             <div class="row-fluid">
                 <div class="col-md-6 offset-md-3">
+                    <div class="alert alert-danger" role="alert" th:if="${error}" style="margin: 16px">
+                        An unexpected error occurred. Please try again later.
+                    </div>
                     <form action="/login" method="post" style="margin: 16px">
                         <div class="form-group">
                             <label for="login">Login</label>

@@ -18,10 +18,12 @@ public class LoginController {
     }
 
     @GetMapping("/login")
-    public String login(@ModelAttribute("user-session") UserSession session) {
+    public String login(Model model, @RequestParam(defaultValue = "false") boolean error,
+                        @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() != null) {
             return "redirect:main";
         }
+        model.addAttribute("error", error);
         return "login";
     }
 

@@ -65,14 +65,12 @@ public class Game {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Game game = (Game) o;
-        return id == game.id && isCompleted == game.isCompleted && white.equals(game.white) && black.equals(game.black)
-                && playerToMove.equals(game.playerToMove) && fen.equals(game.fen) && description.equals(game.description)
-                && legalMoves.equals(game.legalMoves) && lastModifiedTimestamp.equals(game.lastModifiedTimestamp);
+        return id == game.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, white, black, playerToMove, fen, isCompleted, description, legalMoves, lastModifiedTimestamp);
+        return Objects.hash(id);
     }
 
     public int getId() {

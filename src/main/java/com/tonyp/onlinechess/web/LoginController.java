@@ -21,12 +21,16 @@ public class LoginController {
     public String login(Model model,
                         @RequestParam(defaultValue = "false") boolean error,
                         @RequestParam(defaultValue = "false", name = "force_logout") boolean forceLogout,
+                        @RequestParam(defaultValue = "false", name = "incorrect_login") boolean incorrectLogin,
+                        @RequestParam(defaultValue = "false", name = "incorrect_password") boolean incorrectPassword,
                         @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() != null) {
             return "redirect:main";
         }
         model.addAttribute("error", error);
         model.addAttribute("forceLogout", forceLogout);
+        model.addAttribute("incorrectLogin", incorrectLogin);
+        model.addAttribute("incorrectPassword", incorrectPassword);
         return "login";
     }
 
@@ -39,14 +43,22 @@ public class LoginController {
             return new RedirectView("/main");
         }
         try {
-            if (usersDao.findByLoginAndPassword(login, password) != null) {
-                return new RedirectView("/main");
+            if (usersDao.findByLogin(login) == null) {
+                session.setLogin(null);
+                attributes.addAttribute("incorrect_login", true);
+                return new RedirectView("/login");
             }
+            if (usersDao.findByLoginAndPassword(login, password) == null) {
+                session.setLogin(null);
+                attributes.addAttribute("incorrect_password", true);
+                return new RedirectView("/login");
+            }
+            return new RedirectView("/main");
         } catch (Throwable e) {
             session.setLogin(null);
             attributes.addAttribute("error", true);
+            return new RedirectView("/login");
         }
-        return new RedirectView("/login");
     }
 
     @PostMapping("/logout")

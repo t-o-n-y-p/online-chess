@@ -13,6 +13,9 @@
                     <div class="alert alert-danger" role="alert" th:if="${error}" style="margin: 16px">
                         An unexpected error occurred. Please try again later.
                     </div>
+                    <div class="alert alert-danger" role="alert" th:if="${incorrectLogin}" style="margin: 16px">
+                        User with this login already exists.
+                    </div>
                     <form action="/signup" method="post" style="margin: 16px"
                           oninput='repeat_password.setCustomValidity(repeat_password.value !== password.value ? "Passwords do not match." : "")'>
                         <div class="form-group">
@@ -27,7 +30,7 @@
                         </div>
                         <div class="form-group">
                             <label for="repeat_password">Repeat password</label>
-                            <input type="password" class="form-control" id="repeat_password" name="repeat_password" placeholder="Password">
+                            <input type="password" class="form-control" id="repeat_password" placeholder="Password">
                         </div>
                         <button type="submit" class="btn btn-dark" style="width: 100%">Sign up</button>
                     </form>

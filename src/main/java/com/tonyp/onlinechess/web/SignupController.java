@@ -23,12 +23,15 @@ public class SignupController {
     }
 
     @GetMapping("/signup")
-    public String signup(Model model, @RequestParam(defaultValue = "false") boolean error,
+    public String signup(Model model,
+                         @RequestParam(defaultValue = "false") boolean error,
+                         @RequestParam(defaultValue = "false", name = "incorrect_login") String incorrectLogin,
                          @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() != null) {
             return "redirect:main";
         }
         model.addAttribute("error", error);
+        model.addAttribute("incorrectLogin", incorrectLogin);
         return "signup";
     }
 
@@ -36,18 +39,17 @@ public class SignupController {
     public RedirectView signup(RedirectAttributes attributes,
                                @RequestParam String login,
                                @RequestParam String password,
-                               @RequestParam(name = "repeat_password") String repeatPassword,
                                @ModelAttribute("user-session") UserSession session) {
         if (!session.getLogin().equals(login)) {
             return new RedirectView("/main");
         }
-        if (!password.equals(repeatPassword)) {
-            return new RedirectView("/signup");
-        }
-        if (usersDao.findByLogin(login) != null) {
-            return new RedirectView("/signup");
-        }
         try {
+            if (usersDao.findByLogin(login) != null) {
+                session.setLogin(null);
+                attributes.addAttribute("incorrect_login", true);
+                return new RedirectView("/signup");
+            }
+
             manager.getTransaction().begin();
             usersDao.createNewUser(login, password);
             manager.getTransaction().commit();

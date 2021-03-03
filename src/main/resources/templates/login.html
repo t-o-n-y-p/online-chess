@@ -16,6 +16,12 @@
                     <div class="alert alert-danger" role="alert" th:if="${forceLogout}" style="margin: 16px">
                         You've been logged out.
                     </div>
+                    <div class="alert alert-danger" role="alert" th:if="${incorrectLogin}" style="margin: 16px">
+                        Login is incorrect.
+                    </div>
+                    <div class="alert alert-danger" role="alert" th:if="${incorrectPassword}" style="margin: 16px">
+                        Password is incorrect.
+                    </div>
                     <form action="/login" method="post" style="margin: 16px">
                         <div class="form-group">
                             <label for="login">Login</label>

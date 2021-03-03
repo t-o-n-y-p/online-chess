@@ -2,7 +2,6 @@ package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.UsersDao;
 import com.tonyp.onlinechess.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,14 +20,14 @@ import java.util.stream.Collectors;
 @SessionAttributes("user-session")
 public class ChallengePageController {
 
-    private final int COLUMNS = 2;
-    private final int PAGE_RESULTS = 20;
-    private final int RATING_THRESHOLD = 50;
+    public static final int COLUMNS = 2;
+    public static final int PAGE_RESULTS = 20;
+    public static final double RATING_THRESHOLD = 50.0;
 
     private final EntityManager manager;
     private final UsersDao usersDao;
 
-    public ChallengePageController(@Autowired EntityManager manager, @Autowired UsersDao usersDao) {
+    public ChallengePageController(EntityManager manager, UsersDao usersDao) {
         this.manager = manager;
         this.usersDao = usersDao;
     }
@@ -56,7 +55,7 @@ public class ChallengePageController {
         model.addAttribute("opponentsMap", opponentsMap);
         model.addAttribute("nextPageAvailable", opponents.size() > PAGE_RESULTS);
 
-        return "challenge/step1";
+        return "challenge/_step1";
     }
 
     @GetMapping("/challenge/step2")
@@ -69,7 +68,7 @@ public class ChallengePageController {
         }
         User opponent = manager.find(User.class, opponentId);
         model.addAttribute("opponent", opponent);
-        return "challenge/step2";
+        return "challenge/_step2";
     }
 
     @ModelAttribute("user-session")

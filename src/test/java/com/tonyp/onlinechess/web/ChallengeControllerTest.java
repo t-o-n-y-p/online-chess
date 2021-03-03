@@ -55,7 +55,6 @@ public class ChallengeControllerTest {
     public void testAcceptIsNotLoggedIn() throws Exception {
         mvc.perform(post("/challenge/accept")
                 .param("id", "1")
-                .sessionAttr("user-session", new UserSession())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/login?force_logout={forceLogout}", "true"));
@@ -180,7 +179,6 @@ public class ChallengeControllerTest {
         mvc.perform(post("/challenge")
                 .param("opponent_id", "1")
                 .param("target_color", Color.WHITE.name())
-                .sessionAttr("user-session", new UserSession())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/login?force_logout={forceLogout}", "true"));

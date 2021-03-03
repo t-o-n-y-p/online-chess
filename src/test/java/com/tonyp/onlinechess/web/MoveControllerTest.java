@@ -59,7 +59,6 @@ public class MoveControllerTest {
                 .param("square1", "e2")
                 .param("square2", "e4")
                 .param("promotion", "")
-                .sessionAttr("user-session", new UserSession())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/login?force_logout={forceLogout}", "true"));

@@ -13,14 +13,17 @@
                     <div class="alert alert-danger" role="alert" th:if="${error}" style="margin: 16px">
                         An unexpected error occurred. Please try again later.
                     </div>
-                    <form action="/signup" method="post" style="margin: 16px">
+                    <form action="/signup" method="post" style="margin: 16px"
+                          oninput='repeat_password.setCustomValidity(repeat_password.value !== password.value ? "Passwords do not match." : "")'>
                         <div class="form-group">
                             <label for="login">Login</label>
-                            <input type="text" class="form-control" id="login" name="login" placeholder="Login">
+                            <input type="text" class="form-control" id="login" name="login" placeholder="Login" required
+                                   oninvalid="this.setCustomValidity('Login must not be empty.')" oninput="this.setCustomValidity('')">
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required
+                                   oninvalid="this.setCustomValidity('Password must not be empty.')" oninput="this.setCustomValidity('')">
                         </div>
                         <div class="form-group">
                             <label for="repeat_password">Repeat password</label>

@@ -55,7 +55,7 @@ public class SignupController {
             manager.getTransaction().commit();
 
             return new RedirectView("/main");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             session.setLogin(null);
             attributes.addAttribute("error", true);
             return new RedirectView("/signup");

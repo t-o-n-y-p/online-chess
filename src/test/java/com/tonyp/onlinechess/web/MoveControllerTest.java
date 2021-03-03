@@ -27,8 +27,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlTemplate;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @AutoConfigureMockMvc
@@ -52,6 +51,20 @@ public class MoveControllerTest {
 
     @Autowired
     private EntityTransaction tx;
+
+    @Test
+    public void testIsNotLoggedIn() throws Exception {
+        mvc.perform(post("/move")
+                .param("game_id", "1")
+                .param("square1", "e2")
+                .param("square2", "e4")
+                .param("promotion", "")
+                .sessionAttr("user-session", new UserSession())
+        )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"));
+        verifyNoInteractions(manager, usersDao, gamesDao, movesDao, tx);
+    }
 
     @Test
     public void testLegalMoveGameNotFinished() throws Exception {

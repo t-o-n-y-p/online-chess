@@ -50,7 +50,7 @@ public class GamePageController {
                 game.getFen(), game.getWhite().equals(user) ? Color.WHITE : Color.BLACK
         ));
         model.addAttribute("squares", GameUtil.SQUARES);
-        return "game";
+        return "_game";
     }
 
     @ModelAttribute("user-session")

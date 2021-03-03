@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -97,42 +98,61 @@ public class ChallengeListPageControllerTest {
     }
 
     @Test
-    public void testChallengesMiddlePageWithAcceptedFlag() throws Exception {
+    public void testChallengesFirstPageNoResults() throws Exception {
+        User user = new User("login0", "pass0");
+        when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
+
+        UserSession userSession = new UserSession();
+        userSession.setLogin("login0");
+        mvc.perform(get("/challenges")
+                .sessionAttr("user-session", userSession)
+        )
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("challengeAccepted", false))
+                .andExpect(model().attribute("error", false))
+                .andExpect(model().attribute("search", ""))
+                .andExpect(model().attribute("page", 1))
+                .andExpect(model().attribute("columns", COLUMNS))
+                .andExpect(model().attribute("user", user))
+                .andExpect(model().attribute("challengesMap", Collections.emptyMap()))
+                .andExpect(model().attribute("nextPageAvailable", false))
+                .andExpect(model().attribute("toPreviousPage", false));
+        verify(usersDao, times(1)).findByLogin("login0");
+        verify(challengesDao, times(1)).findIncomingChallengesByOpponentLoginInput(
+                user, "", 0, PAGE_RESULTS + 1
+        );
+    }
+
+    @Test
+    public void testChallengesFirstPageSingleResultWithAcceptedFlag() throws Exception {
         User user = new User("login0", "pass0");
         User sideUser = new User("login1", "pass1");
-        List<Challenge> challenges = IntStream.range(0, PAGE_RESULTS + 1)
-                .mapToObj(i -> new Challenge(sideUser, user, Color.WHITE))
-                .collect(Collectors.toList());
-        AtomicInteger counter = new AtomicInteger(0);
-        Map<Integer, List<Challenge>> challengesMap = challenges.stream()
-                .limit(PAGE_RESULTS)
-                .collect(Collectors.groupingBy(i -> counter.getAndIncrement() % COLUMNS));
+        List<Challenge> challenges = List.of(new Challenge(sideUser, user, Color.WHITE));
+        Map<Integer, List<Challenge>> challengesMap = Map.of(0, challenges);
         when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
         when(challengesDao.findIncomingChallengesByOpponentLoginInput(
-                eq(user), eq("qwerty"), eq(3 * PAGE_RESULTS), eq(PAGE_RESULTS + 1)
+                eq(user), eq(""), eq(0), eq(PAGE_RESULTS + 1)
         )).thenReturn(challenges);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
         mvc.perform(get("/challenges")
-                .param("page", "4")
-                .param("search", "qwerty")
                 .param("challenge_accepted", "true")
                 .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("challengeAccepted", true))
                 .andExpect(model().attribute("error", false))
-                .andExpect(model().attribute("search", "qwerty"))
-                .andExpect(model().attribute("page", 4))
+                .andExpect(model().attribute("search", ""))
+                .andExpect(model().attribute("page", 1))
                 .andExpect(model().attribute("columns", COLUMNS))
                 .andExpect(model().attribute("user", user))
                 .andExpect(model().attribute("challengesMap", challengesMap))
-                .andExpect(model().attribute("nextPageAvailable", true))
+                .andExpect(model().attribute("nextPageAvailable", false))
                 .andExpect(model().attribute("toPreviousPage", false));
         verify(usersDao, times(1)).findByLogin("login0");
         verify(challengesDao, times(1)).findIncomingChallengesByOpponentLoginInput(
-                user, "qwerty", 3 * PAGE_RESULTS, PAGE_RESULTS + 1
+                user, "", 0, PAGE_RESULTS + 1
         );
     }
 

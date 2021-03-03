@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 @SessionAttributes("user-session")
 public class GameListPageController {
 
-    private final int COLUMNS = 2;
-    private final int PAGE_RESULTS = 20;
+    public static final int COLUMNS = 2;
+    public static final int PAGE_RESULTS = 20;
 
     private final UsersDao usersDao;
     private final GamesDao gamesDao;
@@ -57,7 +57,7 @@ public class GameListPageController {
         model.addAttribute("gamesMap", gamesMap);
         model.addAttribute("nextPageAvailable", games.size() > PAGE_RESULTS);
 
-        return "games";
+        return "_games";
     }
 
     @ModelAttribute("user-session")

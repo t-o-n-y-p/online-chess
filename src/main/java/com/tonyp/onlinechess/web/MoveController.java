@@ -76,9 +76,6 @@ public class MoveController {
             attributes.addAttribute("legal_move", true);
             return new RedirectView("/game");
         } catch (Throwable e) {
-            System.out.println(e.getClass().getSimpleName());
-            System.out.println(e.getMessage());
-            System.out.println(Arrays.toString(e.getStackTrace()));
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("error", true);
             return new RedirectView("/game");

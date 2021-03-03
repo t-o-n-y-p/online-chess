@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -33,11 +34,12 @@ public class ChallengePageController {
     }
 
     @GetMapping("/challenge/step1")
-    public String step1(Model model,
+    public String step1(RedirectAttributes attributes, Model model,
                         @RequestParam(defaultValue = "1") int page,
                         @RequestParam(defaultValue = "") String search,
                         @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() == null) {
+            attributes.addAttribute("force_logout", true);
             return "redirect:login";
         }
         model.addAttribute("search", search);
@@ -58,10 +60,11 @@ public class ChallengePageController {
     }
 
     @GetMapping("/challenge/step2")
-    public String step2(Model model,
+    public String step2(RedirectAttributes attributes, Model model,
                         @RequestParam(name = "opponent_id") int opponentId,
                         @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() == null) {
+            attributes.addAttribute("force_logout", true);
             return "redirect:login";
         }
         User opponent = manager.find(User.class, opponentId);

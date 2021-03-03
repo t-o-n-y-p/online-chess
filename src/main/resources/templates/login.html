@@ -13,6 +13,9 @@
                     <div class="alert alert-danger" role="alert" th:if="${error}" style="margin: 16px">
                         An unexpected error occurred. Please try again later.
                     </div>
+                    <div class="alert alert-danger" role="alert" th:if="${forceLogout}" style="margin: 16px">
+                        You've been logged out.
+                    </div>
                     <form action="/login" method="post" style="margin: 16px">
                         <div class="form-group">
                             <label for="login">Login</label>

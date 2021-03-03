@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Map;
@@ -33,11 +34,12 @@ public class GameListPageController {
     }
 
     @GetMapping("/games")
-    public String games(Model model,
+    public String games(RedirectAttributes attributes, Model model,
                         @RequestParam(defaultValue = "1") int page,
                         @RequestParam(defaultValue = "") String search,
                         @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() == null) {
+            attributes.addAttribute("force_logout", true);
             return "redirect:login";
         }
         model.addAttribute("search", search);

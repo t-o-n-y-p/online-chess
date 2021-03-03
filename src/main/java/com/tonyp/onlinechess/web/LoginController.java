@@ -18,12 +18,15 @@ public class LoginController {
     }
 
     @GetMapping("/login")
-    public String login(Model model, @RequestParam(defaultValue = "false") boolean error,
+    public String login(Model model,
+                        @RequestParam(defaultValue = "false") boolean error,
+                        @RequestParam(defaultValue = "false", name = "force_logout") boolean forceLogout,
                         @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() != null) {
             return "redirect:main";
         }
         model.addAttribute("error", error);
+        model.addAttribute("forceLogout", forceLogout);
         return "login";
     }
 

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -36,12 +37,13 @@ public class MainPageController {
     }
 
     @GetMapping("/main")
-    public String main(Model model,
+    public String main(RedirectAttributes attributes, Model model,
                        @RequestParam(defaultValue = "false", name = "challenge_created") boolean challengeCreated,
                        @RequestParam(defaultValue = "false", name = "challenge_accepted") boolean challengeAccepted,
                        @RequestParam(defaultValue = "false") boolean error,
                        @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() == null) {
+            attributes.addAttribute("force_logout", true);
             return "redirect:login";
         }
         model.addAttribute("challengeCreated", challengeCreated);

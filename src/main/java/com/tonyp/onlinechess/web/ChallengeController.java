@@ -34,12 +34,14 @@ public class ChallengeController {
     }
 
     @PostMapping("/challenge/accept")
-    public RedirectView accept(RedirectAttributes attributes, @RequestParam int id,
+    public RedirectView accept(RedirectAttributes attributes,
+                               @RequestParam int id,
                                @RequestParam(defaultValue = "1") int page,
                                @RequestParam(defaultValue = "false", name = "to_previous_page") boolean toPreviousPage,
                                @RequestParam(defaultValue = "false", name = "from_challenges") boolean fromChallenges,
                                @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() == null) {
+            attributes.addAttribute("force_logout", true);
             return new RedirectView("/login");
         }
         try {
@@ -71,6 +73,7 @@ public class ChallengeController {
                                   @RequestParam(name = "target_color") Color targetColor,
                                   @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() == null) {
+            attributes.addAttribute("force_logout", true);
             return new RedirectView("/login");
         }
         try {

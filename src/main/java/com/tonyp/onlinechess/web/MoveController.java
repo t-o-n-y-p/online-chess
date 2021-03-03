@@ -42,6 +42,7 @@ public class MoveController {
                                  @RequestParam String promotion,
                                  @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() == null) {
+            attributes.addAttribute("force_logout", true);
             return new RedirectView("/login");
         }
         try {

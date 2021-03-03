@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.persistence.EntityManager;
 
@@ -28,12 +29,14 @@ public class GamePageController {
     }
 
     @GetMapping("/game")
-    public String game(Model model, @RequestParam int id,
+    public String game(RedirectAttributes attributes, Model model,
+                       @RequestParam int id,
                        @RequestParam(defaultValue = "false", name = "legal_move") boolean legalMove,
                        @RequestParam(defaultValue = "false", name = "illegal_move") boolean illegalMove,
                        @RequestParam(defaultValue = "false") boolean error,
                        @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() == null) {
+            attributes.addAttribute("force_logout", true);
             return "redirect:login";
         }
         model.addAttribute("legalMove", legalMove);

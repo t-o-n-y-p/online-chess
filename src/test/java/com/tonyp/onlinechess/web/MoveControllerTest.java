@@ -62,7 +62,7 @@ public class MoveControllerTest {
                 .sessionAttr("user-session", new UserSession())
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/login"));
+                .andExpect(redirectedUrlTemplate("/login?force_logout={forceLogout}", "true"));
         verifyNoInteractions(manager, usersDao, gamesDao, movesDao, tx);
     }
 

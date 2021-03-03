@@ -40,20 +40,20 @@ public class MoveControllerTest {
     @Autowired
     private EntityManager manager;
 
-    @MockBean
+    @Autowired
     private UsersDao usersDao;
 
-    @MockBean
+    @Autowired
     private GamesDao gamesDao;
 
-    @MockBean
+    @Autowired
     private MovesDao movesDao;
 
     @Autowired
     private EntityTransaction tx;
 
     @Test
-    public void testIsNotLoggedIn() throws Exception {
+    public void testMakeMoveIsNotLoggedIn() throws Exception {
         mvc.perform(post("/move")
                 .param("game_id", "1")
                 .param("square1", "e2")
@@ -67,7 +67,7 @@ public class MoveControllerTest {
     }
 
     @Test
-    public void testLegalMoveGameNotFinished() throws Exception {
+    public void testMakeMoveLegalMoveGameNotFinished() throws Exception {
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
@@ -104,7 +104,7 @@ public class MoveControllerTest {
     }
 
     @Test
-    public void testLegalMoveGameFinished() throws Exception {
+    public void testMakeMoveLegalMoveGameFinished() throws Exception {
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
@@ -146,7 +146,7 @@ public class MoveControllerTest {
     }
 
     @Test
-    public void testIllegalMove() throws Exception {
+    public void testMakeMoveIllegalMove() throws Exception {
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
@@ -180,7 +180,7 @@ public class MoveControllerTest {
     }
 
     @Test
-    public void testError() throws Exception {
+    public void testMakeMoveError() throws Exception {
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);

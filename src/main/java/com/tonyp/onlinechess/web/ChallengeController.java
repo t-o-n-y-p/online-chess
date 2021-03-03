@@ -68,10 +68,10 @@ public class ChallengeController {
     }
 
     @PostMapping("/challenge")
-    public RedirectView challenge(RedirectAttributes attributes,
-                                  @RequestParam(name = "opponent_id") int opponentId,
-                                  @RequestParam(name = "target_color") Color targetColor,
-                                  @ModelAttribute("user-session") UserSession session) {
+    public RedirectView create(RedirectAttributes attributes,
+                               @RequestParam(name = "opponent_id") int opponentId,
+                               @RequestParam(name = "target_color") Color targetColor,
+                               @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() == null) {
             attributes.addAttribute("force_logout", true);
             return new RedirectView("/login");

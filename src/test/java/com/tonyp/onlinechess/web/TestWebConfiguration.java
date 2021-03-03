@@ -34,4 +34,13 @@ public class TestWebConfiguration {
     @MockBean
     private ChallengesDao challengesDao;
 
+    @MockBean
+    private UsersDao usersDao;
+
+    @MockBean
+    private GamesDao gamesDao;
+
+    @MockBean
+    private MovesDao movesDao;
+
 }

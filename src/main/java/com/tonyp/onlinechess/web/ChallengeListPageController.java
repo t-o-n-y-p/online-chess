@@ -1,10 +1,8 @@
 package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.ChallengesDao;
-import com.tonyp.onlinechess.dao.GamesDao;
 import com.tonyp.onlinechess.dao.UsersDao;
 import com.tonyp.onlinechess.model.Challenge;
-import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,8 +22,8 @@ import java.util.stream.Collectors;
 @SessionAttributes("user-session")
 public class ChallengeListPageController {
 
-    private final int COLUMNS = 2;
-    private final int PAGE_RESULTS = 20;
+    public static final int COLUMNS = 2;
+    public static final int PAGE_RESULTS = 20;
 
     private final UsersDao usersDao;
     private final ChallengesDao challengesDao;
@@ -64,7 +62,7 @@ public class ChallengeListPageController {
         model.addAttribute("nextPageAvailable", challenges.size() > PAGE_RESULTS);
         model.addAttribute("toPreviousPage", challenges.size() == 1 && page > 1);
 
-        return "challenges";
+        return "_challenges";
     }
 
     @ModelAttribute("user-session")

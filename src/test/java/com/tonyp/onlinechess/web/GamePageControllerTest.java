@@ -78,7 +78,6 @@ public class GamePageControllerTest {
     @Test
     public void testGameIllegalMoveAsBlack() throws Exception {
         User user = new User("login0", "pass0");
-        user.setId(1);
         Game game = new Game(new User("login1", "pass1"), user);
         when(manager.find(eq(Game.class), eq(1))).thenReturn(game);
         when(usersDao.findByLogin(eq("login0"))).thenReturn(user);

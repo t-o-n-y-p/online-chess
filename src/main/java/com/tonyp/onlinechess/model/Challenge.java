@@ -4,6 +4,8 @@ import javax.persistence.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "challenges")
@@ -25,6 +27,9 @@ public class Challenge {
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
+    @Column(unique = true, nullable = false)
+    private UUID uuid;
+
     public Challenge() {
     }
 
@@ -33,6 +38,20 @@ public class Challenge {
         this.to = to;
         this.targetColor = targetColor;
         timestamp = Instant.now().atZone(ZoneId.of("GMT")).toLocalDateTime();
+        uuid = UUID.randomUUID();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Challenge challenge = (Challenge) o;
+        return id == challenge.id && Objects.equals(uuid, challenge.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, uuid);
     }
 
     public int getId() {

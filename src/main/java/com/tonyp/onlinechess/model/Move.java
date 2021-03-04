@@ -3,6 +3,7 @@ package com.tonyp.onlinechess.model;
 import com.tonyp.onlinechess.tools.GameUtil;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "moves")
@@ -28,6 +29,19 @@ public class Move {
         this.game = game;
         this.value = value;
         repetitionInfo = GameUtil.getPositionFromFen(game.getFen());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Move move = (Move) o;
+        return id == move.id && Objects.equals(game, move.game);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, game);
     }
 
     public int getId() {

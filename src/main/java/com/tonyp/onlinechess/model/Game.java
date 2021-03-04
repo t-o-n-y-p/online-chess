@@ -6,10 +6,9 @@ import javax.persistence.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Entity
 @Table(name = "games")
@@ -41,6 +40,9 @@ public class Game {
     @Column(name = "legal_moves", nullable = false)
     private String legalMoves;
 
+    @Column(unique = true, nullable = false)
+    private UUID uuid;
+
     @Column(name = "last_modified_timestamp", nullable = false)
     private LocalDateTime lastModifiedTimestamp;
 
@@ -58,6 +60,7 @@ public class Game {
         legalMoves = GameUtil.STARTING_POSITION_LEGAL_MOVES;
         isCompleted = false;
         lastModifiedTimestamp = Instant.now().atZone(ZoneId.of("GMT")).toLocalDateTime();
+        uuid = UUID.randomUUID();
     }
 
     @Override
@@ -65,12 +68,12 @@ public class Game {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Game game = (Game) o;
-        return id == game.id;
+        return id == game.id && Objects.equals(uuid, game.uuid);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, uuid);
     }
 
     public int getId() {

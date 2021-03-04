@@ -140,6 +140,14 @@ public class Game {
         this.legalMoves = legalMoves;
     }
 
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
     public LocalDateTime getLastModifiedTimestamp() {
         return lastModifiedTimestamp;
     }

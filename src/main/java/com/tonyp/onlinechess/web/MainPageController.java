@@ -6,8 +6,6 @@ import com.tonyp.onlinechess.dao.UsersDao;
 import com.tonyp.onlinechess.model.Challenge;
 import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,21 +14,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 
 @Controller
 @SessionAttributes("user-session")
 public class MainPageController {
-    private final int MAIN_PAGE_RESULTS = 10;
+    public static final int MAIN_PAGE_RESULTS = 10;
 
     private final UsersDao usersDao;
     private final ChallengesDao challengesDao;
     private final GamesDao gamesDao;
 
-    public MainPageController(@Autowired UsersDao usersDao,
-                              @Autowired ChallengesDao challengesDao,
-                              @Autowired GamesDao gamesDao) {
+    public MainPageController(UsersDao usersDao, ChallengesDao challengesDao, GamesDao gamesDao) {
         this.usersDao = usersDao;
         this.challengesDao = challengesDao;
         this.gamesDao = gamesDao;
@@ -58,7 +53,7 @@ public class MainPageController {
         List<Game> games = gamesDao.findByUser(user, 0, MAIN_PAGE_RESULTS + 1);
         model.addAttribute("games", games.subList(0, Integer.min(games.size(), MAIN_PAGE_RESULTS)));
         model.addAttribute("canViewAllGames", games.size() > MAIN_PAGE_RESULTS);
-        return "main";
+        return "_main";
     }
 
     @ModelAttribute("user-session")

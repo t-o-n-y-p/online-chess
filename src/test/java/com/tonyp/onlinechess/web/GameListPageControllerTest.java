@@ -52,15 +52,12 @@ public class GameListPageControllerTest {
     @Autowired
     private GamesDao gamesDao;
 
-    @Autowired
-    private EntityTransaction tx;
-
     @Test
     public void testGamesNotLoggedIn() throws Exception {
         mvc.perform(get("/games"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(manager, usersDao, gamesDao, tx);
+        verifyNoInteractions(manager, usersDao, gamesDao);
     }
 
     @Test

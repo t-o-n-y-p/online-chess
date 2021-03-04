@@ -45,15 +45,12 @@ public class ChallengePageControllerTest {
     @Autowired
     private UsersDao usersDao;
 
-    @Autowired
-    private EntityTransaction tx;
-
     @Test
     public void testStep1NotLoggedIn() throws Exception {
         mvc.perform(get("/challenge/step1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(manager, usersDao, tx);
+        verifyNoInteractions(manager, usersDao);
     }
 
     @Test
@@ -147,7 +144,7 @@ public class ChallengePageControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(manager, usersDao, tx);
+        verifyNoInteractions(manager, usersDao);
     }
 
     @Test

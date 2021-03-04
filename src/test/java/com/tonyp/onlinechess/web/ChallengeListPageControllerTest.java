@@ -49,15 +49,12 @@ public class ChallengeListPageControllerTest {
     @Autowired
     private ChallengesDao challengesDao;
 
-    @Autowired
-    private EntityTransaction tx;
-
     @Test
     public void testChallengesNotLoggedIn() throws Exception {
         mvc.perform(get("/challenges"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(manager, usersDao, challengesDao, tx);
+        verifyNoInteractions(manager, usersDao, challengesDao);
     }
 
     @Test

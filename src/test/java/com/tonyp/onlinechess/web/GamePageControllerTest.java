@@ -36,9 +36,6 @@ public class GamePageControllerTest {
     @Autowired
     private UsersDao usersDao;
 
-    @Autowired
-    private EntityTransaction tx;
-
     @Test
     public void testGameNotLoggedIn() throws Exception {
         mvc.perform(get("/game")
@@ -46,7 +43,7 @@ public class GamePageControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(manager, usersDao, tx);
+        verifyNoInteractions(manager, usersDao);
     }
 
     @Test

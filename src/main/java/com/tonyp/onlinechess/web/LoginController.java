@@ -1,6 +1,7 @@
 package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.UsersDao;
+import com.tonyp.onlinechess.model.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class LoginController {
         model.addAttribute("forceLogout", forceLogout);
         model.addAttribute("incorrectLogin", incorrectLogin);
         model.addAttribute("incorrectPassword", incorrectPassword);
-        return "login";
+        return "_login";
     }
 
     @PostMapping("/login")
@@ -43,12 +44,13 @@ public class LoginController {
             return new RedirectView("/main");
         }
         try {
-            if (usersDao.findByLogin(login) == null) {
+            User found = usersDao.findByLogin(login);
+            if (found == null) {
                 session.setLogin(null);
                 attributes.addAttribute("incorrect_login", true);
                 return new RedirectView("/login");
             }
-            if (usersDao.findByLoginAndPassword(login, password) == null) {
+            if (!found.getPassword().equals(password)) {
                 session.setLogin(null);
                 attributes.addAttribute("incorrect_password", true);
                 return new RedirectView("/login");

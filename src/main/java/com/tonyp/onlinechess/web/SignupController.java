@@ -1,7 +1,6 @@
 package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.UsersDao;
-import com.tonyp.onlinechess.model.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,14 +24,14 @@ public class SignupController {
     @GetMapping("/signup")
     public String signup(Model model,
                          @RequestParam(defaultValue = "false") boolean error,
-                         @RequestParam(defaultValue = "false", name = "incorrect_login") String incorrectLogin,
+                         @RequestParam(defaultValue = "false", name = "incorrect_login") boolean incorrectLogin,
                          @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() != null) {
             return "redirect:main";
         }
         model.addAttribute("error", error);
         model.addAttribute("incorrectLogin", incorrectLogin);
-        return "signup";
+        return "_signup";
     }
 
     @PostMapping("/signup")

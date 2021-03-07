@@ -17,15 +17,15 @@
                         User with this login already exists.
                     </div>
                     <div class="alert alert-danger" role="alert" th:if="${invalidLogin}" style="margin: 16px; text-align: center">
-                        Login must contain 4-12 characters: a-z, A-Z, or 0-9.
+                        Login must contain 4-9 characters: a-z, A-Z, or 0-9.
                     </div>
                     <form action="/signup" method="post" style="margin: 16px"
                           oninput='repeat_password.setCustomValidity(repeat_password.value !== password.value ? "Passwords do not match." : "")'>
                         <div class="form-group">
                             <label for="login">Login</label>
                             <input type="text" class="form-control" id="login" name="login" placeholder="Login" required
-                                   pattern="[a-zA-Z0-9]{4,12}"
-                                   oninvalid="this.setCustomValidity('Login must contain 4-12 characters: a-z, A-Z, or 0-9.')"
+                                   pattern="[a-zA-Z0-9]{4,9}"
+                                   oninvalid="this.setCustomValidity('Login must contain 4-9 characters: a-z, A-Z, or 0-9.')"
                                    oninput="this.setCustomValidity('')">
                         </div>
                         <div class="form-group">

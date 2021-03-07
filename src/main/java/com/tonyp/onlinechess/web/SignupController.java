@@ -44,7 +44,7 @@ public class SignupController {
         if (!session.getLogin().equals(login)) {
             return new RedirectView("/main");
         }
-        if (!login.matches("[a-zA-Z0-9]{4,12}")) {
+        if (!login.matches("[a-zA-Z0-9]{4,9}")) {
             attributes.addAttribute("invalid_login", true);
             return new RedirectView("/signup");
         }

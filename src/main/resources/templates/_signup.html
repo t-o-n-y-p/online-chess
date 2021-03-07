@@ -10,11 +10,14 @@
         <div class="container">
             <div class="row-fluid">
                 <div class="col-md-6 offset-md-3">
-                    <div class="alert alert-danger" role="alert" th:if="${error}" style="margin: 16px">
+                    <div class="alert alert-danger" role="alert" th:if="${error}" style="margin: 16px; text-align: center">
                         An unexpected error occurred. Please try again later.
                     </div>
-                    <div class="alert alert-danger" role="alert" th:if="${incorrectLogin}" style="margin: 16px">
+                    <div class="alert alert-danger" role="alert" th:if="${incorrectLogin}" style="margin: 16px; text-align: center">
                         User with this login already exists.
+                    </div>
+                    <div class="alert alert-danger" role="alert" th:if="${invalidLogin}" style="margin: 16px; text-align: center">
+                        Login must contain 4-12 characters: a-z, A-Z, or 0-9.
                     </div>
                     <form action="/signup" method="post" style="margin: 16px"
                           oninput='repeat_password.setCustomValidity(repeat_password.value !== password.value ? "Passwords do not match." : "")'>

@@ -25,12 +25,14 @@ public class SignupController {
     public String signup(Model model,
                          @RequestParam(defaultValue = "false") boolean error,
                          @RequestParam(defaultValue = "false", name = "incorrect_login") boolean incorrectLogin,
+                         @RequestParam(defaultValue = "false", name = "invalid_login") boolean invalidLogin,
                          @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() != null) {
             return "redirect:main";
         }
         model.addAttribute("error", error);
         model.addAttribute("incorrectLogin", incorrectLogin);
+        model.addAttribute("invalidLogin", invalidLogin);
         return "_signup";
     }
 
@@ -41,6 +43,10 @@ public class SignupController {
                                @ModelAttribute("user-session") UserSession session) {
         if (!session.getLogin().equals(login)) {
             return new RedirectView("/main");
+        }
+        if (!login.matches("[a-zA-Z0-9]{4,12}")) {
+            attributes.addAttribute("invalid_login", true);
+            return new RedirectView("/signup");
         }
         try {
             if (usersDao.findByLogin(login) != null) {

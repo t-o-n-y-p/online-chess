@@ -56,7 +56,8 @@ public class SignupControllerTest {
         mvc.perform(get("/signup"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("error", false))
-                .andExpect(model().attribute("incorrectLogin", false));
+                .andExpect(model().attribute("incorrectLogin", false))
+                .andExpect(model().attribute("invalidLogin", false));
         verifyNoInteractions(manager, usersDao, tx);
     }
 
@@ -67,7 +68,8 @@ public class SignupControllerTest {
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("error", true))
-                .andExpect(model().attribute("incorrectLogin", false));
+                .andExpect(model().attribute("incorrectLogin", false))
+                .andExpect(model().attribute("invalidLogin", false));
         verifyNoInteractions(manager, usersDao, tx);
     }
 
@@ -78,7 +80,20 @@ public class SignupControllerTest {
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("error", false))
-                .andExpect(model().attribute("incorrectLogin", true));
+                .andExpect(model().attribute("incorrectLogin", true))
+                .andExpect(model().attribute("invalidLogin", false));
+        verifyNoInteractions(manager, usersDao, tx);
+    }
+
+    @Test
+    public void testGetSignupInvalidLogin() throws Exception {
+        mvc.perform(get("/signup")
+                .param("invalid_login", "true")
+        )
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("error", false))
+                .andExpect(model().attribute("incorrectLogin", false))
+                .andExpect(model().attribute("invalidLogin", true));
         verifyNoInteractions(manager, usersDao, tx);
     }
 
@@ -100,6 +115,20 @@ public class SignupControllerTest {
         verify(usersDao, times(1)).findByLogin("login0");
         verify(manager, times(1)).getTransaction();
         verify(tx, times(1)).isActive();
+    }
+
+    @Test
+    public void testPostSignupInvalidLogin() throws Exception {
+        UserSession userSession = new UserSession();
+        userSession.setLogin("йцукен");
+        mvc.perform(post("/signup")
+                .param("login", "йцукен")
+                .param("password", "password0")
+                .sessionAttr("user-session", userSession)
+        )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlTemplate("/signup?invalid_login={invalidLogin}", "true"));
+        verifyNoInteractions(manager, usersDao, tx);
     }
 
     @Test

@@ -10,16 +10,16 @@
         <div class="container">
             <div class="row-fluid">
                 <div class="col-md-6 offset-md-3">
-                    <div class="alert alert-danger" role="alert" th:if="${error}" style="margin: 16px">
+                    <div class="alert alert-danger" role="alert" th:if="${error}" style="margin: 16px; text-align: center">
                         An unexpected error occurred. Please try again later.
                     </div>
-                    <div class="alert alert-danger" role="alert" th:if="${forceLogout}" style="margin: 16px">
+                    <div class="alert alert-danger" role="alert" th:if="${forceLogout}" style="margin: 16px; text-align: center">
                         You've been logged out.
                     </div>
-                    <div class="alert alert-danger" role="alert" th:if="${incorrectLogin}" style="margin: 16px">
+                    <div class="alert alert-danger" role="alert" th:if="${incorrectLogin}" style="margin: 16px; text-align: center">
                         Login is incorrect.
                     </div>
-                    <div class="alert alert-danger" role="alert" th:if="${incorrectPassword}" style="margin: 16px">
+                    <div class="alert alert-danger" role="alert" th:if="${incorrectPassword}" style="margin: 16px; text-align: center">
                         Password is incorrect.
                     </div>
                     <form action="/login" method="post" style="margin: 16px">

@@ -39,7 +39,7 @@ public class ChallengePageController {
                         @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() == null) {
             attributes.addAttribute("force_logout", true);
-            return "redirect:login";
+            return "redirect:../login";
         }
         model.addAttribute("search", search);
         model.addAttribute("page", page);
@@ -64,7 +64,7 @@ public class ChallengePageController {
                         @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() == null) {
             attributes.addAttribute("force_logout", true);
-            return "redirect:login";
+            return "redirect:../login";
         }
         User opponent = manager.find(User.class, opponentId);
         model.addAttribute("opponent", opponent);

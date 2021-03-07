@@ -42,7 +42,7 @@ public class ChallengeController {
                                @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() == null) {
             attributes.addAttribute("force_logout", true);
-            return new RedirectView("/login");
+            return new RedirectView("../login");
         }
         try {
             Challenge acceptedChallenge = manager.find(Challenge.class, id);

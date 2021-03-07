@@ -60,7 +60,7 @@
             <div class="col-lg d-lg-none">
                 <ul class="nav nav-pills nav-justified mb-2" id="pills-tab" role="tablist" style="margin: 16px">
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link active" id="challenges-tab" data-toggle="pill" href="#challenges" role="tab" aria-controls="challenges" aria-selected="true">Incoming challenges</a>
+                        <a class="nav-link active" id="challenges-tab" data-toggle="pill" href="#challenges" role="tab" aria-controls="challenges" aria-selected="true">Incoming&nbsp;challenges</a>
                     </li>
                     <li class="nav-item" role="presentation">
                         <a class="nav-link" id="games-tab" data-toggle="pill" href="#games" role="tab" aria-controls="games" aria-selected="false">My games</a>
@@ -108,11 +108,11 @@
                                         vs <span th:text="${game.white.login}"></span><br />
                                         (<span th:text="${game.white.rating}"></span>)
                                     </th>
-                                    <td style="width: 25%; vertical-align: middle">
+                                    <td style="width: 15%; vertical-align: middle">
                                         <span style="color: darkgreen" th:if="*{user.equals(game.playerToMove) && !game.completed}">
-                                           ● My move
+                                            ●&nbsp;My&nbsp;move
                                         </span><span th:if="*{!user.equals(game.playerToMove) && !game.completed}">
-                                            His move
+                                            His&nbsp;move
                                         </span>
                                         <span style="color: dimgrey" th:if="*{game.completed}">Completed</span>
                                     </td>
@@ -174,11 +174,11 @@
                                 vs <span th:text="${game.white.login}"></span><br />
                                 (<span th:text="${game.white.rating}"></span>)
                             </th>
-                            <td style="width: 25%; vertical-align: middle">
+                            <td style="width: 15%; vertical-align: middle">
                                             <span style="color: darkgreen" th:if="*{user.equals(game.playerToMove) && !game.completed}">
-                                               ● My move
+                                                ●&nbsp;My&nbsp;move
                                             </span><span th:if="*{!user.equals(game.playerToMove) && !game.completed}">
-                                                His move
+                                                His&nbsp;move
                                             </span>
                                 <span style="color: dimgrey" th:if="*{game.completed}">Completed</span>
                             </td>

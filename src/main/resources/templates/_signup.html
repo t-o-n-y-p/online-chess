@@ -21,12 +21,15 @@
                         <div class="form-group">
                             <label for="login">Login</label>
                             <input type="text" class="form-control" id="login" name="login" placeholder="Login" required
-                                   oninvalid="this.setCustomValidity('Login must not be empty.')" oninput="this.setCustomValidity('')">
+                                   pattern="[a-zA-Z0-9]{4,12}"
+                                   oninvalid="this.setCustomValidity('Login must contain 4-12 characters: a-z, A-Z, or 0-9.')"
+                                   oninput="this.setCustomValidity('')">
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
                             <input type="password" class="form-control" id="password" name="password" placeholder="Password" required
-                                   oninvalid="this.setCustomValidity('Password must not be empty.')" oninput="this.setCustomValidity('')">
+                                   oninvalid="this.setCustomValidity('Password must not be empty.')"
+                                   oninput="this.setCustomValidity('')">
                         </div>
                         <div class="form-group">
                             <label for="repeat_password">Repeat password</label>

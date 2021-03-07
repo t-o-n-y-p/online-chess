@@ -20,7 +20,7 @@ import java.util.List;
 @SessionAttributes("user-session")
 public class MainPageController {
     public static final int MAIN_PAGE_RESULTS_MOBILE = 5;
-    public static final int MAIN_PAGE_RESULTS = 10;
+    public static final int MAIN_PAGE_RESULTS = 8;
 
     private final UsersDao usersDao;
     private final ChallengesDao challengesDao;

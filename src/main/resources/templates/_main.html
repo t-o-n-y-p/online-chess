@@ -68,6 +68,7 @@
                 </ul>
                 <div class="tab-content" id="main-tab-content">
                     <div class="tab-pane fade show active table-responsive-sm" id="challenges" role="tabpanel" aria-labelledby="challenges">
+                        <p style="text-align: center; margin: 20% 0" th:if="${incomingChallengesMobile.isEmpty()}">No incoming challenges.</p>
                         <table class="table">
                             <tbody>
                                 <tr th:each="challenge : ${incomingChallengesMobile}">
@@ -95,6 +96,7 @@
                         </form>
                     </div>
                     <div class="tab-pane fade" id="games" role="tabpanel" aria-labelledby="games">
+                        <p style="text-align: center; margin: 20% 0" th:if="${gamesMobile.isEmpty()}">No games.</p>
                         <table class="table">
                             <tbody>
                                 <tr th:each="game : ${gamesMobile}">
@@ -130,27 +132,28 @@
                 </div>
             </div>
             <div class="col-lg d-none d-lg-block">
-                <p style="text-align: center; margin: 16px"><b>Incoming challenges</b></p>
+                <p style="text-align: center; margin: 20% 0" th:if="${incomingChallenges.isEmpty()}">No incoming challenges.</p>
+                <p style="text-align: center; margin: 16px" th:if="${!incomingChallenges.isEmpty()}"><b>Incoming challenges</b></p>
                 <table class="table">
                     <tbody>
-                    <tr th:each="challenge : ${incomingChallenges}">
-                        <th scope="row">
-                            vs <span th:text="${challenge.from.login}"></span><br />
-                            (<span th:text="${challenge.from.rating}"></span>)
-                        </th>
-                        <td style="width: 15%; vertical-align: middle">
-                                        <span th:text="*{challenge.getTargetColor().name().equals('WHITE')}
-                                                        ? '&#9812;&nbsp;white'
-                                                        : '&#9818;&nbsp;black'">
-                                        </span>
-                        </td>
-                        <td style="width: 15%; vertical-align: middle">
-                            <form action="/challenge/accept" method="post">
-                                <input type="hidden" name="id" th:value="${challenge.id}" />
-                                <button type="submit" class="btn btn-dark">Accept</button>
-                            </form>
-                        </td>
-                    </tr>
+                        <tr th:each="challenge : ${incomingChallenges}">
+                            <th scope="row">
+                                vs <span th:text="${challenge.from.login}"></span><br />
+                                (<span th:text="${challenge.from.rating}"></span>)
+                            </th>
+                            <td style="width: 15%; vertical-align: middle">
+                                            <span th:text="*{challenge.getTargetColor().name().equals('WHITE')}
+                                                            ? '&#9812;&nbsp;white'
+                                                            : '&#9818;&nbsp;black'">
+                                            </span>
+                            </td>
+                            <td style="width: 15%; vertical-align: middle">
+                                <form action="/challenge/accept" method="post">
+                                    <input type="hidden" name="id" th:value="${challenge.id}" />
+                                    <button type="submit" class="btn btn-dark">Accept</button>
+                                </form>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
                 <form action="/challenges" method="get" th:if="${canViewAllChallenges}" style="margin: 16px">
@@ -158,33 +161,34 @@
                 </form>
             </div>
             <div class="col-lg d-none d-lg-block">
-                <p style="text-align: center; margin: 16px"><b>My games</b></p>
+                <p style="text-align: center; margin: 20% 0" th:if="${games.isEmpty()}">No games.</p>
+                <p style="text-align: center; margin: 16px" th:if="${!games.isEmpty()}"><b>My games</b></p>
                 <table class="table">
                     <tbody>
-                    <tr th:each="game : ${games}">
-                        <th scope="row" th:if="${user.equals(game.white)}">
-                            vs <span th:text="${game.black.login}"></span><br />
-                            (<span th:text="${game.black.rating}"></span>)
-                        </th>
-                        <th scope="row" th:if="${user.equals(game.black)}">
-                            vs <span th:text="${game.white.login}"></span><br />
-                            (<span th:text="${game.white.rating}"></span>)
-                        </th>
-                        <td style="width: 25%; vertical-align: middle">
-                                        <span style="color: darkgreen" th:if="*{user.equals(game.playerToMove) && !game.completed}">
-                                           ● My move
-                                        </span><span th:if="*{!user.equals(game.playerToMove) && !game.completed}">
-                                            His move
-                                        </span>
-                            <span style="color: dimgrey" th:if="*{game.completed}">Completed</span>
-                        </td>
-                        <td style="width: 15%; vertical-align: middle">
-                            <form action="/game" method="get">
-                                <input type="hidden" name="id" th:value="${game.id}" />
-                                <button type="submit" class="btn btn-dark">Open</button>
-                            </form>
-                        </td>
-                    </tr>
+                        <tr th:each="game : ${games}">
+                            <th scope="row" th:if="${user.equals(game.white)}">
+                                vs <span th:text="${game.black.login}"></span><br />
+                                (<span th:text="${game.black.rating}"></span>)
+                            </th>
+                            <th scope="row" th:if="${user.equals(game.black)}">
+                                vs <span th:text="${game.white.login}"></span><br />
+                                (<span th:text="${game.white.rating}"></span>)
+                            </th>
+                            <td style="width: 25%; vertical-align: middle">
+                                            <span style="color: darkgreen" th:if="*{user.equals(game.playerToMove) && !game.completed}">
+                                               ● My move
+                                            </span><span th:if="*{!user.equals(game.playerToMove) && !game.completed}">
+                                                His move
+                                            </span>
+                                <span style="color: dimgrey" th:if="*{game.completed}">Completed</span>
+                            </td>
+                            <td style="width: 15%; vertical-align: middle">
+                                <form action="/game" method="get">
+                                    <input type="hidden" name="id" th:value="${game.id}" />
+                                    <button type="submit" class="btn btn-dark">Open</button>
+                                </form>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
                 <form action="/games" method="get" th:if="${canViewAllGames}" style="margin: 16px">

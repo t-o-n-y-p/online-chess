@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.tonyp.onlinechess.web.GameListPageController.COLUMNS;
 import static com.tonyp.onlinechess.web.GameListPageController.PAGE_RESULTS;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
@@ -67,10 +66,6 @@ public class GameListPageControllerTest {
         List<Game> games = IntStream.range(0, PAGE_RESULTS + 1)
                 .mapToObj(i -> new Game(sideUser, user))
                 .collect(Collectors.toList());
-        AtomicInteger counter = new AtomicInteger(0);
-        Map<Integer, List<Game>> gamesMap = games.stream()
-                .limit(PAGE_RESULTS)
-                .collect(Collectors.groupingBy(i -> counter.getAndIncrement() % COLUMNS));
         when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
         when(gamesDao.findByUserAndOpponentLoginInput(
                 eq(user), eq(""), eq(0), eq(PAGE_RESULTS + 1)
@@ -84,9 +79,8 @@ public class GameListPageControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("search", ""))
                 .andExpect(model().attribute("page", 1))
-                .andExpect(model().attribute("columns", COLUMNS))
                 .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("gamesMap", gamesMap))
+                .andExpect(model().attribute("games", games.subList(0, PAGE_RESULTS)))
                 .andExpect(model().attribute("nextPageAvailable", true));
         verify(usersDao, times(1)).findByLogin("login0");
         verify(gamesDao, times(1)).findByUserAndOpponentLoginInput(
@@ -107,9 +101,8 @@ public class GameListPageControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("search", ""))
                 .andExpect(model().attribute("page", 1))
-                .andExpect(model().attribute("columns", COLUMNS))
                 .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("gamesMap", Collections.emptyMap()))
+                .andExpect(model().attribute("games", Collections.emptyList()))
                 .andExpect(model().attribute("nextPageAvailable", false));
         verify(usersDao, times(1)).findByLogin("login0");
         verify(gamesDao, times(1)).findByUserAndOpponentLoginInput(
@@ -122,7 +115,6 @@ public class GameListPageControllerTest {
         User user = new User("login0", "pass0");
         User sideUser = new User("login1", "pass1");
         List<Game> games = List.of(new Game(sideUser, user));
-        Map<Integer, List<Game>> gamesMap = Map.of(0, games);
         when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
         when(gamesDao.findByUserAndOpponentLoginInput(
                 eq(user), eq("qwerty"), eq(3 * PAGE_RESULTS), eq(PAGE_RESULTS + 1)
@@ -138,9 +130,8 @@ public class GameListPageControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("search", "qwerty"))
                 .andExpect(model().attribute("page", 4))
-                .andExpect(model().attribute("columns", COLUMNS))
                 .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("gamesMap", gamesMap))
+                .andExpect(model().attribute("games", games))
                 .andExpect(model().attribute("nextPageAvailable", false));
         verify(usersDao, times(1)).findByLogin("login0");
         verify(gamesDao, times(1)).findByUserAndOpponentLoginInput(

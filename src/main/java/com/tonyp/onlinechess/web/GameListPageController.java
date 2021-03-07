@@ -22,8 +22,7 @@ import java.util.stream.Collectors;
 @SessionAttributes("user-session")
 public class GameListPageController {
 
-    public static final int COLUMNS = 2;
-    public static final int PAGE_RESULTS = 20;
+    public static final int PAGE_RESULTS = 8;
 
     private final UsersDao usersDao;
     private final GamesDao gamesDao;
@@ -44,17 +43,12 @@ public class GameListPageController {
         }
         model.addAttribute("search", search);
         model.addAttribute("page", page);
-        model.addAttribute("columns", COLUMNS);
         User user = usersDao.findByLogin(session.getLogin());
         model.addAttribute("user", user);
         List<Game> games = gamesDao.findByUserAndOpponentLoginInput(
                 user, search, (page - 1) * PAGE_RESULTS, PAGE_RESULTS + 1
         );
-        AtomicInteger counter = new AtomicInteger(0);
-        Map<Integer, List<Game>> gamesMap = games.stream()
-                .limit(PAGE_RESULTS)
-                .collect(Collectors.groupingBy(i -> counter.getAndIncrement() % COLUMNS));
-        model.addAttribute("gamesMap", gamesMap);
+        model.addAttribute("games", games.subList(0, Integer.min(games.size(), PAGE_RESULTS)));
         model.addAttribute("nextPageAvailable", games.size() > PAGE_RESULTS);
 
         return "_games";

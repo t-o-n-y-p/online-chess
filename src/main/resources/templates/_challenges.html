@@ -1,120 +1,97 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="utf-8">
-    <title>Incoming challenges</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.6.0/css/bootstrap.css" />
-    <script type="text/javascript" src="/webjars/jquery/3.6.0/jquery.js"></script>
-    <script type="text/javascript" src="/webjars/bootstrap/4.6.0/js/bootstrap.js"></script>
-</head>
-<body style="background-color:antiquewhite">
-<th:block th:if="${challengeAccepted}">
-    <table style="width: 100%; border: 1px solid darkgreen">
-        <tbody>
-        <tr>
-            <td>
-                <p style="text-align: center; color: darkgreen"> Challenge accepted.
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <p></p>
-</th:block>
-<th:block th:if="${error}">
-    <table style="width: 100%; border: 1px solid darkred">
-        <tbody>
-        <tr>
-            <td>
-                <p style="text-align: center; color: darkred"> An unexpected error occurred. Please try again later.
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <p></p>
-</th:block>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-        <div class="d-flex flex-grow-1">
-            <form class="mr-sm-2 my-auto d-inline-block order-1" action="/challenges" method="get">
-                <div class="input-group">
-                    <input type="text" class="form-control border border-right-0" placeholder="Search..." name="search" th:value="${search}">
-                    <span class="input-group-append">
-                            <button class="btn btn-outline-light border border-left-0" type="button"
-                                    onclick="this.parentNode.parentNode.parentNode.submit();">Search</button>
-                        </span>
+    <head>
+        <meta charset="utf-8">
+        <title>Incoming challenges</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.6.0/css/bootstrap.css" />
+        <script type="text/javascript" src="/webjars/jquery/3.6.0/jquery.js"></script>
+        <script type="text/javascript" src="/webjars/bootstrap/4.6.0/js/bootstrap.js"></script>
+    </head>
+    <body style="background-color:antiquewhite">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <div class="d-flex flex-grow-1">
+                <form class="mr-sm-2 my-auto d-inline-block order-1" action="/challenges" method="get">
+                    <div class="input-group">
+                        <input type="text" class="form-control border border-right-0" placeholder="Search..." name="search" th:value="${search}">
+                        <span class="input-group-append">
+                                <button class="btn btn-outline-light border border-left-0" type="button"
+                                        onclick="this.parentNode.parentNode.parentNode.submit();">Search</button>
+                            </span>
+                    </div>
+                </form>
+            </div>
+            <button class="navbar-toggler order-0" type="button" data-toggle="collapse" data-target="#navbar7">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse flex-shrink-1 flex-grow-0 order-last" id="navbar7">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <form action="/main" method="get">
+                            <a class="nav-link" href="#" onclick="this.parentNode.submit();">Main page</a>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div class="row">
+            <div class="col-xl" th:if="${challengeAccepted}">
+                <div class="alert alert-success" role="alert" style="margin: 0; text-align: center">
+                    Challenge accepted.
                 </div>
-            </form>
-        </div><button class="navbar-toggler order-0" type="button" data-toggle="collapse" data-target="#navbar7">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-        <div class="navbar-collapse collapse flex-shrink-1 flex-grow-0 order-last" id="navbar7">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <form action="/main" method="get">
-                        <a class="nav-link" href="#" onclick="this.parentNode.submit();">Main page</a>
-                    </form>
-                </li>
-            </ul>
-        </div>
-    </nav>
-    <div class="container">
-        <div class="row-fluid">
-            <div class="col-md-12" th:if="${#maps.isEmpty(challengesMap)}" style="margin: 20% 0">
-                <p style="text-align: center">No results.
+            </div>
+            <div class="col-xl" th:if="${error}">
+                <div class="alert alert-danger" role="alert" style="margin: 0; text-align: center">
+                    An unexpected error occurred. Please try again later.
+                </div>
             </div>
         </div>
-    </div>
-<div class="row" style="display: flex">
-    <div class="column" th:style="'width: ' + 100/${columns} + '%'" th:each="column : ${#numbers.sequence(0, columns - 1)}">
-        <table style="width: 100%">
-            <tbody>
-            <tr th:each="challenge : ${challengesMap.get(column)}">
-                <td style="width: 75%; border: 1px solid black">
-                    <p style="padding-left: 2%; text-align: left">
-                        vs <span th:text="${challenge.getFrom().getLogin()}"></span>
-                        (<span th:text="${challenge.getFrom().getRating()}"></span>)
-                </td>
-                <td style="width: 15%; border: 1px solid black">
-                    <p style="text-align: center">
-                        <span th:text="*{challenge.getTargetColor().name().equals('WHITE')}
-                                        ? '&#9812;&nbsp;white'
-                                        : '&#9818;&nbsp;black'">
-                        </span>
-                </td>
-                <td style="width: 10%; border: 1px solid black">
-                    <form action="/challenge/accept" method="post">
-                        <input type="hidden" name="id" th:value="${challenge.getId()}" />
-                        <input type="hidden" name="page" th:value="${page}" />
-                        <input type="hidden" name="to_previous_page" th:value="${toPreviousPage}" />
-                        <input type="hidden" name="from_challenges" value="true" />
-                        <p style="text-align: center">
-                            <input type="submit" value="Accept">
+        <div class="container">
+            <div class="row-fluid">
+                <div class="col-md-10 offset-md-1">
+                    <p style="text-align: center; margin: 20% 0" th:if="${challenges.isEmpty()}">No results.</p>
+                    <table class="table">
+                        <tbody>
+                            <tr th:each="challenge : ${challenges}">
+                                <th scope="row">
+                                    vs <span th:text="${challenge.from.login}"></span><br />
+                                    (<span th:text="${challenge.from.rating}"></span>)
+                                </th>
+                                <td style="width: 15%; vertical-align: middle">
+                                            <span th:text="*{challenge.targetColor.name().equals('WHITE')}
+                                                            ? '&#9812;&nbsp;white'
+                                                            : '&#9818;&nbsp;black'">
+                                            </span>
+                                </td>
+                                <td style="width: 15%; vertical-align: middle">
+                                    <form action="/challenge/accept" method="post">
+                                        <input type="hidden" name="id" th:value="${challenge.id}" />
+                                        <input type="hidden" name="page" th:value="${page}" />
+                                        <input type="hidden" name="to_previous_page" th:value="${toPreviousPage}" />
+                                        <input type="hidden" name="from_challenges" value="true" />
+                                        <button type="submit" class="btn btn-dark">Accept</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <form action="/challenges" method="get" id="previous-page">
+                        <input type="hidden" name="page" th:value="${page - 1}" />
+                        <input type="hidden" name="search" th:value="${search}" />
                     </form>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-<table style="width: 100%">
-    <tbody>
-    <tr>
-        <td style="width: 50%">
-            <form action="/challenges" method="get" th:if="${page > 1}">
-                <input type="hidden" name="page" th:value="${page - 1}" />
-                <p style="text-align: right; margin-right: 1%">
-                    <input type="submit" value="Previous page" style="width: 12%">
-            </form>
-        </td>
-        <td style="width: 50%">
-            <form action="/challenges" method="get" th:if="${nextPageAvailable}">
-                <input type="hidden" name="page" th:value="${page + 1}" />
-                <p style="text-align: left; margin-left: 1%">
-                    <input type="submit" value="Next page" style="width: 12%">
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
-</body>
+                    <form action="/challenges" method="get" id="next-page">
+                        <input type="hidden" name="page" th:value="${page + 1}" />
+                        <input type="hidden" name="search" th:value="${search}" />
+                    </form>
+                    <div class="btn-group d-flex" role="group" aria-label="navigation-mobile" style="margin: 16px"
+                         th:if="${page != 1 || nextPageAvailable}">
+                        <button type="button" class="btn btn-dark col-md-3 offset-md-3" th:disabled="${page < 2}"
+                                onclick="document.getElementById('previous-page').submit();">Previous page</button>
+                        <button type="button" class="btn btn-dark col-md-3 offset-md-6" th:disabled="${!nextPageAvailable}"
+                                onclick="document.getElementById('next-page').submit();">Next page</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

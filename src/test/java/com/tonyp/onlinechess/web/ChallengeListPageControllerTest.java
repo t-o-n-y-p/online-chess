@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.tonyp.onlinechess.web.ChallengeListPageController.COLUMNS;
 import static com.tonyp.onlinechess.web.ChallengeListPageController.PAGE_RESULTS;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
@@ -64,10 +63,6 @@ public class ChallengeListPageControllerTest {
         List<Challenge> challenges = IntStream.range(0, PAGE_RESULTS + 1)
                 .mapToObj(i -> new Challenge(sideUser, user, Color.WHITE))
                 .collect(Collectors.toList());
-        AtomicInteger counter = new AtomicInteger(0);
-        Map<Integer, List<Challenge>> challengesMap = challenges.stream()
-                .limit(PAGE_RESULTS)
-                .collect(Collectors.groupingBy(i -> counter.getAndIncrement() % COLUMNS));
         when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
         when(challengesDao.findIncomingChallengesByOpponentLoginInput(
                 eq(user), eq(""), eq(0), eq(PAGE_RESULTS + 1)
@@ -83,9 +78,8 @@ public class ChallengeListPageControllerTest {
                 .andExpect(model().attribute("error", false))
                 .andExpect(model().attribute("search", ""))
                 .andExpect(model().attribute("page", 1))
-                .andExpect(model().attribute("columns", COLUMNS))
                 .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("challengesMap", challengesMap))
+                .andExpect(model().attribute("challenges", challenges.subList(0, PAGE_RESULTS)))
                 .andExpect(model().attribute("nextPageAvailable", true))
                 .andExpect(model().attribute("toPreviousPage", false));
         verify(usersDao, times(1)).findByLogin("login0");
@@ -109,9 +103,8 @@ public class ChallengeListPageControllerTest {
                 .andExpect(model().attribute("error", false))
                 .andExpect(model().attribute("search", ""))
                 .andExpect(model().attribute("page", 1))
-                .andExpect(model().attribute("columns", COLUMNS))
                 .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("challengesMap", Collections.emptyMap()))
+                .andExpect(model().attribute("challenges", Collections.emptyList()))
                 .andExpect(model().attribute("nextPageAvailable", false))
                 .andExpect(model().attribute("toPreviousPage", false));
         verify(usersDao, times(1)).findByLogin("login0");
@@ -125,7 +118,6 @@ public class ChallengeListPageControllerTest {
         User user = new User("login0", "pass0");
         User sideUser = new User("login1", "pass1");
         List<Challenge> challenges = List.of(new Challenge(sideUser, user, Color.WHITE));
-        Map<Integer, List<Challenge>> challengesMap = Map.of(0, challenges);
         when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
         when(challengesDao.findIncomingChallengesByOpponentLoginInput(
                 eq(user), eq(""), eq(0), eq(PAGE_RESULTS + 1)
@@ -142,9 +134,8 @@ public class ChallengeListPageControllerTest {
                 .andExpect(model().attribute("error", false))
                 .andExpect(model().attribute("search", ""))
                 .andExpect(model().attribute("page", 1))
-                .andExpect(model().attribute("columns", COLUMNS))
                 .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("challengesMap", challengesMap))
+                .andExpect(model().attribute("challenges", challenges))
                 .andExpect(model().attribute("nextPageAvailable", false))
                 .andExpect(model().attribute("toPreviousPage", false));
         verify(usersDao, times(1)).findByLogin("login0");
@@ -158,7 +149,6 @@ public class ChallengeListPageControllerTest {
         User user = new User("login0", "pass0");
         User sideUser = new User("login1", "pass1");
         List<Challenge> challenges = List.of(new Challenge(sideUser, user, Color.WHITE));
-        Map<Integer, List<Challenge>> challengesMap = Map.of(0, challenges);
         when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
         when(challengesDao.findIncomingChallengesByOpponentLoginInput(
                 eq(user), eq("qwerty"), eq(3 * PAGE_RESULTS), eq(PAGE_RESULTS + 1)
@@ -177,9 +167,8 @@ public class ChallengeListPageControllerTest {
                 .andExpect(model().attribute("error", true))
                 .andExpect(model().attribute("search", "qwerty"))
                 .andExpect(model().attribute("page", 4))
-                .andExpect(model().attribute("columns", COLUMNS))
                 .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("challengesMap", challengesMap))
+                .andExpect(model().attribute("challenges", challenges))
                 .andExpect(model().attribute("nextPageAvailable", false))
                 .andExpect(model().attribute("toPreviousPage", true));
         verify(usersDao, times(1)).findByLogin("login0");

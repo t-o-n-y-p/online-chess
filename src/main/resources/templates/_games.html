@@ -3,47 +3,43 @@
 <head>
     <meta charset="utf-8">
     <title>My games</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.6.0/css/bootstrap.css" />
+    <script type="text/javascript" src="/webjars/jquery/3.6.0/jquery.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/4.6.0/js/bootstrap.js"></script>
 </head>
 <body style="background-color:antiquewhite">
-    <table style="width: 100%; border: 1px solid black">
-        <tbody>
-        <tr>
-            <td style="width: 95%">
-                <form action="/games" method="get">
-                    <table style="width: 100%">
-                        <tbody>
-                        <tr>
-                            <td style="width: 8%">
-                                <p style="text-align: center"> Opponent login:
-                            </td>
-                            <td style="width: 87%">
-                                <p style="text-align: left">
-                                    <label>
-                                        <input type="text" name="search" style="width: 99%" th:value="${search}">
-                                    </label>
-                            </td>
-                            <td style="width: 5%">
-                                <p style="text-align: center">
-                                    <input type="submit" value="Search">
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </form>
-            </td>
-            <td style="width: 5%">
-                <form action="/main" method="get">
-                    <p style="text-align: left">
-                        <input type="submit" value="Main page">
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <p></p>
-    <th:block th:if="${#maps.isEmpty(gamesMap)}">
-        <p style="text-align: center">No results.
-    </th:block>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="d-flex flex-grow-1">
+            <form class="mr-sm-2 my-auto d-inline-block order-1" action="/games" method="get">
+                <div class="input-group">
+                    <input type="text" class="form-control border border-right-0" placeholder="Search..." name="search" th:value="${search}">
+                    <span class="input-group-append">
+                                <button class="btn btn-outline-light border border-left-0" type="button"
+                                        onclick="this.parentNode.parentNode.parentNode.submit();">Search</button>
+                            </span>
+                </div>
+            </form>
+        </div><button class="navbar-toggler order-0" type="button" data-toggle="collapse" data-target="#navbar7">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+        <div class="navbar-collapse collapse flex-shrink-1 flex-grow-0 order-last" id="navbar7">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <form action="/main" method="get">
+                        <a class="nav-link" href="#" onclick="this.parentNode.submit();">Main page</a>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row-fluid">
+            <div class="col-md-12" th:if="${#maps.isEmpty(gamesMap)}" style="margin: 20% 0">
+                <p style="text-align: center">No results.
+            </div>
+        </div>
+    </div>
     <div class="row" style="display: flex">
         <div class="column" th:style="'width: ' + 100/${columns} + '%'" th:each="column : ${#numbers.sequence(0, columns - 1)}">
             <table style="width: 100%">

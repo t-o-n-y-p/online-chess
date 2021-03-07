@@ -3,31 +3,40 @@
     <head>
         <meta charset="utf-8">
         <title>Main page</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.6.0/css/bootstrap.css" />
+        <script type="text/javascript" src="/webjars/jquery/3.6.0/jquery.js"></script>
+        <script type="text/javascript" src="/webjars/bootstrap/4.6.0/js/bootstrap.js"></script>
     </head>
     <body style="background-color:antiquewhite">
-        <table style="width: 100%; border: 1px solid black">
-            <tbody>
-            <tr>
-                <td style="width: 90%">
-                    <p style="text-align: left; padding-left: 1%">
-                        <b>Login: </b><span th:text="${user.getLogin()}"></span><br />
-                        <b>Rating: </b><span th:text="${user.getRating()}"></span>
-                </td>
-                <td style="width: 5%">
-                    <form action="/challenge/step1" method="get">
-                        <p style="text-align: center">
-                            <input type="submit" value="Create challenge">
-                    </form>
-                </td>
-                <td style="width: 5%">
-                    <form action="/logout" method="post">
-                        <p style="text-align: center">
-                            <input type="submit" value="Logout">
-                    </form>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <a class="navbar-brand mb-0 h1">
+                <span th:text="${user.login}"></span>&nbsp;(<span th:text="${user.rating}"></span>)
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar7">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse justify-content-stretch" id="navbar7" aria-controls="navbar7">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <form action="/challenge/step1" method="get">
+                            <a class="nav-link" href="#" onclick="this.parentNode.submit();">Create challenge</a>
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <form action="/logout" method="post">
+                            <a class="nav-link" href="#" onclick="this.parentNode.submit();">Logout</a>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row-fluid">
+                <div class="col-md-12">
+                </div>
+            </div>
+        </div>
         <p></p>
         <th:block th:if="${challengeCreated}">
             <table style="width: 100%; border: 1px solid darkgreen">

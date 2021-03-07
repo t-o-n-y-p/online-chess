@@ -72,7 +72,7 @@ public class ChallengePageControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("search", ""))
                 .andExpect(model().attribute("page", 1))
-                .andExpect(model().attribute("opponents", opponents))
+                .andExpect(model().attribute("opponents", opponents.subList(0, PAGE_RESULTS)))
                 .andExpect(model().attribute("nextPageAvailable", true));
         verify(usersDao, times(1)).findByLogin("login0");
         verify(usersDao, times(1)).findOpponentsByRatingAndLoginInput(

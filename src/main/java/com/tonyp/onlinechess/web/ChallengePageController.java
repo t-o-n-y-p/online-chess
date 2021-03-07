@@ -46,7 +46,7 @@ public class ChallengePageController {
         List<User> opponents = usersDao.findOpponentsByRatingAndLoginInput(
                     user, search, user.getRating(), RATING_THRESHOLD, (page - 1) * PAGE_RESULTS, PAGE_RESULTS + 1
         );
-        model.addAttribute("opponents", opponents);
+        model.addAttribute("opponents", opponents.subList(0, Integer.min(opponents.size(), PAGE_RESULTS)));
         model.addAttribute("nextPageAvailable", opponents.size() > PAGE_RESULTS);
 
         return "challenge/_step1";

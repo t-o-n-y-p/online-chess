@@ -20,8 +20,7 @@ import java.util.stream.Collectors;
 @SessionAttributes("user-session")
 public class ChallengePageController {
 
-    public static final int COLUMNS = 2;
-    public static final int PAGE_RESULTS = 20;
+    public static final int PAGE_RESULTS = 8;
     public static final double RATING_THRESHOLD = 50.0;
 
     private final EntityManager manager;
@@ -43,16 +42,11 @@ public class ChallengePageController {
         }
         model.addAttribute("search", search);
         model.addAttribute("page", page);
-        model.addAttribute("columns", COLUMNS);
         User user = usersDao.findByLogin(session.getLogin());
         List<User> opponents = usersDao.findOpponentsByRatingAndLoginInput(
                     user, search, user.getRating(), RATING_THRESHOLD, (page - 1) * PAGE_RESULTS, PAGE_RESULTS + 1
         );
-        AtomicInteger counter = new AtomicInteger(0);
-        Map<Integer, List<User>> opponentsMap = opponents.stream()
-                .limit(PAGE_RESULTS)
-                .collect(Collectors.groupingBy(i -> counter.getAndIncrement() % COLUMNS));
-        model.addAttribute("opponentsMap", opponentsMap);
+        model.addAttribute("opponents", opponents);
         model.addAttribute("nextPageAvailable", opponents.size() > PAGE_RESULTS);
 
         return "challenge/_step1";

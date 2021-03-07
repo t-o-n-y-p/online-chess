@@ -57,7 +57,7 @@ public class ChallengeControllerTest {
                 .param("id", "1")
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/login?force_logout={forceLogout}", "true"));
+                .andExpect(redirectedUrlTemplate("../login?force_logout={forceLogout}", "true"));
         verifyNoInteractions(manager, usersDao, gamesDao, challengesDao, tx);
     }
 

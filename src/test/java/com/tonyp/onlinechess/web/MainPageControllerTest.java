@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.tonyp.onlinechess.web.MainPageController.MAIN_PAGE_RESULTS;
+import static com.tonyp.onlinechess.web.MainPageController.MAIN_PAGE_RESULTS_MOBILE;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -59,7 +60,7 @@ public class MainPageControllerTest {
     }
 
     @Test
-    public void testMainChallengeCreatedFewChallengesEmptyGames() throws Exception {
+    public void testMainChallengeCreatedOneChallengeEmptyGames() throws Exception {
         User user = new User("login0", "pass0");
         User sideUser = new User("login1", "pass1");
         List<Challenge> challenges = List.of(new Challenge(sideUser, user, Color.WHITE));
@@ -78,9 +79,13 @@ public class MainPageControllerTest {
                 .andExpect(model().attribute("error", false))
                 .andExpect(model().attribute("user", user))
                 .andExpect(model().attribute("incomingChallenges", challenges))
+                .andExpect(model().attribute("incomingChallengesMobile", challenges))
                 .andExpect(model().attribute("canViewAllChallenges", false))
+                .andExpect(model().attribute("canViewAllChallengesMobile", false))
                 .andExpect(model().attribute("games", Collections.emptyList()))
-                .andExpect(model().attribute("canViewAllGames", false));
+                .andExpect(model().attribute("gamesMobile", Collections.emptyList()))
+                .andExpect(model().attribute("canViewAllGames", false))
+                .andExpect(model().attribute("canViewAllGamesMobile", false));
         verify(usersDao, times(1)).findByLogin("login0");
         verify(challengesDao, times(1))
                 .findIncomingChallenges(user, 0, MAIN_PAGE_RESULTS + 1);
@@ -110,9 +115,13 @@ public class MainPageControllerTest {
                 .andExpect(model().attribute("error", false))
                 .andExpect(model().attribute("user", user))
                 .andExpect(model().attribute("incomingChallenges", Collections.emptyList()))
+                .andExpect(model().attribute("incomingChallengesMobile", Collections.emptyList()))
                 .andExpect(model().attribute("canViewAllChallenges", false))
+                .andExpect(model().attribute("canViewAllChallengesMobile", false))
                 .andExpect(model().attribute("games", games.subList(0, MAIN_PAGE_RESULTS)))
-                .andExpect(model().attribute("canViewAllGames", true));
+                .andExpect(model().attribute("gamesMobile", games.subList(0, MAIN_PAGE_RESULTS_MOBILE)))
+                .andExpect(model().attribute("canViewAllGames", true))
+                .andExpect(model().attribute("canViewAllGamesMobile", true));
         verify(usersDao, times(1)).findByLogin("login0");
         verify(challengesDao, times(1))
                 .findIncomingChallenges(user, 0, MAIN_PAGE_RESULTS + 1);
@@ -125,6 +134,46 @@ public class MainPageControllerTest {
         User user = new User("login0", "pass0");
         User sideUser = new User("login1", "pass1");
         List<Challenge> challenges = IntStream.range(0, MAIN_PAGE_RESULTS + 1)
+                .mapToObj(i -> new Challenge(sideUser, user, Color.WHITE))
+                .collect(Collectors.toList());
+        List<Game> games = IntStream.range(0, MAIN_PAGE_RESULTS_MOBILE + 1)
+                .mapToObj(i -> new Game(sideUser, user))
+                .collect(Collectors.toList());
+        when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
+        when(challengesDao.findIncomingChallenges(eq(user), eq(0), eq(MAIN_PAGE_RESULTS + 1))).thenReturn(challenges);
+        when(gamesDao.findByUser(eq(user), eq(0), eq(MAIN_PAGE_RESULTS + 1))).thenReturn(games);
+
+        UserSession userSession = new UserSession();
+        userSession.setLogin("login0");
+        mvc.perform(get("/main")
+                .param("error", "true")
+                .sessionAttr("user-session", userSession)
+        )
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("challengeCreated", false))
+                .andExpect(model().attribute("challengeAccepted", false))
+                .andExpect(model().attribute("error", true))
+                .andExpect(model().attribute("user", user))
+                .andExpect(model().attribute("incomingChallenges", challenges.subList(0, MAIN_PAGE_RESULTS)))
+                .andExpect(model().attribute("incomingChallengesMobile", challenges.subList(0, MAIN_PAGE_RESULTS_MOBILE)))
+                .andExpect(model().attribute("canViewAllChallenges", true))
+                .andExpect(model().attribute("canViewAllChallengesMobile", true))
+                .andExpect(model().attribute("games", games))
+                .andExpect(model().attribute("gamesMobile", games.subList(0, MAIN_PAGE_RESULTS_MOBILE)))
+                .andExpect(model().attribute("canViewAllGames", false))
+                .andExpect(model().attribute("canViewAllGamesMobile", true));
+        verify(usersDao, times(1)).findByLogin("login0");
+        verify(challengesDao, times(1))
+                .findIncomingChallenges(user, 0, MAIN_PAGE_RESULTS + 1);
+        verify(gamesDao, times(1))
+                .findByUser(user, 0, MAIN_PAGE_RESULTS + 1);
+    }
+
+    @Test
+    public void testMainErrorFewChallengesOneGame() throws Exception {
+        User user = new User("login0", "pass0");
+        User sideUser = new User("login1", "pass1");
+        List<Challenge> challenges = IntStream.range(0, MAIN_PAGE_RESULTS_MOBILE + 1)
                 .mapToObj(i -> new Challenge(sideUser, user, Color.WHITE))
                 .collect(Collectors.toList());
         List<Game> games = List.of(new Game(sideUser, user));
@@ -143,10 +192,14 @@ public class MainPageControllerTest {
                 .andExpect(model().attribute("challengeAccepted", false))
                 .andExpect(model().attribute("error", true))
                 .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("incomingChallenges", challenges.subList(0, MAIN_PAGE_RESULTS)))
-                .andExpect(model().attribute("canViewAllChallenges", true))
+                .andExpect(model().attribute("incomingChallenges", challenges))
+                .andExpect(model().attribute("incomingChallengesMobile", challenges.subList(0, MAIN_PAGE_RESULTS_MOBILE)))
+                .andExpect(model().attribute("canViewAllChallenges", false))
+                .andExpect(model().attribute("canViewAllChallengesMobile", true))
                 .andExpect(model().attribute("games", games))
-                .andExpect(model().attribute("canViewAllGames", false));
+                .andExpect(model().attribute("gamesMobile", games))
+                .andExpect(model().attribute("canViewAllGames", false))
+                .andExpect(model().attribute("canViewAllGamesMobile", false));
         verify(usersDao, times(1)).findByLogin("login0");
         verify(challengesDao, times(1))
                 .findIncomingChallenges(user, 0, MAIN_PAGE_RESULTS + 1);

@@ -19,6 +19,7 @@ import java.util.List;
 @Controller
 @SessionAttributes("user-session")
 public class MainPageController {
+    public static final int MAIN_PAGE_RESULTS_MOBILE = 5;
     public static final int MAIN_PAGE_RESULTS = 10;
 
     private final UsersDao usersDao;
@@ -49,10 +50,15 @@ public class MainPageController {
         List<Challenge> incomingChallenges = challengesDao.findIncomingChallenges(user, 0, MAIN_PAGE_RESULTS + 1);
         model.addAttribute("incomingChallenges",
                 incomingChallenges.subList(0, Integer.min(incomingChallenges.size(), MAIN_PAGE_RESULTS)));
+        model.addAttribute("incomingChallengesMobile",
+                incomingChallenges.subList(0, Integer.min(incomingChallenges.size(), MAIN_PAGE_RESULTS_MOBILE)));
         model.addAttribute("canViewAllChallenges", incomingChallenges.size() > MAIN_PAGE_RESULTS);
+        model.addAttribute("canViewAllChallengesMobile", incomingChallenges.size() > MAIN_PAGE_RESULTS_MOBILE);
         List<Game> games = gamesDao.findByUser(user, 0, MAIN_PAGE_RESULTS + 1);
         model.addAttribute("games", games.subList(0, Integer.min(games.size(), MAIN_PAGE_RESULTS)));
+        model.addAttribute("gamesMobile", games.subList(0, Integer.min(games.size(), MAIN_PAGE_RESULTS_MOBILE)));
         model.addAttribute("canViewAllGames", games.size() > MAIN_PAGE_RESULTS);
+        model.addAttribute("canViewAllGamesMobile", games.size() > MAIN_PAGE_RESULTS_MOBILE);
         return "_main";
     }
 

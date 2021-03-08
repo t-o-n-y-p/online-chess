@@ -57,7 +57,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-8">
-                    <table style="border-spacing: 0; border-collapse: collapse; margin: 8px auto auto">
+                    <table style="border-spacing: 0; border-collapse: collapse; margin: 8px auto auto; font-family: sans-serif">
                         <tbody>
                             <tr th:each="rank : ${#numbers.sequence(1, 8)}">
                                 <td style="line-height: 0" th:text="*{user.equals(game.white)} ? 9 - ${rank} : ${rank}">

@@ -43,6 +43,11 @@
                     The move you made is illegal. Please make a legal move.
                 </div>
             </div>
+            <div class="col-xl" th:if="${resignation}" style="padding-left: 0; padding-right: 0">
+                <div class="alert alert-info" role="alert" style="margin: 0; text-align: center">
+                    You have resigned the game.
+                </div>
+            </div>
             <div class="col-xl" th:if="${error}" style="padding-left: 0; padding-right: 0">
                 <div class="alert alert-danger" role="alert" style="margin: 0; text-align: center">
                     An unexpected error occurred. Please try again later.
@@ -93,25 +98,24 @@
                     <p style="text-align: center" th:if="${!user.equals(game.playerToMove) && !game.completed}">
                         <br />Opponent to move.
                     </p>
-                    <form action="/move" method="post" th:if="${game.playerToMove.equals(user) && !game.completed}" style="margin: 8px 16px">
-                        <input type="hidden" name="game_id" th:value="${game.id}" />
+                    <div th:if="${game.playerToMove.equals(user) && !game.completed}" style="margin: 8px">
                         <div class="form-row">
                             <div class="form-group col-6">
                                 <label for="square1">From&nbsp;square:</label>
-                                <select id="square1" name="square1" class="form-control">
+                                <select id="square1" name="square1" class="form-control" form="make-move">
                                     <option th:each="square : ${squares}" th:value="${square}" th:text="${square}"></option>
                                 </select>
                             </div>
                             <div class="form-group col-6">
                                 <label for="square2">To&nbsp;square:</label>
-                                <select id="square2" name="square2" class="form-control">
+                                <select id="square2" name="square2" class="form-control" form="make-move">
                                     <option th:each="square : ${squares}" th:value="${square}" th:text="${square}"></option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="promotion">Piece for promotion:</label>
-                            <select id="promotion" name="promotion" class="form-control">
+                            <select id="promotion" name="promotion" class="form-control" form="make-move">
                                 <option></option>
                                 <option value="q">Queen</option>
                                 <option value="r">Rook</option>
@@ -120,8 +124,42 @@
                             </select>
                             <small class="form-text text-muted">Leave empty if not a pawn promotion.</small>
                         </div>
-                        <button type="submit" class="btn btn-dark" style="width: 100%">Make a move</button>
-                    </form>
+                        <div class="form-row">
+                            <div class="form-group col-6">
+                                <form action="/move" method="post" id="make-move">
+                                    <input type="hidden" name="game_id" th:value="${game.id}" />
+                                    <button type="submit" class="btn btn-dark" style="width: 100%">Make a move</button>
+                                </form>
+                            </div>
+                            <div class="form-group col-6">
+                                <form action="/resign" method="post" id="resign">
+                                    <input type="hidden" name="game_id" th:value="${game.id}" />
+                                    <button type="button" class="btn btn-danger" style="width: 100%"
+                                            data-toggle="modal" data-target="#resign-modal">Resign</button>
+                                    <div class="modal fade" id="resign-modal" data-backdrop="static" data-keyboard="false"
+                                         tabindex="-1" aria-labelledby="resign-modal-label" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="resign-modal-label">Confirm resignation</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-danger">Resign the game</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

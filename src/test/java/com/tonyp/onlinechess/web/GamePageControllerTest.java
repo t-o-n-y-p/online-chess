@@ -63,6 +63,7 @@ public class GamePageControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("legalMove", true))
                 .andExpect(model().attribute("illegalMove", false))
+                .andExpect(model().attribute("resignation", false))
                 .andExpect(model().attribute("error", false))
                 .andExpect(model().attribute("user", user))
                 .andExpect(model().attribute("game", game))
@@ -89,10 +90,38 @@ public class GamePageControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("legalMove", false))
                 .andExpect(model().attribute("illegalMove", true))
+                .andExpect(model().attribute("resignation", false))
                 .andExpect(model().attribute("error", false))
                 .andExpect(model().attribute("user", user))
                 .andExpect(model().attribute("game", game))
                 .andExpect(model().attribute("board", GameUtil.getBoard(game.getFen(), Color.BLACK)))
+                .andExpect(model().attribute("squares", GameUtil.SQUARES));
+        verify(manager, times(1)).find(Game.class, 1);
+        verify(usersDao, times(1)).findByLogin("login0");
+    }
+
+    @Test
+    public void testGameResignation() throws Exception {
+        User user = new User("login0", "pass0");
+        Game game = new Game(user, new User("login1", "pass1"));
+        when(manager.find(eq(Game.class), eq(1))).thenReturn(game);
+        when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
+
+        UserSession userSession = new UserSession();
+        userSession.setLogin("login0");
+        mvc.perform(get("/game")
+                .param("id", "1")
+                .param("resignation", "true")
+                .sessionAttr("user-session", userSession)
+        )
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("legalMove", false))
+                .andExpect(model().attribute("illegalMove", false))
+                .andExpect(model().attribute("resignation", true))
+                .andExpect(model().attribute("error", false))
+                .andExpect(model().attribute("user", user))
+                .andExpect(model().attribute("game", game))
+                .andExpect(model().attribute("board", GameUtil.getBoard(game.getFen(), Color.WHITE)))
                 .andExpect(model().attribute("squares", GameUtil.SQUARES));
         verify(manager, times(1)).find(Game.class, 1);
         verify(usersDao, times(1)).findByLogin("login0");
@@ -115,6 +144,7 @@ public class GamePageControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("legalMove", false))
                 .andExpect(model().attribute("illegalMove", false))
+                .andExpect(model().attribute("resignation", false))
                 .andExpect(model().attribute("error", true))
                 .andExpect(model().attribute("user", user))
                 .andExpect(model().attribute("game", game))

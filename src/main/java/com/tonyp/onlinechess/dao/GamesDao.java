@@ -41,6 +41,13 @@ public class GamesDao {
         return manager.merge(game);
     }
 
+    public Game updateGame(Game game, boolean isCompleted, String description) {
+        game.setCompleted(isCompleted);
+        game.setDescription(description);
+        game.setLastModifiedTimestamp(Instant.now().atZone(ZoneId.of("GMT")).toLocalDateTime());
+        return manager.merge(game);
+    }
+
     public List<Game> findByUser(User user, int offset, int limit) {
         return manager.createQuery(
                 "from Game where white = :user or black = :user " +

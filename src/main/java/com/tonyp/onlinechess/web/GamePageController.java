@@ -33,6 +33,7 @@ public class GamePageController {
                        @RequestParam int id,
                        @RequestParam(defaultValue = "false", name = "legal_move") boolean legalMove,
                        @RequestParam(defaultValue = "false", name = "illegal_move") boolean illegalMove,
+                       @RequestParam(defaultValue = "false") boolean resignation,
                        @RequestParam(defaultValue = "false") boolean error,
                        @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() == null) {
@@ -41,6 +42,7 @@ public class GamePageController {
         }
         model.addAttribute("legalMove", legalMove);
         model.addAttribute("illegalMove", illegalMove);
+        model.addAttribute("resignation", resignation);
         model.addAttribute("error", error);
         User user = usersDao.findByLogin(session.getLogin());
         Game game = manager.find(Game.class, id);

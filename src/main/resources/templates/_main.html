@@ -19,7 +19,7 @@
     <body style="background-color:antiquewhite">
         <nav class="navbar navbar-expand-md navbar-dark bg-dark">
             <a class="navbar-brand mb-0 h1">
-                <span th:text="${user.login}"></span>&nbsp;(<span th:text="${user.rating}"></span>)
+                <span th:text="${user.login}"></span>&nbsp;(<span th:text="${#numbers.formatDecimal(user.rating, 0, 1, 'POINT')}"></span>)
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar7">
                 <span class="navbar-toggler-icon"></span>
@@ -74,7 +74,7 @@
                                 <tr th:each="challenge : ${incomingChallengesMobile}">
                                     <th scope="row">
                                         vs <span th:text="${challenge.from.login}"></span><br />
-                                        (<span th:text="${challenge.from.rating}"></span>)
+                                        (<span th:text="${#numbers.formatDecimal(challenge.from.rating, 0, 1, 'POINT')}"></span>)
                                     </th>
                                     <td style="width: 15%; vertical-align: middle">
                                         <span th:text="*{challenge.targetColor.name().equals('WHITE')}
@@ -102,11 +102,11 @@
                                 <tr th:each="game : ${gamesMobile}">
                                     <th scope="row" th:if="${user.equals(game.white)}">
                                         vs <span th:text="${game.black.login}"></span><br />
-                                        (<span th:text="${game.black.rating}"></span>)
+                                        (<span th:text="${#numbers.formatDecimal(game.black.rating, 0, 1, 'POINT')}"></span>)
                                     </th>
                                     <th scope="row" th:if="${user.equals(game.black)}">
                                         vs <span th:text="${game.white.login}"></span><br />
-                                        (<span th:text="${game.white.rating}"></span>)
+                                        (<span th:text="${#numbers.formatDecimal(game.white.rating, 0, 1, 'POINT')}"></span>)
                                     </th>
                                     <td style="width: 15%; vertical-align: middle">
                                         <span style="color: darkgreen" th:if="*{user.equals(game.playerToMove) && !game.completed}">
@@ -139,7 +139,7 @@
                         <tr th:each="challenge : ${incomingChallenges}">
                             <th scope="row">
                                 vs <span th:text="${challenge.from.login}"></span><br />
-                                (<span th:text="${challenge.from.rating}"></span>)
+                                (<span th:text="${#numbers.formatDecimal(challenge.from.rating, 0, 1, 'POINT')}"></span>)
                             </th>
                             <td style="width: 15%; vertical-align: middle">
                                             <span th:text="*{challenge.targetColor.name().equals('WHITE')}
@@ -168,11 +168,11 @@
                         <tr th:each="game : ${games}">
                             <th scope="row" th:if="${user.equals(game.white)}">
                                 vs <span th:text="${game.black.login}"></span><br />
-                                (<span th:text="${game.black.rating}"></span>)
+                                (<span th:text="${#numbers.formatDecimal(game.black.rating, 0, 1, 'POINT')}"></span>)
                             </th>
                             <th scope="row" th:if="${user.equals(game.black)}">
                                 vs <span th:text="${game.white.login}"></span><br />
-                                (<span th:text="${game.white.rating}"></span>)
+                                (<span th:text="${#numbers.formatDecimal(game.white.rating, 0, 1, 'POINT')}"></span>)
                             </th>
                             <td style="width: 15%; vertical-align: middle">
                                             <span style="color: darkgreen" th:if="*{user.equals(game.playerToMove) && !game.completed}">

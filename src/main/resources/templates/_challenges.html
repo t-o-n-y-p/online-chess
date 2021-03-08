@@ -55,7 +55,7 @@
                             <tr th:each="challenge : ${challenges}">
                                 <th scope="row">
                                     vs <span th:text="${challenge.from.login}"></span><br />
-                                    (<span th:text="${challenge.from.rating}"></span>)
+                                    (<span th:text="${#numbers.formatDecimal(challenge.from.rating, 0, 1, 'POINT')}"></span>)
                                 </th>
                                 <td style="width: 15%; vertical-align: middle">
                                             <span th:text="*{challenge.targetColor.name().equals('WHITE')}

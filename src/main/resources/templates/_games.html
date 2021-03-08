@@ -43,11 +43,11 @@
                             <tr th:each="game : ${games}">
                                 <th scope="row" th:if="${user.equals(game.white)}">
                                     vs <span th:text="${game.black.login}"></span><br />
-                                    (<span th:text="${game.black.rating}"></span>)
+                                    (<span th:text="${#numbers.formatDecimal(game.black.rating, 0, 1, 'POINT')}"></span>)
                                 </th>
                                 <th scope="row" th:if="${user.equals(game.black)}">
                                     vs <span th:text="${game.white.login}"></span><br />
-                                    (<span th:text="${game.white.rating}"></span>)
+                                    (<span th:text="${#numbers.formatDecimal(game.white.rating, 0, 1, 'POINT')}"></span>)
                                 </th>
                                 <td style="width: 15%; vertical-align: middle">
                                             <span style="color: darkgreen" th:if="*{user.equals(game.playerToMove) && !game.completed}">

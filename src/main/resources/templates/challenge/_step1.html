@@ -43,7 +43,7 @@
                             <tr th:each="opponent : ${opponents}">
                                 <th scope="row">
                                     <span th:text="${opponent.login}"></span><br />
-                                    (<span th:text="${opponent.rating}"></span>)
+                                    (<span th:text="${#numbers.formatDecimal(opponent.rating, 0, 1, 'POINT')}"></span>)
                                 </th>
                                 <td style="width: 10%; vertical-align: middle">
                                     <form action="/challenge/step2" method="get">

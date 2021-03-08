@@ -1,36 +1,43 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="utf-8">
-    <title>Select challenge properties</title>
-</head>
-<body style="background-color:antiquewhite">
-    <table style="width: 100%; border: 1px solid black">
-        <tbody>
-        <tr>
-            <td>
-                <form action="/challenge/step1" method="get">
-                    <p style="text-align: center">Your opponent:
-                    <p style="text-align: center">
-                        <b th:text="${opponent.getLogin()}"></b>
-                    <p style="text-align: center">
-                        <input type="submit" value="Change opponent">
-                </form>
-                <form action="/challenge" method="post">
-                    <input type="hidden" name="opponent_id" th:value="${opponent.getId()}" />
-                    <p style="text-align: center">
-                        <label for="target_color">Color of your opponent pieces:</label>
-                    <p style="text-align: center">
-                        <select id="target_color" name="target_color">
-                            <option th:each="color : ${T(com.tonyp.onlinechess.model.Color).values()}"
-                                    th:value="${color}" th:text="${color.name().toLowerCase()}"></option>
-                        </select>
-                    <p style="text-align: center">
-                        <input type="submit" value="Create challenge">
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</body>
+    <head>
+        <meta charset="utf-8">
+        <title>Select challenge properties</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.6.0/css/bootstrap.css" />
+        <script type="text/javascript" src="/webjars/jquery/3.6.0/jquery.js"></script>
+        <script type="text/javascript" src="/webjars/bootstrap/4.6.0/js/bootstrap.js"></script>
+    </head>
+    <body style="background-color:antiquewhite">
+        <div class="container">
+            <div class="row-fluid">
+                <div class="col-md-6 offset-md-3">
+                    <form action="/challenge/step1" method="get" style="margin: 16px">
+                        <p style="text-align: center">Your opponent:
+                        <p style="text-align: center">
+                            <b th:text="${opponent.login}"></b>
+                        </p>
+                        <button type="submit" class="btn btn-dark" style="width: 100%">Change opponent</button>
+                    </form>
+                    <form action="/challenge" method="post" style="margin: 16px">
+                        <input type="hidden" name="opponent_id" th:value="${opponent.id}" />
+                        <p style="text-align: center">Color of your opponent pieces:</p>
+                        <p>
+                            <div class="btn-group btn-group-toggle" data-toggle="buttons" style="width: 100%">
+                                <label class="btn btn-outline-dark active">
+                                    <input type="radio" th:value="${T(com.tonyp.onlinechess.model.Color).WHITE}"
+                                           name="target_color" autocomplete="off" checked> White
+                                </label>
+                                <label class="btn btn-outline-dark">
+                                    <input type="radio" th:value="${T(com.tonyp.onlinechess.model.Color).BLACK}"
+                                           name="target_color" autocomplete="off"> Black
+                                </label>
+                            </div>
+                        </p>
+                        <button type="submit" class="btn btn-dark" style="width: 100%">Create challenge</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

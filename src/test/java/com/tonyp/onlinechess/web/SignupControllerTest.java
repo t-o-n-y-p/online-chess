@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
+import java.util.List;
+
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -119,15 +121,17 @@ public class SignupControllerTest {
 
     @Test
     public void testPostSignupInvalidLogin() throws Exception {
-        UserSession userSession = new UserSession();
-        userSession.setLogin("йцукен");
-        mvc.perform(post("/signup")
-                .param("login", "йцукен")
-                .param("password", "password0")
-                .sessionAttr("user-session", userSession)
-        )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/signup?invalid_login={invalidLogin}", "true"));
+        for (String login : List.of("йцукен", "qwe", "qwertyuiop")) {
+            UserSession userSession = new UserSession();
+            userSession.setLogin(login);
+            mvc.perform(post("/signup")
+                    .param("login", login)
+                    .param("password", "password0")
+                    .sessionAttr("user-session", userSession)
+            )
+                    .andExpect(status().is3xxRedirection())
+                    .andExpect(redirectedUrlTemplate("/signup?invalid_login={invalidLogin}", "true"));
+        }
         verifyNoInteractions(manager, usersDao, tx);
     }
 

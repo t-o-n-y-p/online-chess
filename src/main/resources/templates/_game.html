@@ -52,33 +52,10 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-8">
-                    <table style="border-spacing: 0; border-collapse: collapse; margin: auto">
+                    <table style="border-spacing: 0; border-collapse: collapse; margin: 8px auto auto">
                         <tbody>
-                            <tr th:if="${user.equals(game.white)}">
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">a
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">b
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">c
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">d
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">e
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">f
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">g
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">h
-                            </tr>
-                            <tr th:if="${user.equals(game.black)}">
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">h
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">g
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">f
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">e
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">d
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">c
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">b
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0">a
-                            </tr>
                             <tr th:each="rank : ${#numbers.sequence(1, 8)}">
-                                <td style="width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0"
-                                    th:text="*{user.equals(game.white)} ? 9 - ${rank} : ${rank}">
+                                <td style="line-height: 0" th:text="*{user.equals(game.white)} ? 9 - ${rank} : ${rank}">
                                 <td th:each="file : ${#numbers.sequence(1, 8)}"
                                     th:style="'width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0; ' +
                                         (${rank} % 2 == ${file} % 2
@@ -86,84 +63,67 @@
                                             : 'background: #aaa')"
                                     th:text="${board.get(rank - 1).get(file - 1)}">
                             </tr>
+                            <tr th:if="${user.equals(game.white)}">
+                                <td style="height: 1em; line-height: 0; text-align: center">
+                                <td style="height: 1em; line-height: 0; text-align: center">a
+                                <td style="height: 1em; line-height: 0; text-align: center">b
+                                <td style="height: 1em; line-height: 0; text-align: center">c
+                                <td style="height: 1em; line-height: 0; text-align: center">d
+                                <td style="height: 1em; line-height: 0; text-align: center">e
+                                <td style="height: 1em; line-height: 0; text-align: center">f
+                                <td style="height: 1em; line-height: 0; text-align: center">g
+                                <td style="height: 1em; line-height: 0; text-align: center">h
+                            </tr>
+                            <tr th:if="${user.equals(game.black)}">
+                                <td style="height: 1em; line-height: 0; text-align: center">
+                                <td style="height: 1em; line-height: 0; text-align: center">h
+                                <td style="height: 1em; line-height: 0; text-align: center">g
+                                <td style="height: 1em; line-height: 0; text-align: center">f
+                                <td style="height: 1em; line-height: 0; text-align: center">e
+                                <td style="height: 1em; line-height: 0; text-align: center">d
+                                <td style="height: 1em; line-height: 0; text-align: center">c
+                                <td style="height: 1em; line-height: 0; text-align: center">b
+                                <td style="height: 1em; line-height: 0; text-align: center">a
+                            </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="col-md-4">
-                    <p style="text-align: center" th:if="${game.completed}" th:text="${game.description}"><br /><br /></p>
+                    <p style="text-align: center" th:if="${game.completed}" th:text="${game.description}"><br /></p>
                     <p style="text-align: center" th:if="${!user.equals(game.playerToMove) && !game.completed}">
-                        <br /><br />Opponent to move.
+                        <br />Opponent to move.
                     </p>
+                    <form action="/move" method="post" th:if="${game.playerToMove.equals(user) && !game.completed}" style="margin: 8px 16px">
+                        <input type="hidden" name="game_id" th:value="${game.id}" />
+                        <div class="form-row">
+                            <div class="form-group col-6">
+                                <label for="square1">From&nbsp;square:</label>
+                                <select id="square1" name="square1" class="form-control">
+                                    <option th:each="square : ${squares}" th:value="${square}" th:text="${square}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="square2">To&nbsp;square:</label>
+                                <select id="square2" name="square2" class="form-control">
+                                    <option th:each="square : ${squares}" th:value="${square}" th:text="${square}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="promotion">Piece for promotion:</label>
+                            <select id="promotion" name="promotion" class="form-control">
+                                <option></option>
+                                <option value="q">Queen</option>
+                                <option value="r">Rook</option>
+                                <option value="b">Bishop</option>
+                                <option value="n">Knight</option>
+                            </select>
+                            <small class="form-text text-muted">Leave empty if not a pawn promotion.</small>
+                        </div>
+                        <button type="submit" class="btn btn-dark" style="width: 100%">Make a move</button>
+                    </form>
                 </div>
             </div>
         </div>
-
-<!--        <table style="width: 100%; border: 1px solid black">-->
-<!--            <tbody>-->
-<!--                <tr>-->
-<!--                    <td style="width: 50%; border: 1px solid black; align-content: center">-->
-<!--                        <p>-->
-<!--                            <table style="margin: auto">-->
-<!--                                <tbody>-->
-<!--                                    <tr th:each="line : ${board}">-->
-<!--                                        <td th:each="symbol : ${line}" style="border: 1px solid black; width: 60px; height: 60px">-->
-<!--                                            <p style="text-align: center">-->
-<!--                                                <span th:text="${symbol}"></span>-->
-<!--                                            </p>-->
-<!--                                        </td>-->
-<!--                                    </tr>-->
-<!--                                </tbody>-->
-<!--                            </table>-->
-<!--                        </p>-->
-<!--                    </td>-->
-<!--                    <td style="width: 50%; border: 1px solid black; align-content: center">-->
-<!--                        <p style="text-align: center" th:if="${!game.getPlayerToMove().equals(user) && !game.isCompleted()}">-->
-<!--                            Opponent to move.-->
-<!--                        </p>-->
-<!--                        <p style="text-align: center" th:if="${game.isCompleted()}">-->
-<!--                            <span th:text="${game.getDescription()}"></span>-->
-<!--                        </p>-->
-<!--                        <form action="/move" method="post" th:if="${game.getPlayerToMove().equals(user) && !game.isCompleted()}">-->
-<!--                            <input type="hidden" name="game_id" th:value="${game.getId()}" />-->
-<!--                            <table style="width: 20%; margin: auto">-->
-<!--                                <tbody>-->
-<!--                                    <tr>-->
-<!--                                        <td style="width: 80%">-->
-<!--                                            <p style="text-align: left">-->
-<!--                                                <label for="square1">From square: </label>-->
-<!--                                            <p style="text-align: left">-->
-<!--                                                <label for="square2">To square: </label>-->
-<!--                                        </td>-->
-<!--                                        <td style="width: 20%">-->
-<!--                                            <select id="square1" name="square1">-->
-<!--                                                <option th:each="square : ${squares}" th:value="${square}" th:text="${square}">-->
-<!--                                                </option>-->
-<!--                                            </select>-->
-<!--                                            <p></p>-->
-<!--                                            <select id="square2" name="square2">-->
-<!--                                                <option th:each="square : ${squares}" th:value="${square}" th:text="${square}">-->
-<!--                                                </option>-->
-<!--                                            </select>-->
-<!--                                        </td>-->
-<!--                                    </tr>-->
-<!--                                </tbody>-->
-<!--                            </table>-->
-<!--                            <p style="text-align: center">-->
-<!--                                <label for="promotion"> Piece for promotion <br /> (leave empty if not a pawn promotion):</label>-->
-<!--                            <p style="text-align: center">-->
-<!--                                <select id="promotion" name="promotion">-->
-<!--                                    <option></option>-->
-<!--                                    <option value="q">queen</option>-->
-<!--                                    <option value="r">rook</option>-->
-<!--                                    <option value="b">bishop</option>-->
-<!--                                    <option value="n">knight</option>-->
-<!--                                </select>-->
-<!--                            <p style="text-align: center">-->
-<!--                                <input type="submit" value="Make a move">-->
-<!--                        </form>-->
-<!--                    </td>-->
-<!--                </tr>-->
-<!--            </tbody>-->
-<!--        </table>-->
     </body>
 </html>

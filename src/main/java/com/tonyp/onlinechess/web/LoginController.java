@@ -1,6 +1,6 @@
 package com.tonyp.onlinechess.web;
 
-import com.tonyp.onlinechess.dao.UsersDao;
+import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,10 +12,10 @@ import org.springframework.web.servlet.view.RedirectView;
 @SessionAttributes("user-session")
 public class LoginController {
 
-    private UsersDao usersDao;
+    private final UsersRepository usersRepository;
 
-    public LoginController(UsersDao usersDao) {
-        this.usersDao = usersDao;
+    public LoginController(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
     }
 
     @GetMapping("/login")
@@ -44,7 +44,7 @@ public class LoginController {
             return new RedirectView("/main");
         }
         try {
-            User found = usersDao.findByLogin(login);
+            User found = usersRepository.findByLogin(login);
             if (found == null) {
                 session.setLogin(null);
                 attributes.addAttribute("incorrect_login", true);

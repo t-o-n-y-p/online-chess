@@ -1,7 +1,8 @@
 package com.tonyp.onlinechess.web;
 
-import com.tonyp.onlinechess.dao.UsersDao;
+import com.tonyp.onlinechess.dao.UsersRepository;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -13,12 +14,10 @@ import javax.persistence.EntityManager;
 @SessionAttributes("user-session")
 public class SignupController {
 
-    private EntityManager manager;
-    private UsersDao usersDao;
+    private final UsersRepository usersRepository;
 
-    public SignupController(EntityManager manager, UsersDao usersDao) {
-        this.manager = manager;
-        this.usersDao = usersDao;
+    public SignupController(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
     }
 
     @GetMapping("/signup")
@@ -37,6 +36,7 @@ public class SignupController {
     }
 
     @PostMapping("/signup")
+    @Transactional
     public RedirectView signup(RedirectAttributes attributes,
                                @RequestParam String login,
                                @RequestParam String password,
@@ -49,25 +49,19 @@ public class SignupController {
             return new RedirectView("/signup");
         }
         try {
-            if (usersDao.findByLogin(login) != null) {
+            if (usersRepository.findByLogin(login) != null) {
                 session.setLogin(null);
                 attributes.addAttribute("incorrect_login", true);
                 return new RedirectView("/signup");
             }
 
-            manager.getTransaction().begin();
-            usersDao.createNewUser(login, password);
-            manager.getTransaction().commit();
+            usersRepository.createNewUser(login, password);
 
             return new RedirectView("/main");
         } catch (Throwable e) {
             session.setLogin(null);
             attributes.addAttribute("error", true);
             return new RedirectView("/signup");
-        } finally {
-            if (manager.getTransaction().isActive()) {
-                manager.getTransaction().rollback();
-            }
         }
     }
 

@@ -1,13 +1,13 @@
 package com.tonyp.onlinechess.web;
 
-import com.tonyp.onlinechess.dao.ChallengesDao;
-import com.tonyp.onlinechess.dao.GamesDao;
-import com.tonyp.onlinechess.dao.UsersDao;
+import com.tonyp.onlinechess.dao.ChallengesRepository;
+import com.tonyp.onlinechess.dao.GamesRepository;
+import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.Challenge;
 import com.tonyp.onlinechess.model.Color;
-import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,24 +16,25 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.persistence.EntityManager;
+import java.util.Optional;
 
+@SuppressWarnings("OptionalGetWithoutIsPresent")
 @Controller
 @SessionAttributes("user-session")
 public class ChallengeController {
 
-    private EntityManager manager;
-    private UsersDao usersDao;
-    private ChallengesDao challengesDao;
-    private GamesDao gamesDao;
+    private final UsersRepository usersRepository;
+    private final ChallengesRepository challengesRepository;
+    private final GamesRepository gamesRepository;
 
-    public ChallengeController(EntityManager manager, UsersDao usersDao, ChallengesDao challengesDao, GamesDao gamesDao) {
-        this.manager = manager;
-        this.usersDao = usersDao;
-        this.challengesDao = challengesDao;
-        this.gamesDao = gamesDao;
+    public ChallengeController(UsersRepository usersRepository, ChallengesRepository challengesRepository, GamesRepository gamesRepository) {
+        this.usersRepository = usersRepository;
+        this.challengesRepository = challengesRepository;
+        this.gamesRepository = gamesRepository;
     }
 
     @PostMapping("/challenge/accept")
+    @Transactional
     public RedirectView accept(RedirectAttributes attributes,
                                @RequestParam int id,
                                @RequestParam(defaultValue = "1") int page,
@@ -45,29 +46,24 @@ public class ChallengeController {
             return new RedirectView("../login");
         }
         try {
-            Challenge acceptedChallenge = manager.find(Challenge.class, id);
-            manager.getTransaction().begin();
-            manager.remove(acceptedChallenge);
+            Challenge acceptedChallenge = challengesRepository.findById(id).get();
+            challengesRepository.delete(acceptedChallenge);
             if (acceptedChallenge.getTargetColor().equals(Color.WHITE)) {
-                gamesDao.createNewGame(acceptedChallenge.getTo(), acceptedChallenge.getFrom());
+                gamesRepository.createNewGame(acceptedChallenge.getTo(), acceptedChallenge.getFrom());
             } else {
-                gamesDao.createNewGame(acceptedChallenge.getFrom(), acceptedChallenge.getTo());
+                gamesRepository.createNewGame(acceptedChallenge.getFrom(), acceptedChallenge.getTo());
             }
-            manager.getTransaction().commit();
 
             attributes.addAttribute("challenge_accepted", true);
             return getAcceptChallengeRedirectView(attributes, page, toPreviousPage, fromChallenges);
         } catch (Throwable e) {
             attributes.addAttribute("error", true);
             return getAcceptChallengeRedirectView(attributes, page, toPreviousPage, fromChallenges);
-        } finally {
-            if (manager.getTransaction().isActive()) {
-                manager.getTransaction().rollback();
-            }
         }
     }
 
     @PostMapping("/challenge")
+    @Transactional
     public RedirectView create(RedirectAttributes attributes,
                                @RequestParam(name = "opponent_id") int opponentId,
                                @RequestParam(name = "target_color") Color targetColor,
@@ -77,23 +73,17 @@ public class ChallengeController {
             return new RedirectView("/login");
         }
         try {
-            manager.getTransaction().begin();
-            challengesDao.createNewChallenge(
-                    usersDao.findByLogin(session.getLogin()),
-                    manager.find(User.class, opponentId),
+            challengesRepository.createNewChallenge(
+                    usersRepository.findByLogin(session.getLogin()),
+                    usersRepository.findById(opponentId).get(),
                     targetColor
             );
-            manager.getTransaction().commit();
 
             attributes.addAttribute("challenge_created", true);
             return new RedirectView("/main");
         } catch (Throwable e) {
             attributes.addAttribute("error", true);
             return new RedirectView("/main");
-        } finally {
-            if (manager.getTransaction().isActive()) {
-                manager.getTransaction().rollback();
-            }
         }
     }
 

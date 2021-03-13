@@ -1,21 +1,23 @@
 package com.tonyp.onlinechess.web;
 
-import com.tonyp.onlinechess.dao.ChallengesDao;
-import com.tonyp.onlinechess.dao.GamesDao;
-import com.tonyp.onlinechess.dao.MovesDao;
-import com.tonyp.onlinechess.dao.UsersDao;
-import com.tonyp.onlinechess.model.Challenge;
-import com.tonyp.onlinechess.tools.StockfishUtil;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
+import com.tonyp.onlinechess.dao.ChallengesRepository;
+import com.tonyp.onlinechess.dao.GamesRepository;
+import com.tonyp.onlinechess.dao.MovesRepository;
+import com.tonyp.onlinechess.dao.UsersRepository;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import java.util.concurrent.ExecutionException;
+import javax.persistence.Persistence;
 
 @Configuration
 @ComponentScan(basePackages = "com.tonyp.onlinechess.web", excludeFilters = {
@@ -26,21 +28,15 @@ import java.util.concurrent.ExecutionException;
 public class TestWebConfiguration {
 
     @MockBean
-    private EntityManager manager;
+    private ChallengesRepository challengesRepository;
 
     @MockBean
-    private EntityTransaction tx;
+    private UsersRepository usersRepository;
 
     @MockBean
-    private ChallengesDao challengesDao;
+    private GamesRepository gamesRepository;
 
     @MockBean
-    private UsersDao usersDao;
-
-    @MockBean
-    private GamesDao gamesDao;
-
-    @MockBean
-    private MovesDao movesDao;
+    private MovesRepository movesRepository;
 
 }

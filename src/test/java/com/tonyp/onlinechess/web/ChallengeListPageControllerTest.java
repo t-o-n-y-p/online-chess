@@ -1,31 +1,23 @@
 package com.tonyp.onlinechess.web;
 
-import com.tonyp.onlinechess.dao.ChallengesDao;
-import com.tonyp.onlinechess.dao.GamesDao;
-import com.tonyp.onlinechess.dao.UsersDao;
+import com.tonyp.onlinechess.dao.ChallengesRepository;
+import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.Challenge;
-import com.tonyp.onlinechess.model.Color;
 import com.tonyp.onlinechess.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static com.tonyp.onlinechess.web.ChallengeListPageController.PAGE_RESULTS;
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,32 +32,28 @@ public class ChallengeListPageControllerTest {
     private MockMvc mvc;
 
     @Autowired
-    private EntityManager manager;
+    private UsersRepository usersRepository;
 
     @Autowired
-    private UsersDao usersDao;
+    private ChallengesRepository challengesRepository;
 
-    @Autowired
-    private ChallengesDao challengesDao;
+    @Mock
+    private Page<Challenge> challenges;
 
     @Test
     public void testChallengesNotLoggedIn() throws Exception {
         mvc.perform(get("/challenges"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(manager, usersDao, challengesDao);
+        verifyNoInteractions(usersRepository, challengesRepository);
     }
 
     @Test
     public void testChallengesFirstPageDefault() throws Exception {
         User user = new User("login0", "pass0");
-        User sideUser = new User("login1", "pass1");
-        List<Challenge> challenges = IntStream.range(0, PAGE_RESULTS + 1)
-                .mapToObj(i -> new Challenge(sideUser, user, Color.WHITE))
-                .collect(Collectors.toList());
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
-        when(challengesDao.findIncomingChallengesByOpponentLoginInput(
-                eq(user), eq(""), eq(0), eq(PAGE_RESULTS + 1)
+        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(challengesRepository.findIncomingChallengesByOpponentLoginInput(
+                eq(user), eq(""), eq(PageRequest.of(0, PAGE_RESULTS))
         )).thenReturn(challenges);
 
         UserSession userSession = new UserSession();
@@ -79,53 +67,25 @@ public class ChallengeListPageControllerTest {
                 .andExpect(model().attribute("search", ""))
                 .andExpect(model().attribute("page", 1))
                 .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("challenges", challenges.subList(0, PAGE_RESULTS)))
-                .andExpect(model().attribute("nextPageAvailable", true))
-                .andExpect(model().attribute("toPreviousPage", false));
-        verify(usersDao, times(1)).findByLogin("login0");
-        verify(challengesDao, times(1)).findIncomingChallengesByOpponentLoginInput(
-                user, "", 0, PAGE_RESULTS + 1
+                .andExpect(model().attribute("challenges", challenges));
+        verify(usersRepository, times(1)).findByLogin("login0");
+        verify(challengesRepository, times(1)).findIncomingChallengesByOpponentLoginInput(
+                user, "", PageRequest.of(0, PAGE_RESULTS)
         );
     }
 
     @Test
-    public void testChallengesFirstPageNoResults() throws Exception {
+    public void testChallengesSecondPageWithChallengeAccepted() throws Exception {
         User user = new User("login0", "pass0");
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
-
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
-        mvc.perform(get("/challenges")
-                .sessionAttr("user-session", userSession)
-        )
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("challengeAccepted", false))
-                .andExpect(model().attribute("error", false))
-                .andExpect(model().attribute("search", ""))
-                .andExpect(model().attribute("page", 1))
-                .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("challenges", Collections.emptyList()))
-                .andExpect(model().attribute("nextPageAvailable", false))
-                .andExpect(model().attribute("toPreviousPage", false));
-        verify(usersDao, times(1)).findByLogin("login0");
-        verify(challengesDao, times(1)).findIncomingChallengesByOpponentLoginInput(
-                user, "", 0, PAGE_RESULTS + 1
-        );
-    }
-
-    @Test
-    public void testChallengesFirstPageSingleResultWithAcceptedFlag() throws Exception {
-        User user = new User("login0", "pass0");
-        User sideUser = new User("login1", "pass1");
-        List<Challenge> challenges = List.of(new Challenge(sideUser, user, Color.WHITE));
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
-        when(challengesDao.findIncomingChallengesByOpponentLoginInput(
-                eq(user), eq(""), eq(0), eq(PAGE_RESULTS + 1)
+        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(challengesRepository.findIncomingChallengesByOpponentLoginInput(
+                eq(user), eq(""), eq(PageRequest.of(1, PAGE_RESULTS))
         )).thenReturn(challenges);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
         mvc.perform(get("/challenges")
+                .param("page", "2")
                 .param("challenge_accepted", "true")
                 .sessionAttr("user-session", userSession)
         )
@@ -133,25 +93,22 @@ public class ChallengeListPageControllerTest {
                 .andExpect(model().attribute("challengeAccepted", true))
                 .andExpect(model().attribute("error", false))
                 .andExpect(model().attribute("search", ""))
-                .andExpect(model().attribute("page", 1))
+                .andExpect(model().attribute("page", 2))
                 .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("challenges", challenges))
-                .andExpect(model().attribute("nextPageAvailable", false))
-                .andExpect(model().attribute("toPreviousPage", false));
-        verify(usersDao, times(1)).findByLogin("login0");
-        verify(challengesDao, times(1)).findIncomingChallengesByOpponentLoginInput(
-                user, "", 0, PAGE_RESULTS + 1
+                .andExpect(model().attribute("challenges", challenges));
+        verify(usersRepository, times(1)).findByLogin("login0");
+        verify(challengesRepository, times(1)).findIncomingChallengesByOpponentLoginInput(
+                user, "", PageRequest.of(1, PAGE_RESULTS)
         );
     }
 
     @Test
-    public void testChallengesLastPageWithErrorFlag() throws Exception {
+    public void testChallengesLastPageWithSearchAndErrorFlag() throws Exception {
         User user = new User("login0", "pass0");
         User sideUser = new User("login1", "pass1");
-        List<Challenge> challenges = List.of(new Challenge(sideUser, user, Color.WHITE));
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
-        when(challengesDao.findIncomingChallengesByOpponentLoginInput(
-                eq(user), eq("qwerty"), eq(3 * PAGE_RESULTS), eq(PAGE_RESULTS + 1)
+        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(challengesRepository.findIncomingChallengesByOpponentLoginInput(
+                eq(user), eq("qwerty"), eq(PageRequest.of(3, PAGE_RESULTS))
         )).thenReturn(challenges);
 
         UserSession userSession = new UserSession();
@@ -168,12 +125,10 @@ public class ChallengeListPageControllerTest {
                 .andExpect(model().attribute("search", "qwerty"))
                 .andExpect(model().attribute("page", 4))
                 .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("challenges", challenges))
-                .andExpect(model().attribute("nextPageAvailable", false))
-                .andExpect(model().attribute("toPreviousPage", true));
-        verify(usersDao, times(1)).findByLogin("login0");
-        verify(challengesDao, times(1)).findIncomingChallengesByOpponentLoginInput(
-                user, "qwerty", 3 * PAGE_RESULTS, PAGE_RESULTS + 1
+                .andExpect(model().attribute("challenges", challenges));
+        verify(usersRepository, times(1)).findByLogin("login0");
+        verify(challengesRepository, times(1)).findIncomingChallengesByOpponentLoginInput(
+                user, "qwerty", PageRequest.of(3, PAGE_RESULTS)
         );
     }
 }

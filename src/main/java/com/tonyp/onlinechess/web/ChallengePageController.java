@@ -1,7 +1,9 @@
 package com.tonyp.onlinechess.web;
 
-import com.tonyp.onlinechess.dao.UsersDao;
+import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,10 +14,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.persistence.EntityManager;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
+@SuppressWarnings("OptionalGetWithoutIsPresent")
 @Controller
 @SessionAttributes("user-session")
 public class ChallengePageController {
@@ -23,12 +23,10 @@ public class ChallengePageController {
     public static final int PAGE_RESULTS = 8;
     public static final double RATING_THRESHOLD = 50.0;
 
-    private final EntityManager manager;
-    private final UsersDao usersDao;
+    private final UsersRepository usersRepository;
 
-    public ChallengePageController(EntityManager manager, UsersDao usersDao) {
-        this.manager = manager;
-        this.usersDao = usersDao;
+    public ChallengePageController(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
     }
 
     @GetMapping("/challenge/step1")
@@ -42,12 +40,13 @@ public class ChallengePageController {
         }
         model.addAttribute("search", search);
         model.addAttribute("page", page);
-        User user = usersDao.findByLogin(session.getLogin());
-        List<User> opponents = usersDao.findOpponentsByRatingAndLoginInput(
-                    user, search, user.getRating(), RATING_THRESHOLD, (page - 1) * PAGE_RESULTS, PAGE_RESULTS + 1
+        User user = usersRepository.findByLogin(session.getLogin());
+        Page<User> opponents = usersRepository.findOpponentsByRatingAndLoginInput(
+                    user, search,
+                user.getRating() - RATING_THRESHOLD,
+                user.getRating() + RATING_THRESHOLD, PageRequest.of(page - 1, PAGE_RESULTS)
         );
-        model.addAttribute("opponents", opponents.subList(0, Integer.min(opponents.size(), PAGE_RESULTS)));
-        model.addAttribute("nextPageAvailable", opponents.size() > PAGE_RESULTS);
+        model.addAttribute("opponents", opponents);
 
         return "challenge/_step1";
     }
@@ -60,7 +59,7 @@ public class ChallengePageController {
             attributes.addAttribute("force_logout", true);
             return "redirect:../login";
         }
-        User opponent = manager.find(User.class, opponentId);
+        User opponent = usersRepository.findById(opponentId).get();
         model.addAttribute("opponent", opponent);
         return "challenge/_step2";
     }

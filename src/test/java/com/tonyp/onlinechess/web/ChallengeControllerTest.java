@@ -1,12 +1,10 @@
 package com.tonyp.onlinechess.web;
 
-import com.tonyp.onlinechess.dao.ChallengesDao;
-import com.tonyp.onlinechess.dao.GamesDao;
-import com.tonyp.onlinechess.dao.MovesDao;
-import com.tonyp.onlinechess.dao.UsersDao;
+import com.tonyp.onlinechess.dao.ChallengesRepository;
+import com.tonyp.onlinechess.dao.GamesRepository;
+import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.Challenge;
 import com.tonyp.onlinechess.model.Color;
-import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,11 +14,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionManager;
+import org.springframework.transaction.TransactionStatus;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
-import static org.junit.Assert.*;
+import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
@@ -37,19 +41,13 @@ public class ChallengeControllerTest {
     private MockMvc mvc;
 
     @Autowired
-    private EntityManager manager;
+    private UsersRepository usersRepository;
 
     @Autowired
-    private UsersDao usersDao;
+    private GamesRepository gamesRepository;
 
     @Autowired
-    private GamesDao gamesDao;
-
-    @Autowired
-    private ChallengesDao challengesDao;
-
-    @Autowired
-    private EntityTransaction tx;
+    private ChallengesRepository challengesRepository;
 
     @Test
     public void testAcceptIsNotLoggedIn() throws Exception {
@@ -58,7 +56,7 @@ public class ChallengeControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("../login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(manager, usersDao, gamesDao, challengesDao, tx);
+        verifyNoInteractions(usersRepository, gamesRepository, challengesRepository);
     }
 
     @Test
@@ -66,8 +64,7 @@ public class ChallengeControllerTest {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
         Challenge challenge = new Challenge(from, to, Color.WHITE);
-        when(manager.find(eq(Challenge.class), eq(1))).thenReturn(challenge);
-        when(manager.getTransaction()).thenReturn(tx);
+        when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login1");
@@ -78,13 +75,9 @@ public class ChallengeControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/main?challenge_accepted={accepted}", "true"));
 
-        verify(manager, times(1)).find(Challenge.class, 1);
-        verify(manager, times(1)).remove(challenge);
-        verify(gamesDao, times(1)).createNewGame(to, from);
-        verify(manager, times(3)).getTransaction();
-        verify(tx, times(1)).begin();
-        verify(tx, times(1)).commit();
-        verify(tx, times(1)).isActive();
+        verify(challengesRepository, times(1)).findById(1);
+        verify(challengesRepository, times(1)).delete(challenge);
+        verify(gamesRepository, times(1)).createNewGame(to, from);
     }
 
     @Test
@@ -92,8 +85,7 @@ public class ChallengeControllerTest {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
         Challenge challenge = new Challenge(from, to, Color.BLACK);
-        when(manager.find(eq(Challenge.class), eq(1))).thenReturn(challenge);
-        when(manager.getTransaction()).thenReturn(tx);
+        when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login1");
@@ -106,13 +98,9 @@ public class ChallengeControllerTest {
                 .andExpect(redirectedUrlTemplate(
                         "/challenges?challenge_accepted={accepted}&page={page}", "true", "1"));
 
-        verify(manager, times(1)).find(Challenge.class, 1);
-        verify(manager, times(1)).remove(challenge);
-        verify(gamesDao, times(1)).createNewGame(from, to);
-        verify(manager, times(3)).getTransaction();
-        verify(tx, times(1)).begin();
-        verify(tx, times(1)).commit();
-        verify(tx, times(1)).isActive();
+        verify(challengesRepository, times(1)).findById(1);
+        verify(challengesRepository, times(1)).delete(challenge);
+        verify(gamesRepository, times(1)).createNewGame(from, to);
     }
 
     @Test
@@ -120,8 +108,7 @@ public class ChallengeControllerTest {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
         Challenge challenge = new Challenge(from, to, Color.WHITE);
-        when(manager.find(eq(Challenge.class), eq(1))).thenReturn(challenge);
-        when(manager.getTransaction()).thenReturn(tx);
+        when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login1");
@@ -136,13 +123,9 @@ public class ChallengeControllerTest {
                 .andExpect(redirectedUrlTemplate(
                         "/challenges?challenge_accepted={accepted}&page={page}", "true", "2"));
 
-        verify(manager, times(1)).find(Challenge.class, 1);
-        verify(manager, times(1)).remove(challenge);
-        verify(gamesDao, times(1)).createNewGame(to, from);
-        verify(manager, times(3)).getTransaction();
-        verify(tx, times(1)).begin();
-        verify(tx, times(1)).commit();
-        verify(tx, times(1)).isActive();
+        verify(challengesRepository, times(1)).findById(1);
+        verify(challengesRepository, times(1)).delete(challenge);
+        verify(gamesRepository, times(1)).createNewGame(to, from);
     }
 
     @Test
@@ -150,10 +133,8 @@ public class ChallengeControllerTest {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
         Challenge challenge = new Challenge(from, to, Color.BLACK);
-        when(manager.find(eq(Challenge.class), eq(1))).thenReturn(challenge);
-        when(manager.getTransaction()).thenReturn(tx);
-        doThrow(RuntimeException.class).when(tx).commit();
-        when(tx.isActive()).thenReturn(true);
+        when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
+        when(gamesRepository.createNewGame(eq(from), eq(to))).thenThrow(RuntimeException.class);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login1");
@@ -164,14 +145,9 @@ public class ChallengeControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/main?error={error}", "true"));
 
-        verify(manager, times(1)).find(Challenge.class, 1);
-        verify(manager, times(1)).remove(challenge);
-        verify(gamesDao, times(1)).createNewGame(from, to);
-        verify(manager, times(4)).getTransaction();
-        verify(tx, times(1)).begin();
-        verify(tx, times(1)).commit();
-        verify(tx, times(1)).isActive();
-        verify(tx, times(1)).rollback();
+        verify(challengesRepository, times(1)).findById(1);
+        verify(challengesRepository, times(1)).delete(challenge);
+        verify(gamesRepository, times(1)).createNewGame(from, to);
     }
 
     @Test
@@ -182,16 +158,15 @@ public class ChallengeControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(manager, usersDao, gamesDao, challengesDao, tx);
+        verifyNoInteractions(usersRepository, gamesRepository, challengesRepository);
     }
 
     @Test
     public void testCreateSuccessWhite() throws Exception {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(from);
-        when(manager.find(eq(User.class), eq(1))).thenReturn(to);
-        when(manager.getTransaction()).thenReturn(tx);
+        when(usersRepository.findByLogin(eq("login0"))).thenReturn(from);
+        when(usersRepository.findById(eq(1))).thenReturn(Optional.of(to));
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
@@ -202,24 +177,18 @@ public class ChallengeControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/main?challenge_created={created}", "true"));
-        verify(manager, times(1)).find(User.class, 1);
-        verify(challengesDao, times(1)).createNewChallenge(from, to, Color.WHITE);
-        verify(usersDao, times(1)).findByLogin("login0");
-        verify(manager, times(3)).getTransaction();
-        verify(tx, times(1)).begin();
-        verify(tx, times(1)).commit();
-        verify(tx, times(1)).isActive();
+        verify(usersRepository, times(1)).findById(1);
+        verify(challengesRepository, times(1)).createNewChallenge(from, to, Color.WHITE);
+        verify(usersRepository, times(1)).findByLogin("login0");
     }
 
     @Test
     public void testCreateErrorBlack() throws Exception {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(from);
-        when(manager.find(eq(User.class), eq(1))).thenReturn(to);
-        when(manager.getTransaction()).thenReturn(tx);
-        doThrow(RuntimeException.class).when(tx).commit();
-        when(tx.isActive()).thenReturn(true);
+        when(usersRepository.findByLogin(eq("login0"))).thenReturn(from);
+        when(usersRepository.findById(eq(1))).thenReturn(Optional.of(to));
+        when(challengesRepository.createNewChallenge(eq(from), eq(to), eq(Color.BLACK))).thenThrow(RuntimeException.class);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
@@ -230,13 +199,8 @@ public class ChallengeControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/main?error={error}", "true"));
-        verify(manager, times(1)).find(User.class, 1);
-        verify(challengesDao, times(1)).createNewChallenge(from, to, Color.BLACK);
-        verify(usersDao, times(1)).findByLogin("login0");
-        verify(manager, times(4)).getTransaction();
-        verify(tx, times(1)).begin();
-        verify(tx, times(1)).commit();
-        verify(tx, times(1)).isActive();
-        verify(tx, times(1)).rollback();
+        verify(usersRepository, times(1)).findById(1);
+        verify(challengesRepository, times(1)).createNewChallenge(from, to, Color.BLACK);
+        verify(usersRepository, times(1)).findByLogin("login0");
     }
 }

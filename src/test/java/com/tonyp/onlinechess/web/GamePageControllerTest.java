@@ -1,6 +1,7 @@
 package com.tonyp.onlinechess.web;
 
-import com.tonyp.onlinechess.dao.UsersDao;
+import com.tonyp.onlinechess.dao.GamesRepository;
+import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.Color;
 import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
@@ -14,9 +15,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 
-import static org.junit.Assert.*;
+import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -31,10 +32,10 @@ public class GamePageControllerTest {
     private MockMvc mvc;
 
     @Autowired
-    private EntityManager manager;
+    private UsersRepository usersRepository;
 
     @Autowired
-    private UsersDao usersDao;
+    private GamesRepository gamesRepository;
 
     @Test
     public void testGameNotLoggedIn() throws Exception {
@@ -43,15 +44,15 @@ public class GamePageControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(manager, usersDao);
+        verifyNoInteractions(usersRepository);
     }
 
     @Test
     public void testGameLegalMoveAsWhite() throws Exception {
         User user = new User("login0", "pass0");
         Game game = new Game(user, new User("login1", "pass1"));
-        when(manager.find(eq(Game.class), eq(1))).thenReturn(game);
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
+        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
+        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
@@ -69,16 +70,16 @@ public class GamePageControllerTest {
                 .andExpect(model().attribute("game", game))
                 .andExpect(model().attribute("board", GameUtil.getBoard(game.getFen(), Color.WHITE)))
                 .andExpect(model().attribute("squares", GameUtil.SQUARES));
-        verify(manager, times(1)).find(Game.class, 1);
-        verify(usersDao, times(1)).findByLogin("login0");
+        verify(gamesRepository, times(1)).findById(1);
+        verify(usersRepository, times(1)).findByLogin("login0");
     }
 
     @Test
     public void testGameIllegalMoveAsBlack() throws Exception {
         User user = new User("login0", "pass0");
         Game game = new Game(new User("login1", "pass1"), user);
-        when(manager.find(eq(Game.class), eq(1))).thenReturn(game);
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
+        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
+        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
@@ -96,16 +97,16 @@ public class GamePageControllerTest {
                 .andExpect(model().attribute("game", game))
                 .andExpect(model().attribute("board", GameUtil.getBoard(game.getFen(), Color.BLACK)))
                 .andExpect(model().attribute("squares", GameUtil.SQUARES));
-        verify(manager, times(1)).find(Game.class, 1);
-        verify(usersDao, times(1)).findByLogin("login0");
+        verify(gamesRepository, times(1)).findById(1);
+        verify(usersRepository, times(1)).findByLogin("login0");
     }
 
     @Test
     public void testGameResignation() throws Exception {
         User user = new User("login0", "pass0");
         Game game = new Game(user, new User("login1", "pass1"));
-        when(manager.find(eq(Game.class), eq(1))).thenReturn(game);
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
+        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
+        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
@@ -123,16 +124,16 @@ public class GamePageControllerTest {
                 .andExpect(model().attribute("game", game))
                 .andExpect(model().attribute("board", GameUtil.getBoard(game.getFen(), Color.WHITE)))
                 .andExpect(model().attribute("squares", GameUtil.SQUARES));
-        verify(manager, times(1)).find(Game.class, 1);
-        verify(usersDao, times(1)).findByLogin("login0");
+        verify(gamesRepository, times(1)).findById(1);
+        verify(usersRepository, times(1)).findByLogin("login0");
     }
 
     @Test
     public void testGameError() throws Exception {
         User user = new User("login0", "pass0");
         Game game = new Game(user, new User("login1", "pass1"));
-        when(manager.find(eq(Game.class), eq(1))).thenReturn(game);
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
+        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
+        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
@@ -150,8 +151,8 @@ public class GamePageControllerTest {
                 .andExpect(model().attribute("game", game))
                 .andExpect(model().attribute("board", GameUtil.getBoard(game.getFen(), Color.WHITE)))
                 .andExpect(model().attribute("squares", GameUtil.SQUARES));
-        verify(manager, times(1)).find(Game.class, 1);
-        verify(usersDao, times(1)).findByLogin("login0");
+        verify(gamesRepository, times(1)).findById(1);
+        verify(usersRepository, times(1)).findByLogin("login0");
     }
 
 }

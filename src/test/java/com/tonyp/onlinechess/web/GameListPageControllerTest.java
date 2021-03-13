@@ -1,32 +1,28 @@
 package com.tonyp.onlinechess.web;
 
-import com.tonyp.onlinechess.dao.ChallengesDao;
-import com.tonyp.onlinechess.dao.GamesDao;
-import com.tonyp.onlinechess.dao.UsersDao;
-import com.tonyp.onlinechess.model.Challenge;
-import com.tonyp.onlinechess.model.Color;
+import com.tonyp.onlinechess.dao.GamesRepository;
+import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.tonyp.onlinechess.web.GameListPageController.PAGE_RESULTS;
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
@@ -43,32 +39,28 @@ public class GameListPageControllerTest {
     private MockMvc mvc;
 
     @Autowired
-    private EntityManager manager;
+    private UsersRepository usersRepository;
 
     @Autowired
-    private UsersDao usersDao;
+    private GamesRepository gamesRepository;
 
-    @Autowired
-    private GamesDao gamesDao;
+    @Mock
+    private Page<Game> games;
 
     @Test
     public void testGamesNotLoggedIn() throws Exception {
         mvc.perform(get("/games"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(manager, usersDao, gamesDao);
+        verifyNoInteractions(usersRepository, gamesRepository);
     }
 
     @Test
     public void testGamesFirstPageDefault() throws Exception {
         User user = new User("login0", "pass0");
-        User sideUser = new User("login1", "pass1");
-        List<Game> games = IntStream.range(0, PAGE_RESULTS + 1)
-                .mapToObj(i -> new Game(sideUser, user))
-                .collect(Collectors.toList());
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
-        when(gamesDao.findByUserAndOpponentLoginInput(
-                eq(user), eq(""), eq(0), eq(PAGE_RESULTS + 1)
+        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(gamesRepository.findByUserAndOpponentLoginInput(
+                eq(user), eq(""), eq(PageRequest.of(0, PAGE_RESULTS))
         )).thenReturn(games);
 
         UserSession userSession = new UserSession();
@@ -80,44 +72,19 @@ public class GameListPageControllerTest {
                 .andExpect(model().attribute("search", ""))
                 .andExpect(model().attribute("page", 1))
                 .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("games", games.subList(0, PAGE_RESULTS)))
-                .andExpect(model().attribute("nextPageAvailable", true));
-        verify(usersDao, times(1)).findByLogin("login0");
-        verify(gamesDao, times(1)).findByUserAndOpponentLoginInput(
-                user, "", 0, PAGE_RESULTS + 1
-        );
-    }
-
-    @Test
-    public void testGamesFirstPageNoResults() throws Exception {
-        User user = new User("login0", "pass0");
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
-
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
-        mvc.perform(get("/games")
-                .sessionAttr("user-session", userSession)
-        )
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("search", ""))
-                .andExpect(model().attribute("page", 1))
-                .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("games", Collections.emptyList()))
-                .andExpect(model().attribute("nextPageAvailable", false));
-        verify(usersDao, times(1)).findByLogin("login0");
-        verify(gamesDao, times(1)).findByUserAndOpponentLoginInput(
-                user, "", 0, PAGE_RESULTS + 1
+                .andExpect(model().attribute("games", games));
+        verify(usersRepository, times(1)).findByLogin("login0");
+        verify(gamesRepository, times(1)).findByUserAndOpponentLoginInput(
+                user, "", PageRequest.of(0, PAGE_RESULTS)
         );
     }
 
     @Test
     public void testGamesLastPageWithSearch() throws Exception {
         User user = new User("login0", "pass0");
-        User sideUser = new User("login1", "pass1");
-        List<Game> games = List.of(new Game(sideUser, user));
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
-        when(gamesDao.findByUserAndOpponentLoginInput(
-                eq(user), eq("qwerty"), eq(3 * PAGE_RESULTS), eq(PAGE_RESULTS + 1)
+        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(gamesRepository.findByUserAndOpponentLoginInput(
+                eq(user), eq("qwerty"), eq(PageRequest.of(3, PAGE_RESULTS))
         )).thenReturn(games);
 
         UserSession userSession = new UserSession();
@@ -131,11 +98,10 @@ public class GameListPageControllerTest {
                 .andExpect(model().attribute("search", "qwerty"))
                 .andExpect(model().attribute("page", 4))
                 .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("games", games))
-                .andExpect(model().attribute("nextPageAvailable", false));
-        verify(usersDao, times(1)).findByLogin("login0");
-        verify(gamesDao, times(1)).findByUserAndOpponentLoginInput(
-                user, "qwerty", 3 * PAGE_RESULTS, PAGE_RESULTS + 1
+                .andExpect(model().attribute("games", games));
+        verify(usersRepository, times(1)).findByLogin("login0");
+        verify(gamesRepository, times(1)).findByUserAndOpponentLoginInput(
+                user, "qwerty", PageRequest.of(3, PAGE_RESULTS)
         );
     }
 

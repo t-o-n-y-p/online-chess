@@ -91,7 +91,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <form action="/challenges" method="get" th:if="${canViewAllChallengesMobile}" style="margin: 16px">
+                        <form action="/challenges" method="get" th:if="${incomingChallengesMobile.hasNext()}" style="margin: 16px">
                             <button type="submit" class="btn btn-dark" style="width: 100%">View all incoming challenges</button>
                         </form>
                     </div>
@@ -125,7 +125,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <form action="/games" method="get" th:if="${canViewAllGamesMobile}" style="margin: 16px">
+                        <form action="/games" method="get" th:if="${gamesMobile.hasNext()}" style="margin: 16px">
                             <button type="submit" class="btn btn-dark" style="width: 100%">View all games</button>
                         </form>
                     </div>
@@ -156,7 +156,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <form action="/challenges" method="get" th:if="${canViewAllChallenges}" style="margin: 16px">
+                <form action="/challenges" method="get" th:if="${incomingChallenges.hasNext()}" style="margin: 16px">
                     <button type="submit" class="btn btn-dark" style="width: 100%">View all incoming challenges</button>
                 </form>
             </div>
@@ -191,7 +191,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <form action="/games" method="get" th:if="${canViewAllGames}" style="margin: 16px">
+                <form action="/games" method="get" th:if="${games.hasNext()}" style="margin: 16px">
                     <button type="submit" class="btn btn-dark" style="width: 100%">View all games</button>
                 </form>
             </div>

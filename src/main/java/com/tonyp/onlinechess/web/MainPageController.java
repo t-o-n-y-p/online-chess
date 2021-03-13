@@ -1,11 +1,13 @@
 package com.tonyp.onlinechess.web;
 
-import com.tonyp.onlinechess.dao.ChallengesDao;
-import com.tonyp.onlinechess.dao.GamesDao;
-import com.tonyp.onlinechess.dao.UsersDao;
+import com.tonyp.onlinechess.dao.ChallengesRepository;
+import com.tonyp.onlinechess.dao.GamesRepository;
+import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.Challenge;
 import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,14 +24,14 @@ public class MainPageController {
     public static final int MAIN_PAGE_RESULTS_MOBILE = 5;
     public static final int MAIN_PAGE_RESULTS = 8;
 
-    private final UsersDao usersDao;
-    private final ChallengesDao challengesDao;
-    private final GamesDao gamesDao;
+    private final UsersRepository usersRepository;
+    private final ChallengesRepository challengesRepository;
+    private final GamesRepository gamesRepository;
 
-    public MainPageController(UsersDao usersDao, ChallengesDao challengesDao, GamesDao gamesDao) {
-        this.usersDao = usersDao;
-        this.challengesDao = challengesDao;
-        this.gamesDao = gamesDao;
+    public MainPageController(UsersRepository usersRepository, ChallengesRepository challengesRepository, GamesRepository gamesRepository) {
+        this.usersRepository = usersRepository;
+        this.challengesRepository = challengesRepository;
+        this.gamesRepository = gamesRepository;
     }
 
     @GetMapping("/main")
@@ -45,20 +47,20 @@ public class MainPageController {
         model.addAttribute("challengeCreated", challengeCreated);
         model.addAttribute("challengeAccepted", challengeAccepted);
         model.addAttribute("error", error);
-        User user = usersDao.findByLogin(session.getLogin());
+        User user = usersRepository.findByLogin(session.getLogin());
         model.addAttribute("user", user);
-        List<Challenge> incomingChallenges = challengesDao.findIncomingChallenges(user, 0, MAIN_PAGE_RESULTS + 1);
-        model.addAttribute("incomingChallenges",
-                incomingChallenges.subList(0, Integer.min(incomingChallenges.size(), MAIN_PAGE_RESULTS)));
-        model.addAttribute("incomingChallengesMobile",
-                incomingChallenges.subList(0, Integer.min(incomingChallenges.size(), MAIN_PAGE_RESULTS_MOBILE)));
-        model.addAttribute("canViewAllChallenges", incomingChallenges.size() > MAIN_PAGE_RESULTS);
-        model.addAttribute("canViewAllChallengesMobile", incomingChallenges.size() > MAIN_PAGE_RESULTS_MOBILE);
-        List<Game> games = gamesDao.findByUser(user, 0, MAIN_PAGE_RESULTS + 1);
-        model.addAttribute("games", games.subList(0, Integer.min(games.size(), MAIN_PAGE_RESULTS)));
-        model.addAttribute("gamesMobile", games.subList(0, Integer.min(games.size(), MAIN_PAGE_RESULTS_MOBILE)));
-        model.addAttribute("canViewAllGames", games.size() > MAIN_PAGE_RESULTS);
-        model.addAttribute("canViewAllGamesMobile", games.size() > MAIN_PAGE_RESULTS_MOBILE);
+        Page<Challenge> incomingChallenges = challengesRepository.findByToOrderByTimestampDesc(
+                user, PageRequest.of(0, MAIN_PAGE_RESULTS)
+        );
+        Page<Challenge> incomingChallengesMobile = challengesRepository.findByToOrderByTimestampDesc(
+                user, PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE)
+        );
+        model.addAttribute("incomingChallenges", incomingChallenges);
+        model.addAttribute("incomingChallengesMobile", incomingChallengesMobile);
+        Page<Game> games = gamesRepository.findByUser(user, PageRequest.of(0, MAIN_PAGE_RESULTS));
+        Page<Game> gamesMobile = gamesRepository.findByUser(user, PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE));
+        model.addAttribute("games", games);
+        model.addAttribute("gamesMobile", gamesMobile);
         return "_main";
     }
 

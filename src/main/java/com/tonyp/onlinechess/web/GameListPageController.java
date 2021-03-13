@@ -1,10 +1,12 @@
 package com.tonyp.onlinechess.web;
 
-import com.tonyp.onlinechess.dao.GamesDao;
-import com.tonyp.onlinechess.dao.UsersDao;
+import com.tonyp.onlinechess.dao.GamesRepository;
+import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +16,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 @Controller
 @SessionAttributes("user-session")
@@ -24,12 +23,12 @@ public class GameListPageController {
 
     public static final int PAGE_RESULTS = 8;
 
-    private final UsersDao usersDao;
-    private final GamesDao gamesDao;
+    private final UsersRepository usersRepository;
+    private final GamesRepository gamesRepository;
 
-    public GameListPageController(@Autowired UsersDao usersDao, @Autowired GamesDao gamesDao) {
-        this.usersDao = usersDao;
-        this.gamesDao = gamesDao;
+    public GameListPageController(UsersRepository usersRepository, GamesRepository gamesRepository) {
+        this.usersRepository = usersRepository;
+        this.gamesRepository = gamesRepository;
     }
 
     @GetMapping("/games")
@@ -43,13 +42,12 @@ public class GameListPageController {
         }
         model.addAttribute("search", search);
         model.addAttribute("page", page);
-        User user = usersDao.findByLogin(session.getLogin());
+        User user = usersRepository.findByLogin(session.getLogin());
         model.addAttribute("user", user);
-        List<Game> games = gamesDao.findByUserAndOpponentLoginInput(
-                user, search, (page - 1) * PAGE_RESULTS, PAGE_RESULTS + 1
+        Page<Game> games = gamesRepository.findByUserAndOpponentLoginInput(
+                user, search, PageRequest.of(page - 1, PAGE_RESULTS)
         );
-        model.addAttribute("games", games.subList(0, Integer.min(games.size(), PAGE_RESULTS)));
-        model.addAttribute("nextPageAvailable", games.size() > PAGE_RESULTS);
+        model.addAttribute("games", games);
 
         return "_games";
     }

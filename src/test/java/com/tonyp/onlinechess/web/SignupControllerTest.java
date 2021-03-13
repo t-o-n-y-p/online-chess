@@ -1,6 +1,6 @@
 package com.tonyp.onlinechess.web;
 
-import com.tonyp.onlinechess.dao.UsersDao;
+import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +15,6 @@ import javax.persistence.EntityTransaction;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
@@ -33,13 +32,7 @@ public class SignupControllerTest {
     private MockMvc mvc;
 
     @Autowired
-    private EntityManager manager;
-
-    @Autowired
-    private UsersDao usersDao;
-
-    @Autowired
-    private EntityTransaction tx;
+    private UsersRepository usersRepository;
 
     @Test
     public void testGetSignupAlreadyLoggedIn() throws Exception {
@@ -50,7 +43,7 @@ public class SignupControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("main"));
-        verifyNoInteractions(manager, usersDao, tx);
+        verifyNoInteractions(usersRepository);
     }
 
     @Test
@@ -60,7 +53,7 @@ public class SignupControllerTest {
                 .andExpect(model().attribute("error", false))
                 .andExpect(model().attribute("incorrectLogin", false))
                 .andExpect(model().attribute("invalidLogin", false));
-        verifyNoInteractions(manager, usersDao, tx);
+        verifyNoInteractions(usersRepository);
     }
 
     @Test
@@ -72,7 +65,7 @@ public class SignupControllerTest {
                 .andExpect(model().attribute("error", true))
                 .andExpect(model().attribute("incorrectLogin", false))
                 .andExpect(model().attribute("invalidLogin", false));
-        verifyNoInteractions(manager, usersDao, tx);
+        verifyNoInteractions(usersRepository);
     }
 
     @Test
@@ -84,7 +77,7 @@ public class SignupControllerTest {
                 .andExpect(model().attribute("error", false))
                 .andExpect(model().attribute("incorrectLogin", true))
                 .andExpect(model().attribute("invalidLogin", false));
-        verifyNoInteractions(manager, usersDao, tx);
+        verifyNoInteractions(usersRepository);
     }
 
     @Test
@@ -96,14 +89,13 @@ public class SignupControllerTest {
                 .andExpect(model().attribute("error", false))
                 .andExpect(model().attribute("incorrectLogin", false))
                 .andExpect(model().attribute("invalidLogin", true));
-        verifyNoInteractions(manager, usersDao, tx);
+        verifyNoInteractions(usersRepository);
     }
 
     @Test
     public void testPostSignupExistingAccount() throws Exception {
         User user = new User("login0", "password0");
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(user);
-        when(manager.getTransaction()).thenReturn(tx);
+        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
@@ -114,9 +106,7 @@ public class SignupControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/signup?incorrect_login={incorrectLogin}", "true"));
-        verify(usersDao, times(1)).findByLogin("login0");
-        verify(manager, times(1)).getTransaction();
-        verify(tx, times(1)).isActive();
+        verify(usersRepository, times(1)).findByLogin("login0");
     }
 
     @Test
@@ -132,14 +122,13 @@ public class SignupControllerTest {
                     .andExpect(status().is3xxRedirection())
                     .andExpect(redirectedUrlTemplate("/signup?invalid_login={invalidLogin}", "true"));
         }
-        verifyNoInteractions(manager, usersDao, tx);
+        verifyNoInteractions(usersRepository);
     }
 
     @Test
     public void testPostSignupSuccess() throws Exception {
         User user = new User("login0", "password0");
-        when(usersDao.createNewUser(eq("login0"), eq("password0"))).thenReturn(user);
-        when(manager.getTransaction()).thenReturn(tx);
+        when(usersRepository.createNewUser(eq("login0"), eq("password0"))).thenReturn(user);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
@@ -150,20 +139,13 @@ public class SignupControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/main"));
-        verify(usersDao, times(1)).findByLogin("login0");
-        verify(manager, times(3)).getTransaction();
-        verify(tx, times(1)).begin();
-        verify(tx, times(1)).commit();
-        verify(tx, times(1)).isActive();
+        verify(usersRepository, times(1)).findByLogin("login0");
+        verify(usersRepository, times(1)).createNewUser("login0", "password0");
     }
 
     @Test
     public void testPostSignupError() throws Exception {
-        User user = new User("login0", "password0");
-        when(usersDao.createNewUser(eq("login0"), eq("password0"))).thenReturn(user);
-        when(manager.getTransaction()).thenReturn(tx);
-        doThrow(RuntimeException.class).when(tx).commit();
-        when(tx.isActive()).thenReturn(true);
+        when(usersRepository.createNewUser(eq("login0"), eq("password0"))).thenThrow(RuntimeException.class);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
@@ -174,12 +156,8 @@ public class SignupControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/signup?error={error}", "true"));
-        verify(usersDao, times(1)).findByLogin("login0");
-        verify(manager, times(4)).getTransaction();
-        verify(tx, times(1)).begin();
-        verify(tx, times(1)).commit();
-        verify(tx, times(1)).isActive();
-        verify(tx, times(1)).rollback();
+        verify(usersRepository, times(1)).findByLogin("login0");
+        verify(usersRepository, times(1)).createNewUser("login0", "password0");
     }
 
 }

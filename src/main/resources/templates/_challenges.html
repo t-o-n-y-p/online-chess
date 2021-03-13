@@ -67,7 +67,8 @@
                                     <form action="/challenge/accept" method="post">
                                         <input type="hidden" name="id" th:value="${challenge.id}" />
                                         <input type="hidden" name="page" th:value="${page}" />
-                                        <input type="hidden" name="to_previous_page" th:value="${toPreviousPage}" />
+                                        <input type="hidden" name="to_previous_page"
+                                               th:value="${challenges.getNumberOfElements() == 1 && page > 1}" />
                                         <input type="hidden" name="from_challenges" value="true" />
                                         <button type="submit" class="btn btn-dark">Accept</button>
                                     </form>
@@ -84,10 +85,10 @@
                         <input type="hidden" name="search" th:value="${search}" />
                     </form>
                     <div class="btn-group d-flex" role="group" aria-label="navigation-mobile" style="margin: 16px"
-                         th:if="${page != 1 || nextPageAvailable}">
+                         th:if="${page != 1 || challenges.hasNext()}">
                         <button type="button" class="btn btn-dark col-md-3 offset-md-3" th:disabled="${page < 2}"
                                 onclick="document.getElementById('previous-page').submit();">Previous page</button>
-                        <button type="button" class="btn btn-dark col-md-3 offset-md-6" th:disabled="${!nextPageAvailable}"
+                        <button type="button" class="btn btn-dark col-md-3 offset-md-6" th:disabled="${!challenges.hasNext()}"
                                 onclick="document.getElementById('next-page').submit();">Next page</button>
                     </div>
                 </div>

@@ -1,9 +1,8 @@
 package com.tonyp.onlinechess.web;
 
-import com.tonyp.onlinechess.dao.GamesDao;
-import com.tonyp.onlinechess.dao.UsersDao;
+import com.tonyp.onlinechess.dao.GamesRepository;
+import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.Game;
-import com.tonyp.onlinechess.model.Move;
 import com.tonyp.onlinechess.model.User;
 import com.tonyp.onlinechess.tools.Result;
 import org.junit.Test;
@@ -17,7 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
-import static org.junit.Assert.*;
+import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
@@ -34,16 +34,10 @@ public class ResignControllerTest {
     private MockMvc mvc;
 
     @Autowired
-    private EntityManager manager;
+    private UsersRepository usersRepository;
 
     @Autowired
-    private UsersDao usersDao;
-
-    @Autowired
-    private GamesDao gamesDao;
-
-    @Autowired
-    private EntityTransaction tx;
+    private GamesRepository gamesRepository;
 
     @Test
     public void testResignIsNotLoggedIn() throws Exception {
@@ -52,7 +46,7 @@ public class ResignControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(manager, usersDao, gamesDao, tx);
+        verifyNoInteractions(usersRepository, gamesRepository);
     }
 
     @Test
@@ -60,9 +54,8 @@ public class ResignControllerTest {
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
-        when(manager.find(eq(Game.class), eq(1))).thenReturn(game);
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(white);
-        when(manager.getTransaction()).thenReturn(tx);
+        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
+        when(usersRepository.findByLogin(eq("login0"))).thenReturn(white);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
@@ -72,18 +65,13 @@ public class ResignControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/game?id={id}&resignation={resignation}", "1", "true"));
-        verify(manager, times(1)).find(Game.class, 1);
-        verify(usersDao, times(1)).findByLogin("login0");
-        verify(gamesDao, times(1)).updateGame(
+        verify(gamesRepository, times(1)).findById(1);
+        verify(usersRepository, times(1)).findByLogin("login0");
+        verify(gamesRepository, times(1)).updateGame(
                 game, true, Result.BLACK_WON_BY_RESIGNATION.getDescription()
         );
-        verify(usersDao, times(1)).updateRating(white, -10.0);
-        verify(usersDao, times(1)).updateRating(black, 10.0);
-
-        verify(manager, times(3)).getTransaction();
-        verify(tx, times(1)).begin();
-        verify(tx, times(1)).commit();
-        verify(tx, times(1)).isActive();
+        verify(usersRepository, times(1)).updateRating(white, -10.0);
+        verify(usersRepository, times(1)).updateRating(black, 10.0);
     }
 
     @Test
@@ -91,9 +79,8 @@ public class ResignControllerTest {
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
-        when(manager.find(eq(Game.class), eq(1))).thenReturn(game);
-        when(usersDao.findByLogin(eq("login1"))).thenReturn(black);
-        when(manager.getTransaction()).thenReturn(tx);
+        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
+        when(usersRepository.findByLogin(eq("login1"))).thenReturn(black);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login1");
@@ -103,18 +90,13 @@ public class ResignControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/game?id={id}&resignation={resignation}", "1", "true"));
-        verify(manager, times(1)).find(Game.class, 1);
-        verify(usersDao, times(1)).findByLogin("login1");
-        verify(gamesDao, times(1)).updateGame(
+        verify(gamesRepository, times(1)).findById(1);
+        verify(usersRepository, times(1)).findByLogin("login1");
+        verify(gamesRepository, times(1)).updateGame(
                 game, true, Result.WHITE_WON_BY_RESIGNATION.getDescription()
         );
-        verify(usersDao, times(1)).updateRating(white, 10.0);
-        verify(usersDao, times(1)).updateRating(black, -10.0);
-
-        verify(manager, times(3)).getTransaction();
-        verify(tx, times(1)).begin();
-        verify(tx, times(1)).commit();
-        verify(tx, times(1)).isActive();
+        verify(usersRepository, times(1)).updateRating(white, 10.0);
+        verify(usersRepository, times(1)).updateRating(black, -10.0);
     }
 
     @Test
@@ -122,11 +104,11 @@ public class ResignControllerTest {
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
-        when(manager.find(eq(Game.class), eq(1))).thenReturn(game);
-        when(usersDao.findByLogin(eq("login0"))).thenReturn(white);
-        when(manager.getTransaction()).thenReturn(tx);
-        doThrow(RuntimeException.class).when(tx).commit();
-        when(tx.isActive()).thenReturn(true);
+        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
+        when(usersRepository.findByLogin(eq("login0"))).thenReturn(white);
+        when(gamesRepository.updateGame(
+                eq(game), eq(true), eq(Result.BLACK_WON_BY_RESIGNATION.getDescription())
+        )).thenThrow(RuntimeException.class);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
@@ -136,19 +118,12 @@ public class ResignControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/game?id={id}&error={error}", "1", "true"));
-        verify(manager, times(1)).find(Game.class, 1);
-        verify(usersDao, times(1)).findByLogin("login0");
-        verify(gamesDao, times(1)).updateGame(
+        verify(gamesRepository, times(1)).findById(1);
+        verify(usersRepository, times(1)).findByLogin("login0");
+        verify(gamesRepository, times(1)).updateGame(
                 game, true, Result.BLACK_WON_BY_RESIGNATION.getDescription()
         );
-        verify(usersDao, times(1)).updateRating(white, -10.0);
-        verify(usersDao, times(1)).updateRating(black, 10.0);
-
-        verify(manager, times(4)).getTransaction();
-        verify(tx, times(1)).begin();
-        verify(tx, times(1)).commit();
-        verify(tx, times(1)).isActive();
-        verify(tx, times(1)).rollback();
+        verify(usersRepository, times(0)).updateRating(any(User.class), anyDouble());
     }
 
 }

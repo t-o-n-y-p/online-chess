@@ -1,6 +1,7 @@
 package com.tonyp.onlinechess.web;
 
-import com.tonyp.onlinechess.dao.UsersDao;
+import com.tonyp.onlinechess.dao.GamesRepository;
+import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.Color;
 import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
@@ -16,16 +17,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.persistence.EntityManager;
 
+@SuppressWarnings("OptionalGetWithoutIsPresent")
 @Controller
 @SessionAttributes("user-session")
 public class GamePageController {
 
-    private final EntityManager manager;
-    private final UsersDao usersDao;
+    private final UsersRepository usersRepository;
+    private final GamesRepository gamesRepository;
 
-    public GamePageController(@Autowired EntityManager manager, @Autowired UsersDao usersDao) {
-        this.manager = manager;
-        this.usersDao = usersDao;
+    public GamePageController(UsersRepository usersRepository, GamesRepository gamesRepository) {
+        this.usersRepository = usersRepository;
+        this.gamesRepository = gamesRepository;
     }
 
     @GetMapping("/game")
@@ -44,8 +46,8 @@ public class GamePageController {
         model.addAttribute("illegalMove", illegalMove);
         model.addAttribute("resignation", resignation);
         model.addAttribute("error", error);
-        User user = usersDao.findByLogin(session.getLogin());
-        Game game = manager.find(Game.class, id);
+        User user = usersRepository.findByLogin(session.getLogin());
+        Game game = gamesRepository.findById(id).get();
         model.addAttribute("user", user);
         model.addAttribute("game", game);
         model.addAttribute("board", GameUtil.getBoard(

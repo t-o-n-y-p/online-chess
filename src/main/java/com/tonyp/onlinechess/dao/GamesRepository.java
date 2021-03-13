@@ -45,27 +45,20 @@ public interface GamesRepository extends JpaRepository<Game, Integer> {
         return save(game);
     }
 
-    @Query(
-            value = "from Game where white = :user or black = :user order by case " +
-                    "when isCompleted = true then 2 " +
-                    "when playerToMove = :user then 0 " +
-                    "else 1 " +
-                    "end, lastModifiedTimestamp desc",
-            countQuery = "select count(g) from Game g where g.white = :user or g.black = :user"
-    )
+    @Query("from Game g where g.white = :user or g.black = :user order by case " +
+            "when g.isCompleted = true then 2 " +
+            "when g.playerToMove = :user then 0 " +
+            "else 1 " +
+            "end, g.lastModifiedTimestamp desc")
     Page<Game> findByUser(@Param("user") User user, Pageable pageable);
 
-    @Query(
-            value = "from Game g where (g.white = :user and g.black.login like concat('%', :input, '%')) " +
-                    "or (g.black = :user and g.white.login like concat('%', :input, '%')) " +
-                    "order by case " +
-                    "when g.isCompleted = true then 2 " +
-                    "when g.playerToMove = :user then 0 " +
-                    "else 1 " +
-                    "end, g.lastModifiedTimestamp desc",
-            countQuery = "select count(g) from Game g where (g.white = :user and g.black.login like concat('%', :input, '%')) " +
-                    "or (g.black = :user and g.white.login like concat('%', :input, '%'))"
-    )
+    @Query("from Game g where (g.white = :user and g.black.login like concat('%', :input, '%')) " +
+            "or (g.black = :user and g.white.login like concat('%', :input, '%')) " +
+            "order by case " +
+            "when g.isCompleted = true then 2 " +
+            "when g.playerToMove = :user then 0 " +
+            "else 1 " +
+            "end, g.lastModifiedTimestamp desc")
     Page<Game> findByUserAndOpponentLoginInput(@Param("user") User user, @Param("input") String input, Pageable pageable);
 
 }

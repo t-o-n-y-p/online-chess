@@ -1,9 +1,6 @@
 package com.tonyp.onlinechess.validation;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -12,6 +9,7 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 @PasswordsMatch
 public class SignupForm {
 

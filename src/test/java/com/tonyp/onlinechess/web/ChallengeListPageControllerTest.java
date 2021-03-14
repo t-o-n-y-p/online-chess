@@ -15,8 +15,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.persistence.EntityManager;
-
 import static com.tonyp.onlinechess.web.ChallengeListPageController.PAGE_RESULTS;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;

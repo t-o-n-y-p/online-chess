@@ -2,26 +2,24 @@ package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.User;
+import com.tonyp.onlinechess.validation.SignupForm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import org.springframework.validation.BeanPropertyBindingResult;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @AutoConfigureMockMvc
@@ -50,78 +48,114 @@ public class SignupControllerTest {
     public void testGetSignupDefault() throws Exception {
         mvc.perform(get("/signup"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("error", false))
-                .andExpect(model().attribute("incorrectLogin", false))
-                .andExpect(model().attribute("invalidLogin", false));
-        verifyNoInteractions(usersRepository);
-    }
-
-    @Test
-    public void testGetSignupError() throws Exception {
-        mvc.perform(get("/signup")
-                .param("error", "true")
-        )
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("error", true))
-                .andExpect(model().attribute("incorrectLogin", false))
-                .andExpect(model().attribute("invalidLogin", false));
-        verifyNoInteractions(usersRepository);
-    }
-
-    @Test
-    public void testGetSignupIncorrectLogin() throws Exception {
-        mvc.perform(get("/signup")
-                .param("incorrect_login", "true")
-        )
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("error", false))
-                .andExpect(model().attribute("incorrectLogin", true))
-                .andExpect(model().attribute("invalidLogin", false));
-        verifyNoInteractions(usersRepository);
-    }
-
-    @Test
-    public void testGetSignupInvalidLogin() throws Exception {
-        mvc.perform(get("/signup")
-                .param("invalid_login", "true")
-        )
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("error", false))
-                .andExpect(model().attribute("incorrectLogin", false))
-                .andExpect(model().attribute("invalidLogin", true));
+                .andExpect(model().attributeDoesNotExist("error"))
+                .andExpect(model().attribute("signupForm", new SignupForm()));
         verifyNoInteractions(usersRepository);
     }
 
     @Test
     public void testPostSignupExistingAccount() throws Exception {
-        User user = new User("login0", "password0");
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(usersRepository.createNewUser(eq("login0"), eq("password0"))).thenThrow(JpaSystemException.class);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
+        SignupForm signupForm = new SignupForm();
+        signupForm.setLogin("login0");
+        signupForm.setPassword("password0");
+        signupForm.setRepeatPassword("password0");
         mvc.perform(post("/signup")
                 .param("login", "login0")
-                .param("password", "password1")
+                .param("password", "password0")
+                .param("repeatPassword", "password0")
                 .sessionAttr("user-session", userSession)
         )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/signup?incorrect_login={incorrectLogin}", "true"));
-        verify(usersRepository, times(1)).findByLogin("login0");
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("signupForm", signupForm))
+                .andExpect(model().attributeHasFieldErrors("signupForm", "login"));
+        verify(usersRepository, times(1)).createNewUser("login0", "password0");
     }
 
     @Test
     public void testPostSignupInvalidLogin() throws Exception {
-        for (String login : List.of("йцукен", "qwe", "qwertyuiop")) {
+        for (String login : List.of("", "йцукен", "qwe", "qwertyuiop")) {
             UserSession userSession = new UserSession();
             userSession.setLogin(login);
+            SignupForm signupForm = new SignupForm();
+            signupForm.setLogin(login);
+            signupForm.setPassword("password0");
+            signupForm.setRepeatPassword("password0");
             mvc.perform(post("/signup")
                     .param("login", login)
                     .param("password", "password0")
+                    .param("repeatPassword", "password0")
                     .sessionAttr("user-session", userSession)
             )
-                    .andExpect(status().is3xxRedirection())
-                    .andExpect(redirectedUrlTemplate("/signup?invalid_login={invalidLogin}", "true"));
+                    .andExpect(status().isOk())
+                    .andExpect(model().attribute("signupForm", signupForm))
+                    .andExpect(model().attributeHasFieldErrors("signupForm", "login"));
         }
+        verifyNoInteractions(usersRepository);
+    }
+
+    @Test
+    public void testPostSignupInvalidLoginAndEmptyPassword() throws Exception {
+        for (String login : List.of("", "йцукен", "qwe", "qwertyuiop")) {
+            UserSession userSession = new UserSession();
+            userSession.setLogin(login);
+            SignupForm signupForm = new SignupForm();
+            signupForm.setLogin(login);
+            signupForm.setPassword("");
+            signupForm.setRepeatPassword("");
+            mvc.perform(post("/signup")
+                    .param("login", login)
+                    .param("password", "")
+                    .param("repeatPassword", "")
+                    .sessionAttr("user-session", userSession)
+            )
+                    .andExpect(status().isOk())
+                    .andExpect(model().attribute("signupForm", signupForm))
+                    .andExpect(model().attributeHasFieldErrors("signupForm", "login", "password"));
+        }
+        verifyNoInteractions(usersRepository);
+    }
+
+    @Test
+    public void testPostSignupEmptyPassword() throws Exception {
+        UserSession userSession = new UserSession();
+        userSession.setLogin("login0");
+        SignupForm signupForm = new SignupForm();
+        signupForm.setLogin("login0");
+        signupForm.setPassword("");
+        signupForm.setRepeatPassword("");
+        mvc.perform(post("/signup")
+                .param("login", "login0")
+                .param("password", "")
+                .param("repeatPassword", "")
+                .sessionAttr("user-session", userSession)
+        )
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("signupForm", signupForm))
+                .andExpect(model().attributeHasFieldErrors("signupForm", "password"));
+        verifyNoInteractions(usersRepository);
+    }
+
+    @Test
+    public void testPostSignupPasswordsDoNotMatch() throws Exception {
+        UserSession userSession = new UserSession();
+        userSession.setLogin("login0");
+        SignupForm signupForm = new SignupForm();
+        signupForm.setLogin("login0");
+        signupForm.setPassword("qwerty");
+        signupForm.setRepeatPassword("");
+        mvc.perform(post("/signup")
+                .param("login", "login0")
+                .param("password", "qwerty")
+                .param("repeatPassword", "")
+                .sessionAttr("user-session", userSession)
+        )
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("signupForm", signupForm))
+                .andExpect(model().attributeHasErrors("signupForm"));
         verifyNoInteractions(usersRepository);
     }
 
@@ -132,14 +166,17 @@ public class SignupControllerTest {
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
+        SignupForm signupForm = new SignupForm();
+        signupForm.setLogin("login0");
+        signupForm.setPassword("password0");
+        signupForm.setRepeatPassword("password0");
         mvc.perform(post("/signup")
-                .param("login", "login0")
-                .param("password", "password0")
+                .flashAttr("signupForm", signupForm)
+                .flashAttr("bindingResult", new BeanPropertyBindingResult(signupForm, "signupForm"))
                 .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/main"));
-        verify(usersRepository, times(1)).findByLogin("login0");
         verify(usersRepository, times(1)).createNewUser("login0", "password0");
     }
 
@@ -149,14 +186,17 @@ public class SignupControllerTest {
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
+        SignupForm signupForm = new SignupForm();
+        signupForm.setLogin("login0");
+        signupForm.setPassword("password0");
+        signupForm.setRepeatPassword("password0");
         mvc.perform(post("/signup")
-                .param("login", "login0")
-                .param("password", "password0")
+                .flashAttr("signupForm", signupForm)
+                .flashAttr("bindingResult", new BeanPropertyBindingResult(signupForm, "signupForm"))
                 .sessionAttr("user-session", userSession)
         )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/signup?error={error}", "true"));
-        verify(usersRepository, times(1)).findByLogin("login0");
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("error", true));
         verify(usersRepository, times(1)).createNewUser("login0", "password0");
     }
 

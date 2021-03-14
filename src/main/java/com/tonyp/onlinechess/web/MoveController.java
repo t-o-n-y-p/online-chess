@@ -1,25 +1,16 @@
 package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.GamesRepository;
-import com.tonyp.onlinechess.dao.MovesRepository;
-import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.Game;
-import com.tonyp.onlinechess.model.Move;
-import com.tonyp.onlinechess.tools.GameUtil;
-import com.tonyp.onlinechess.tools.Result;
-import com.tonyp.onlinechess.tools.StockfishUtil;
 import com.tonyp.onlinechess.web.services.GameService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
-
-import javax.persistence.EntityManager;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 @Controller

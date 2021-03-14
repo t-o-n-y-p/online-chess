@@ -3,7 +3,7 @@ package com.tonyp.onlinechess.web;
 import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.validation.SignupForm;
 import lombok.AllArgsConstructor;
-import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -37,25 +37,21 @@ public class SignupController {
                              BindingResult bindingResult,
                              @ModelAttribute("user-session") UserSession session) {
         if (!session.getLogin().equals(signupForm.getLogin())) {
-            return "redirect:main";
+            return "redirect:/main";
+        }
+        if (bindingResult.hasErrors()) {
+            session.setLogin(null);
+            return "_signup";
         }
         try {
-            if (bindingResult.hasErrors()) {
-                session.setLogin(null);
-                return "_signup";
-            }
-
             usersRepository.createNewUser(signupForm.getLogin(), signupForm.getPassword());
-            return "redirect:main";
+            return "redirect:/main";
+        } catch (JpaSystemException e) {
+            session.setLogin(null);
+            bindingResult.addError(new FieldError("signupForm", "login", "User with this login already exists."));
+            return "_signup";
         } catch (Throwable e) {
             session.setLogin(null);
-            while (e.getCause() != null && !e.getCause().equals(e)) {
-                e = e.getCause();
-                if (e.getClass().equals(ConstraintViolationException.class)) {
-                    bindingResult.addError(new FieldError("form", "login", "User with this login already exists."));
-                    return "_signup";
-                }
-            }
             model.addAttribute("error", true);
             return "_signup";
         }

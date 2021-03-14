@@ -1,8 +1,13 @@
 package com.tonyp.onlinechess.model;
 
 import com.tonyp.onlinechess.tools.GameUtil;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -12,10 +17,15 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "games")
+@NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Game {
 
     @Id
     @GeneratedValue
+    @EqualsAndHashCode.Include
     private int id;
 
     @ManyToOne(optional = false)
@@ -29,6 +39,7 @@ public class Game {
     private User playerToMove;
 
     @Column(nullable = false, length = 100)
+    @NotBlank
     private String fen;
 
     @Column(name = "is_completed", nullable = false)
@@ -41,6 +52,7 @@ public class Game {
     private String legalMoves;
 
     @Column(unique = true, nullable = false)
+    @EqualsAndHashCode.Include
     private UUID uuid;
 
     @Column(name = "last_modified_timestamp", nullable = false)
@@ -48,9 +60,6 @@ public class Game {
 
     @OneToMany(mappedBy = "game")
     private List<Move> moves;
-
-    public Game() {
-    }
 
     public Game(User white, User black) {
         this.white = white;
@@ -61,107 +70,6 @@ public class Game {
         isCompleted = false;
         lastModifiedTimestamp = Instant.now().atZone(ZoneId.of("GMT")).toLocalDateTime();
         uuid = UUID.randomUUID();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Game game = (Game) o;
-        return id == game.id && Objects.equals(uuid, game.uuid);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, uuid);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public User getWhite() {
-        return white;
-    }
-
-    public void setWhite(User white) {
-        this.white = white;
-    }
-
-    public User getBlack() {
-        return black;
-    }
-
-    public void setBlack(User black) {
-        this.black = black;
-    }
-
-    public User getPlayerToMove() {
-        return playerToMove;
-    }
-
-    public void setPlayerToMove(User playerToMove) {
-        this.playerToMove = playerToMove;
-    }
-
-    public String getFen() {
-        return fen;
-    }
-
-    public void setFen(String fen) {
-        this.fen = fen;
-    }
-
-    public boolean isCompleted() {
-        return isCompleted;
-    }
-
-    public void setCompleted(boolean completed) {
-        isCompleted = completed;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getLegalMoves() {
-        return legalMoves;
-    }
-
-    public void setLegalMoves(String legalMoves) {
-        this.legalMoves = legalMoves;
-    }
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
-
-    public LocalDateTime getLastModifiedTimestamp() {
-        return lastModifiedTimestamp;
-    }
-
-    public void setLastModifiedTimestamp(LocalDateTime lastModifiedTimestamp) {
-        this.lastModifiedTimestamp = lastModifiedTimestamp;
-    }
-
-    public List<Move> getMoves() {
-        return moves;
-    }
-
-    public void setMoves(List<Move> moves) {
-        this.moves = moves;
     }
 }
 

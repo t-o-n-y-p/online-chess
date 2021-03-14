@@ -1,79 +1,51 @@
 package com.tonyp.onlinechess.model;
 
 import com.tonyp.onlinechess.tools.GameUtil;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.Objects;
 
 @Entity
 @Table(name = "moves")
+@NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Move {
 
     @Id
     @GeneratedValue
+    @EqualsAndHashCode.Include
     private int id;
 
     @ManyToOne(optional = false)
+    @EqualsAndHashCode.Include
     private Game game;
 
     @Column(nullable = false, length = 5)
+    @Pattern(regexp = "([a-h][1-8]){2}[qrbn]?")
     private String value;
 
     @Column(name = "repetition_info", nullable = false, length = 100)
+    @NotBlank
     private String repetitionInfo;
 
-    public Move() {
-    }
+    @Column(nullable = false, length = 100)
+    @NotBlank
+    private String fen;
 
-    public Move(Game game, String value) {
+    public Move(Game game, String value, String fen) {
         this.game = game;
         this.value = value;
+        this.fen = fen;
         repetitionInfo = GameUtil.getPositionFromFen(game.getFen());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Move move = (Move) o;
-        return id == move.id && Objects.equals(game, move.game);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, game);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Game getGame() {
-        return game;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getRepetitionInfo() {
-        return repetitionInfo;
-    }
-
-    public void setRepetitionInfo(String repetitionInfo) {
-        this.repetitionInfo = repetitionInfo;
-    }
 }
 

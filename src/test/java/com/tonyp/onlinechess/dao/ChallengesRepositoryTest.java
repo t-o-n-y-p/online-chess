@@ -43,7 +43,7 @@ public class ChallengesRepositoryTest {
     private List<Challenge> allCreatedChallenges;
 
     @Before
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void setUp() throws InterruptedException {
         allCreatedUsers = new ArrayList<>();
         allCreatedChallenges = new ArrayList<>();

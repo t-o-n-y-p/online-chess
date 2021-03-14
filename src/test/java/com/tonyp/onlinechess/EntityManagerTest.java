@@ -38,7 +38,7 @@ public class EntityManagerTest {
     private MovesRepository movesRepository;
 
     @Test
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void smokeTest() throws InterruptedException {
         User player1 = new User("test" + System.currentTimeMillis(), "aaa");
         usersRepository.save(player1);
@@ -49,7 +49,7 @@ public class EntityManagerTest {
         gamesRepository.save(game);
         Challenge challenge = new Challenge(player1, player2, Color.WHITE);
         challengesRepository.save(challenge);
-        Move move = new Move(game, "e2e4");
+        Move move = new Move(game, "e2e4", "qwerty");
         movesRepository.save(move);
 
         Optional<User> foundUser = usersRepository.findById(player1.getId());

@@ -6,6 +6,7 @@ import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.Challenge;
 import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Controller
 @SessionAttributes("user-session")
+@AllArgsConstructor
 public class MainPageController {
     public static final int MAIN_PAGE_RESULTS_MOBILE = 5;
     public static final int MAIN_PAGE_RESULTS = 8;
@@ -27,12 +29,6 @@ public class MainPageController {
     private final UsersRepository usersRepository;
     private final ChallengesRepository challengesRepository;
     private final GamesRepository gamesRepository;
-
-    public MainPageController(UsersRepository usersRepository, ChallengesRepository challengesRepository, GamesRepository gamesRepository) {
-        this.usersRepository = usersRepository;
-        this.challengesRepository = challengesRepository;
-        this.gamesRepository = gamesRepository;
-    }
 
     @GetMapping("/main")
     public String main(RedirectAttributes attributes, Model model,

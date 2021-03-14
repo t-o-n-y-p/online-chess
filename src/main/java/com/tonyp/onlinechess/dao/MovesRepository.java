@@ -11,8 +11,8 @@ import javax.persistence.EntityManager;
 @Repository
 public interface MovesRepository extends JpaRepository<Move, Integer> {
 
-    default Move createNewMove(Game game, String notation) {
-        return save(new Move(game, notation));
+    default Move createNewMove(Game game, String notation, String fen) {
+        return save(new Move(game, notation, fen));
     }
 
 }

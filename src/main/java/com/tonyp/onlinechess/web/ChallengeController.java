@@ -6,6 +6,8 @@ import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.Challenge;
 import com.tonyp.onlinechess.model.Color;
 import com.tonyp.onlinechess.model.User;
+import com.tonyp.onlinechess.web.services.ChallengeService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,20 +23,15 @@ import java.util.Optional;
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 @Controller
 @SessionAttributes("user-session")
+@AllArgsConstructor
 public class ChallengeController {
 
     private final UsersRepository usersRepository;
     private final ChallengesRepository challengesRepository;
     private final GamesRepository gamesRepository;
-
-    public ChallengeController(UsersRepository usersRepository, ChallengesRepository challengesRepository, GamesRepository gamesRepository) {
-        this.usersRepository = usersRepository;
-        this.challengesRepository = challengesRepository;
-        this.gamesRepository = gamesRepository;
-    }
+    private final ChallengeService challengeService;
 
     @PostMapping("/challenge/accept")
-    @Transactional
     public RedirectView accept(RedirectAttributes attributes,
                                @RequestParam int id,
                                @RequestParam(defaultValue = "1") int page,
@@ -47,12 +44,7 @@ public class ChallengeController {
         }
         try {
             Challenge acceptedChallenge = challengesRepository.findById(id).get();
-            challengesRepository.delete(acceptedChallenge);
-            if (acceptedChallenge.getTargetColor().equals(Color.WHITE)) {
-                gamesRepository.createNewGame(acceptedChallenge.getTo(), acceptedChallenge.getFrom());
-            } else {
-                gamesRepository.createNewGame(acceptedChallenge.getFrom(), acceptedChallenge.getTo());
-            }
+            challengeService.acceptChallenge(acceptedChallenge);
 
             attributes.addAttribute("challenge_accepted", true);
             return getAcceptChallengeRedirectView(attributes, page, toPreviousPage, fromChallenges);
@@ -63,7 +55,6 @@ public class ChallengeController {
     }
 
     @PostMapping("/challenge")
-    @Transactional
     public RedirectView create(RedirectAttributes attributes,
                                @RequestParam(name = "opponent_id") int opponentId,
                                @RequestParam(name = "target_color") Color targetColor,

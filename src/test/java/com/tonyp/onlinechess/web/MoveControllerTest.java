@@ -57,12 +57,14 @@ public class MoveControllerTest {
 
     @Test
     public void testMakeMoveLegalMoveGameNotFinished() throws Exception {
+        String newFen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1";
+
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
-        Move move = new Move(game, "e2e4");
+        Move move = new Move(game, "e2e4", newFen);
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(movesRepository.createNewMove(eq(game), eq("e2e4"))).thenReturn(move);
+        when(movesRepository.createNewMove(eq(game), eq("e2e4"), eq(newFen))).thenReturn(move);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
@@ -77,10 +79,9 @@ public class MoveControllerTest {
                 .andExpect(redirectedUrlTemplate("/game?id={id}&legal_move={legalMove}", "1", "true"));
 
         verify(gamesRepository, times(1)).findById(1);
-        verify(movesRepository, times(1)).createNewMove(game, "e2e4");
+        verify(movesRepository, times(1)).createNewMove(game, "e2e4", newFen);
         verify(gamesRepository, times(1)).updateGame(
-                game,
-                "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+                game, newFen,
                 "a7a6 b7b6 c7c6 d7d6 e7e6 f7f6 g7g6 h7h6 a7a5 b7b5 c7c5 d7d5 e7e5 f7f5 g7g5 h7h5 b8a6 b8c6 g8f6 g8h6 ",
                 false, null, move
         );
@@ -89,15 +90,17 @@ public class MoveControllerTest {
 
     @Test
     public void testMakeMoveLegalMoveGameFinished() throws Exception {
+        String newFen = "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3";
+
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
         game.setFen("rnbqkbnr/pppp1ppp/8/4p3/5PP1/8/PPPPP2P/RNBQKBNR b KQkq - 0 2");
         game.setLegalMoves("d8h4");
         game.setPlayerToMove(black);
-        Move move = new Move(game, "d8h4");
+        Move move = new Move(game, "d8h4", newFen);
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(movesRepository.createNewMove(eq(game), eq("d8h4"))).thenReturn(move);
+        when(movesRepository.createNewMove(eq(game), eq("d8h4"), eq(newFen))).thenReturn(move);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
@@ -112,10 +115,9 @@ public class MoveControllerTest {
                 .andExpect(redirectedUrlTemplate("/game?id={id}&legal_move={legalMove}", "1", "true"));
 
         verify(gamesRepository, times(1)).findById(1);
-        verify(movesRepository, times(1)).createNewMove(game, "d8h4");
+        verify(movesRepository, times(1)).createNewMove(game, "d8h4", newFen);
         verify(gamesRepository, times(1)).updateGame(
-                game,
-                "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3",
+                game, newFen,
                 "",
                 true, Result.BLACK_WON_BY_CHECKMATE.getDescription(), move
         );
@@ -128,9 +130,9 @@ public class MoveControllerTest {
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
-        Move move = new Move(game, "a1a1");
+        Move move = new Move(game, "a1a1", "qwerty");
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(movesRepository.createNewMove(eq(game), eq("a1a1"))).thenReturn(move);
+        when(movesRepository.createNewMove(eq(game), eq("a1a1"), anyString())).thenReturn(move);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
@@ -145,7 +147,7 @@ public class MoveControllerTest {
                 .andExpect(redirectedUrlTemplate("/game?id={id}&illegal_move={illegalMove}", "1", "true"));
 
         verify(gamesRepository, times(1)).findById(1);
-        verify(movesRepository, never()).createNewMove(any(Game.class), anyString());
+        verify(movesRepository, never()).createNewMove(any(Game.class), anyString(), anyString());
         verify(gamesRepository, never()).updateGame(
                 any(Game.class), anyString(), anyString(), anyBoolean(), anyString(), any(Move.class)
         );
@@ -154,15 +156,16 @@ public class MoveControllerTest {
 
     @Test
     public void testMakeMoveError() throws Exception {
+        String newFen = "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3";
+
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
-        Move move = new Move(game, "e2e4");
+        Move move = new Move(game, "e2e4", newFen);
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(movesRepository.createNewMove(eq(game), eq("e2e4"))).thenReturn(move);
+        when(movesRepository.createNewMove(eq(game), eq("e2e4"), eq(newFen))).thenReturn(move);
         when(gamesRepository.updateGame(
-                eq(game),
-                eq("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"),
+                eq(game), eq(newFen),
                 eq("a7a6 b7b6 c7c6 d7d6 e7e6 f7f6 g7g6 h7h6 a7a5 b7b5 c7c5 d7d5 e7e5 f7f5 g7g5 h7h5 b8a6 b8c6 g8f6 g8h6 "),
                 eq(false), eq(null), eq(move))
         ).thenThrow(RuntimeException.class);
@@ -180,10 +183,9 @@ public class MoveControllerTest {
                 .andExpect(redirectedUrlTemplate("/game?id={id}&error={error}", "1", "true"));
 
         verify(gamesRepository, times(1)).findById(1);
-        verify(movesRepository, times(1)).createNewMove(game, "e2e4");
+        verify(movesRepository, times(1)).createNewMove(game, "e2e4", newFen);
         verify(gamesRepository, times(1)).updateGame(
-                game,
-                "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+                game, newFen,
                 "a7a6 b7b6 c7c6 d7d6 e7e6 f7f6 g7g6 h7h6 a7a5 b7b5 c7c5 d7d5 e7e5 f7f5 g7g5 h7h5 b8a6 b8c6 g8f6 g8h6 ",
                 false, null, move
         );

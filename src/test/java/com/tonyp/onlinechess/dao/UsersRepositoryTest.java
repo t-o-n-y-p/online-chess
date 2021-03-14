@@ -40,7 +40,7 @@ public class UsersRepositoryTest {
     private User highRatedUser;
 
     @Before
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void setUp() {
         allCreatedUsers = new ArrayList<>();
         double currentRating = 2800;

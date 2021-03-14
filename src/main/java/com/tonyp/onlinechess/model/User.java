@@ -1,77 +1,43 @@
 package com.tonyp.onlinechess.model;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
-import java.util.Objects;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "users")
+@NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
     @Id
     @GeneratedValue
+    @EqualsAndHashCode.Include
     private int id;
 
-    @Column(unique = true, nullable = false, length = 50)
+    @Column(unique = true, nullable = false, length = 9)
+    @EqualsAndHashCode.Include
+    @Pattern(regexp = "[a-zA-Z0-9]{4,9}")
     private String login;
 
     @Column(nullable = false, length = 50)
+    @NotBlank
     private String password;
 
     @Column(nullable = false)
     private double rating;
 
-    public User() {
-    }
-
     public User(String login, String password) {
         this.login = login;
         this.password = password;
         rating = 1200.0;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return id == user.id && Objects.equals(login, user.login);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, login);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public double getRating() {
-        return rating;
-    }
-
-    public void setRating(double rating) {
-        this.rating = rating;
     }
 }
 

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -16,6 +17,7 @@ import java.util.List;
 @Repository
 public interface UsersRepository extends JpaRepository<User, Integer> {
 
+    @Transactional(rollbackFor = Exception.class)
     default User createNewUser(String login, String password) {
         return save(new User(login, password));
     }

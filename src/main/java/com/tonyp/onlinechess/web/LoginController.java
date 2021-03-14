@@ -2,6 +2,7 @@ package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.User;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -10,13 +11,10 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @SessionAttributes("user-session")
+@AllArgsConstructor
 public class LoginController {
 
     private final UsersRepository usersRepository;
-
-    public LoginController(UsersRepository usersRepository) {
-        this.usersRepository = usersRepository;
-    }
 
     @GetMapping("/login")
     public String login(Model model,

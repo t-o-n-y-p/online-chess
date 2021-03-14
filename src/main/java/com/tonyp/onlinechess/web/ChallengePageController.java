@@ -2,6 +2,7 @@ package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.User;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -18,16 +19,13 @@ import java.util.List;
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 @Controller
 @SessionAttributes("user-session")
+@AllArgsConstructor
 public class ChallengePageController {
 
     public static final int PAGE_RESULTS = 8;
     public static final double RATING_THRESHOLD = 50.0;
 
     private final UsersRepository usersRepository;
-
-    public ChallengePageController(UsersRepository usersRepository) {
-        this.usersRepository = usersRepository;
-    }
 
     @GetMapping("/challenge/step1")
     public String step1(RedirectAttributes attributes, Model model,

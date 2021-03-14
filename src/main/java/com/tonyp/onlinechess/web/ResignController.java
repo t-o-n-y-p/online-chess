@@ -6,6 +6,8 @@ import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
 import com.tonyp.onlinechess.tools.GameUtil;
 import com.tonyp.onlinechess.tools.Result;
+import com.tonyp.onlinechess.web.services.GameService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,19 +22,16 @@ import javax.persistence.EntityManager;
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 @Controller
 @SessionAttributes("user-session")
+@AllArgsConstructor
 public class ResignController {
 
     private final UsersRepository usersRepository;
     private final GamesRepository gamesRepository;
-
-    public ResignController(UsersRepository usersRepository, GamesRepository gamesRepository) {
-        this.usersRepository = usersRepository;
-        this.gamesRepository = gamesRepository;
-    }
+    private final GameService gameService;
 
     @PostMapping("/resign")
-    @Transactional
-    public RedirectView resign(RedirectAttributes attributes, @RequestParam(name = "game_id") int gameId,
+    public RedirectView resign(RedirectAttributes attributes,
+                               @RequestParam(name = "game_id") int gameId,
                                @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() == null) {
             attributes.addAttribute("force_logout", true);
@@ -41,14 +40,7 @@ public class ResignController {
         try {
             Game game = gamesRepository.findById(gameId).get();
             User user = usersRepository.findByLogin(session.getLogin());
-            Result currentResult = user.equals(game.getWhite())
-                    ? Result.BLACK_WON_BY_RESIGNATION
-                    : Result.WHITE_WON_BY_RESIGNATION;
-
-            gamesRepository.updateGame(game, true, currentResult.getDescription());
-            double ratingDifference = GameUtil.getRatingDifference(game.getWhite(), game.getBlack(), currentResult);
-            usersRepository.updateRating(game.getWhite(), ratingDifference);
-            usersRepository.updateRating(game.getBlack(), -ratingDifference);
+            gameService.resign(game, user);
 
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("resignation", true);

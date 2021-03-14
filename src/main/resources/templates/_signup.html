@@ -13,30 +13,30 @@
                     <div class="alert alert-danger" role="alert" th:if="${error}" style="margin: 16px; text-align: center">
                         An unexpected error occurred. Please try again later.
                     </div>
-                    <div class="alert alert-danger" role="alert" th:if="${incorrectLogin}" style="margin: 16px; text-align: center">
-                        User with this login already exists.
-                    </div>
-                    <div class="alert alert-danger" role="alert" th:if="${invalidLogin}" style="margin: 16px; text-align: center">
-                        Login must contain 4-9 characters: a-z, A-Z, or 0-9.
-                    </div>
-                    <form action="/signup" method="post" style="margin: 16px"
-                          oninput='repeat_password.setCustomValidity(repeat_password.value !== password.value ? "Passwords do not match." : "")'>
+                    <form action="/signup" method="post" style="margin: 16px" th:object="${signupForm}">
                         <div class="form-group">
                             <label for="login">Login</label>
-                            <input type="text" class="form-control" id="login" name="login" placeholder="Login" required
-                                   pattern="[a-zA-Z0-9]{4,9}"
-                                   oninvalid="this.setCustomValidity('Login must contain 4-9 characters: a-z, A-Z, or 0-9.')"
-                                   oninput="this.setCustomValidity('')">
+                            <input type="text" th:class="${#fields.hasErrors('login')} ? 'form-control is-invalid' : 'form-control'"
+                                   id="login" name="login" placeholder="Login" aria-describedby="login_validation" th:value="${signupForm.login}">
+                            <div th:if="${#fields.hasErrors('login')}" id="login_validation" class="invalid-feedback"
+                                 th:each="fieldError : ${#fields.errors('login')}" th:text="${fieldError}">
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required
-                                   oninvalid="this.setCustomValidity('Password must not be empty.')"
-                                   oninput="this.setCustomValidity('')">
+                            <input type="password" th:class="${#fields.hasErrors('password')} ? 'form-control is-invalid' : 'form-control'"
+                                   id="password" name="password" placeholder="Password" aria-describedby="password_validation">
+                            <div th:if="${#fields.hasErrors('password')}" id="password_validation" class="invalid-feedback"
+                                 th:each="fieldError : ${#fields.errors('password')}" th:text="${fieldError}">
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="repeat_password">Repeat password</label>
-                            <input type="password" class="form-control" id="repeat_password" placeholder="Password">
+                            <input type="password" th:class="${#fields.hasGlobalErrors()} ? 'form-control is-invalid' : 'form-control'"
+                                   id="repeat_password" name="repeatPassword" placeholder="Password" aria-describedby="confirm_password_validation">
+                            <div th:if="${#fields.hasGlobalErrors()}" id="confirm_password_validation" class="invalid-feedback"
+                                 th:each="fieldError : ${#fields.globalErrors()}" th:text="${fieldError}">
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-dark" style="width: 100%">Sign up</button>
                     </form>

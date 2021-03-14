@@ -4,6 +4,7 @@ import com.tonyp.onlinechess.dao.ChallengesRepository;
 import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.Challenge;
 import com.tonyp.onlinechess.model.User;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,17 +18,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @SessionAttributes("user-session")
+@AllArgsConstructor
 public class ChallengeListPageController {
 
     public static final int PAGE_RESULTS = 8;
 
     private final UsersRepository usersRepository;
     private final ChallengesRepository challengesRepository;
-
-    public ChallengeListPageController(UsersRepository usersRepository, ChallengesRepository challengesRepository) {
-        this.usersRepository = usersRepository;
-        this.challengesRepository = challengesRepository;
-    }
 
     @GetMapping("/challenges")
     public String challenges(RedirectAttributes attributes, Model model,

@@ -6,6 +6,7 @@ import com.tonyp.onlinechess.model.Color;
 import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
 import com.tonyp.onlinechess.tools.GameUtil;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,15 +21,11 @@ import javax.persistence.EntityManager;
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 @Controller
 @SessionAttributes("user-session")
+@AllArgsConstructor
 public class GamePageController {
 
     private final UsersRepository usersRepository;
     private final GamesRepository gamesRepository;
-
-    public GamePageController(UsersRepository usersRepository, GamesRepository gamesRepository) {
-        this.usersRepository = usersRepository;
-        this.gamesRepository = gamesRepository;
-    }
 
     @GetMapping("/game")
     public String game(RedirectAttributes attributes, Model model,

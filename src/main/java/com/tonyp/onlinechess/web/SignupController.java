@@ -1,67 +1,63 @@
 package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.UsersRepository;
+import com.tonyp.onlinechess.validation.SignupForm;
+import lombok.AllArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
-import javax.persistence.EntityManager;
+import javax.validation.Valid;
 
 @Controller
 @SessionAttributes("user-session")
+@AllArgsConstructor
 public class SignupController {
 
     private final UsersRepository usersRepository;
 
-    public SignupController(UsersRepository usersRepository) {
-        this.usersRepository = usersRepository;
-    }
-
     @GetMapping("/signup")
-    public String signup(Model model,
-                         @RequestParam(defaultValue = "false") boolean error,
-                         @RequestParam(defaultValue = "false", name = "incorrect_login") boolean incorrectLogin,
-                         @RequestParam(defaultValue = "false", name = "invalid_login") boolean invalidLogin,
-                         @ModelAttribute("user-session") UserSession session) {
+    public String getSignup(SignupForm signupForm,
+                            @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() != null) {
             return "redirect:main";
         }
-        model.addAttribute("error", error);
-        model.addAttribute("incorrectLogin", incorrectLogin);
-        model.addAttribute("invalidLogin", invalidLogin);
         return "_signup";
     }
 
     @PostMapping("/signup")
-    @Transactional
-    public RedirectView signup(RedirectAttributes attributes,
-                               @RequestParam String login,
-                               @RequestParam String password,
-                               @ModelAttribute("user-session") UserSession session) {
-        if (!session.getLogin().equals(login)) {
-            return new RedirectView("/main");
-        }
-        if (!login.matches("[a-zA-Z0-9]{4,9}")) {
-            attributes.addAttribute("invalid_login", true);
-            return new RedirectView("/signup");
+    public String postSignup(Model model,
+                             @Valid SignupForm signupForm,
+                             BindingResult bindingResult,
+                             @ModelAttribute("user-session") UserSession session) {
+        if (!session.getLogin().equals(signupForm.getLogin())) {
+            return "redirect:main";
         }
         try {
-            if (usersRepository.findByLogin(login) != null) {
+            if (bindingResult.hasErrors()) {
                 session.setLogin(null);
-                attributes.addAttribute("incorrect_login", true);
-                return new RedirectView("/signup");
+                return "_signup";
             }
 
-            usersRepository.createNewUser(login, password);
-
-            return new RedirectView("/main");
+            usersRepository.createNewUser(signupForm.getLogin(), signupForm.getPassword());
+            return "redirect:main";
         } catch (Throwable e) {
             session.setLogin(null);
-            attributes.addAttribute("error", true);
-            return new RedirectView("/signup");
+            while (e.getCause() != null && !e.getCause().equals(e)) {
+                e = e.getCause();
+                if (e.getClass().equals(ConstraintViolationException.class)) {
+                    bindingResult.addError(new FieldError("form", "login", "User with this login already exists."));
+                    return "_signup";
+                }
+            }
+            model.addAttribute("error", true);
+            return "_signup";
         }
     }
 

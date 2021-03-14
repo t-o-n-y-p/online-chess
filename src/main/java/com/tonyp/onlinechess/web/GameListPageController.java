@@ -4,6 +4,7 @@ import com.tonyp.onlinechess.dao.GamesRepository;
 import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,17 +20,13 @@ import java.util.List;
 
 @Controller
 @SessionAttributes("user-session")
+@AllArgsConstructor
 public class GameListPageController {
 
     public static final int PAGE_RESULTS = 8;
 
     private final UsersRepository usersRepository;
     private final GamesRepository gamesRepository;
-
-    public GameListPageController(UsersRepository usersRepository, GamesRepository gamesRepository) {
-        this.usersRepository = usersRepository;
-        this.gamesRepository = gamesRepository;
-    }
 
     @GetMapping("/games")
     public String games(RedirectAttributes attributes, Model model,

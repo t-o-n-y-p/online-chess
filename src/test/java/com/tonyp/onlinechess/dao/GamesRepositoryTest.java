@@ -41,7 +41,7 @@ public class GamesRepositoryTest {
     private List<Game> allCreatedGames;
 
     @Before
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void setUp() throws InterruptedException {
         allCreatedUsers = new ArrayList<>();
         allCreatedGames = new ArrayList<>();

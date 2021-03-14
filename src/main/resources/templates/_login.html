@@ -16,22 +16,22 @@
                     <div class="alert alert-danger" role="alert" th:if="${forceLogout}" style="margin: 16px; text-align: center">
                         You've been logged out.
                     </div>
-                    <div class="alert alert-danger" role="alert" th:if="${incorrectLogin}" style="margin: 16px; text-align: center">
-                        Login is incorrect.
-                    </div>
-                    <div class="alert alert-danger" role="alert" th:if="${incorrectPassword}" style="margin: 16px; text-align: center">
-                        Password is incorrect.
-                    </div>
-                    <form action="/login" method="post" style="margin: 16px">
+                    <form action="/login" method="post" style="margin: 16px" th:object="${loginForm}">
                         <div class="form-group">
                             <label for="login">Login</label>
-                            <input type="text" class="form-control" id="login" name="login" placeholder="Login" required
-                                   oninvalid="this.setCustomValidity('Login must not be empty.')" oninput="this.setCustomValidity('')">
+                            <input type="text" th:class="${#fields.hasErrors('login')} ? 'form-control is-invalid' : 'form-control'"
+                                   id="login" name="login" placeholder="Login" aria-describedby="login_validation" th:value="${loginForm.login}">
+                            <div th:if="${#fields.hasErrors('login')}" id="login_validation" class="invalid-feedback"
+                                 th:each="fieldError : ${#fields.errors('login')}" th:text="${fieldError}">
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required
-                                   oninvalid="this.setCustomValidity('Password must not be empty.')" oninput="this.setCustomValidity('')">
+                            <input type="password" th:class="${#fields.hasErrors('password')} ? 'form-control is-invalid' : 'form-control'"
+                                   id="password" name="password" placeholder="Password" aria-describedby="password_validation">
+                            <div th:if="${#fields.hasErrors('password')}" id="password_validation" class="invalid-feedback"
+                                 th:each="fieldError : ${#fields.errors('password')}" th:text="${fieldError}">
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-dark" style="width: 100%">Log in</button>
                     </form>

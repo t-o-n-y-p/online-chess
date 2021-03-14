@@ -2,12 +2,18 @@ package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.User;
+import com.tonyp.onlinechess.validation.LoginForm;
+import com.tonyp.onlinechess.validation.SignupForm;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.validation.Valid;
 
 @Controller
 @SessionAttributes("user-session")
@@ -17,47 +23,46 @@ public class LoginController {
     private final UsersRepository usersRepository;
 
     @GetMapping("/login")
-    public String login(Model model,
-                        @RequestParam(defaultValue = "false") boolean error,
-                        @RequestParam(defaultValue = "false", name = "force_logout") boolean forceLogout,
-                        @RequestParam(defaultValue = "false", name = "incorrect_login") boolean incorrectLogin,
-                        @RequestParam(defaultValue = "false", name = "incorrect_password") boolean incorrectPassword,
-                        @ModelAttribute("user-session") UserSession session) {
+    public String getLogin(Model model,
+                           LoginForm loginForm,
+                           @RequestParam(defaultValue = "false", name = "force_logout") boolean forceLogout,
+                           @ModelAttribute("user-session") UserSession session) {
         if (session.getLogin() != null) {
             return "redirect:main";
         }
-        model.addAttribute("error", error);
         model.addAttribute("forceLogout", forceLogout);
-        model.addAttribute("incorrectLogin", incorrectLogin);
-        model.addAttribute("incorrectPassword", incorrectPassword);
         return "_login";
     }
 
     @PostMapping("/login")
-    public RedirectView login(RedirectAttributes attributes,
-                              @RequestParam String login,
-                              @RequestParam String password,
-                              @ModelAttribute("user-session") UserSession session) {
-        if (!session.getLogin().equals(login)) {
-            return new RedirectView("/main");
+    public String postLogin(Model model,
+                            @Valid LoginForm loginForm,
+                            BindingResult bindingResult,
+                            @ModelAttribute("user-session") UserSession session) {
+        if (!session.getLogin().equals(loginForm.getLogin())) {
+            return "redirect:/main";
+        }
+        if (bindingResult.hasErrors()) {
+            session.setLogin(null);
+            return "_login";
         }
         try {
-            User found = usersRepository.findByLogin(login);
+            User found = usersRepository.findByLogin(loginForm.getLogin());
             if (found == null) {
                 session.setLogin(null);
-                attributes.addAttribute("incorrect_login", true);
-                return new RedirectView("/login");
+                bindingResult.addError(new FieldError("loginForm", "login", "Login is incorrect."));
+                return "_login";
             }
-            if (!found.getPassword().equals(password)) {
+            if (!found.getPassword().equals(loginForm.getPassword())) {
                 session.setLogin(null);
-                attributes.addAttribute("incorrect_password", true);
-                return new RedirectView("/login");
+                bindingResult.addError(new FieldError("loginForm", "password", "Password is incorrect."));
+                return "_login";
             }
-            return new RedirectView("/main");
+            return "redirect:/main";
         } catch (Throwable e) {
             session.setLogin(null);
-            attributes.addAttribute("error", true);
-            return new RedirectView("/login");
+            model.addAttribute("error", true);
+            return "_login";
         }
     }
 

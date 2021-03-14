@@ -2,6 +2,7 @@ package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.User;
+import com.tonyp.onlinechess.validation.LoginForm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,23 +44,7 @@ public class LoginControllerTest {
     public void testGetLoginDefault() throws Exception {
         mvc.perform(get("/login"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("error", false))
-                .andExpect(model().attribute("forceLogout", false))
-                .andExpect(model().attribute("incorrectLogin", false))
-                .andExpect(model().attribute("incorrectPassword", false));
-        verifyNoInteractions(usersRepository);
-    }
-
-    @Test
-    public void testGetLoginError() throws Exception {
-        mvc.perform(get("/login")
-                .param("error", "true")
-        )
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("error", true))
-                .andExpect(model().attribute("forceLogout", false))
-                .andExpect(model().attribute("incorrectLogin", false))
-                .andExpect(model().attribute("incorrectPassword", false));
+                .andExpect(model().attribute("forceLogout", false));
         verifyNoInteractions(usersRepository);
     }
 
@@ -69,36 +54,25 @@ public class LoginControllerTest {
                 .param("force_logout", "true")
         )
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("error", false))
-                .andExpect(model().attribute("forceLogout", true))
-                .andExpect(model().attribute("incorrectLogin", false))
-                .andExpect(model().attribute("incorrectPassword", false));
+                .andExpect(model().attribute("forceLogout", true));
         verifyNoInteractions(usersRepository);
     }
 
     @Test
-    public void testGetLoginIncorrectLogin() throws Exception {
-        mvc.perform(get("/login")
-                .param("incorrect_login", "true")
+    public void testPostLoginEmptyFields() throws Exception {
+        UserSession userSession = new UserSession();
+        userSession.setLogin("login0");
+        LoginForm loginForm = new LoginForm();
+        loginForm.setLogin("");
+        loginForm.setPassword("");
+        mvc.perform(post("/login")
+                .param("login", "")
+                .param("password", "")
+                .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("error", false))
-                .andExpect(model().attribute("forceLogout", false))
-                .andExpect(model().attribute("incorrectLogin", true))
-                .andExpect(model().attribute("incorrectPassword", false));
-        verifyNoInteractions(usersRepository);
-    }
-
-    @Test
-    public void testGetLoginIncorrectPassword() throws Exception {
-        mvc.perform(get("/login")
-                .param("incorrect_password", "true")
-        )
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("error", false))
-                .andExpect(model().attribute("forceLogout", false))
-                .andExpect(model().attribute("incorrectLogin", false))
-                .andExpect(model().attribute("incorrectPassword", true));
+                .andExpect(model().attribute("loginForm", loginForm))
+                .andExpect(model().attributeHasFieldErrors("loginForm", "login", "password"));
         verifyNoInteractions(usersRepository);
     }
 
@@ -108,30 +82,38 @@ public class LoginControllerTest {
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
+        LoginForm loginForm = new LoginForm();
+        loginForm.setLogin("login0");
+        loginForm.setPassword("password0");
         mvc.perform(post("/login")
                 .param("login", "login0")
                 .param("password", "password0")
                 .sessionAttr("user-session", userSession)
         )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/login?incorrect_login={incorrectLogin}", "true"));
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("loginForm", loginForm))
+                .andExpect(model().attributeHasFieldErrors("loginForm", "login"));
         verify(usersRepository, times(1)).findByLogin("login0");
     }
 
     @Test
     public void testPostLoginIncorrectPassword() throws Exception {
-        User user = new User("login0", "password0");
+        User user = new User("login0", "password1");
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
         UserSession userSession = new UserSession();
         userSession.setLogin("login0");
+        LoginForm loginForm = new LoginForm();
+        loginForm.setLogin("login0");
+        loginForm.setPassword("password0");
         mvc.perform(post("/login")
                 .param("login", "login0")
-                .param("password", "password1")
+                .param("password", "password0")
                 .sessionAttr("user-session", userSession)
         )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/login?incorrect_password={incorrectPassword}", "true"));
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("loginForm", loginForm))
+                .andExpect(model().attributeHasFieldErrors("loginForm", "password"));
         verify(usersRepository, times(1)).findByLogin("login0");
     }
 
@@ -163,8 +145,8 @@ public class LoginControllerTest {
                 .param("password", "password0")
                 .sessionAttr("user-session", userSession)
         )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/login?error={error}", "true"));
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("error", true));
         verify(usersRepository, times(1)).findByLogin("login0");
     }
 

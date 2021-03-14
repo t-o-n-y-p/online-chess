@@ -1,9 +1,6 @@
 package com.tonyp.onlinechess.validation;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 
@@ -11,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 public class LoginForm {
 
     @NotBlank(message = "Login must not be empty.")

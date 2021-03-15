@@ -1,7 +1,11 @@
 package com.tonyp.onlinechess.tools;
 
 import com.tonyp.onlinechess.model.Color;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@AllArgsConstructor
+@Getter
 public enum Result {
 
     UNDEFINED("Play continues", null),
@@ -17,17 +21,5 @@ public enum Result {
     private final String description;
     private final Color winningSide;
 
-    Result(String description, Color winningSide) {
-        this.description = description;
-        this.winningSide = winningSide;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Color getWinningSide() {
-        return winningSide;
-    }
 }
 

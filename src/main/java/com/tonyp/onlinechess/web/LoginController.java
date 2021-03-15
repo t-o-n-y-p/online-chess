@@ -3,14 +3,12 @@ package com.tonyp.onlinechess.web;
 import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.User;
 import com.tonyp.onlinechess.validation.LoginForm;
-import com.tonyp.onlinechess.validation.SignupForm;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.validation.Valid;

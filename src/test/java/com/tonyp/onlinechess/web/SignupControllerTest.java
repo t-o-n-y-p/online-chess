@@ -171,8 +171,9 @@ public class SignupControllerTest {
         signupForm.setPassword("password0");
         signupForm.setRepeatPassword("password0");
         mvc.perform(post("/signup")
-                .flashAttr("signupForm", signupForm)
-                .flashAttr("bindingResult", new BeanPropertyBindingResult(signupForm, "signupForm"))
+                .param("login", "login0")
+                .param("password", "password0")
+                .param("repeatPassword", "password0")
                 .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().is3xxRedirection())
@@ -191,8 +192,9 @@ public class SignupControllerTest {
         signupForm.setPassword("password0");
         signupForm.setRepeatPassword("password0");
         mvc.perform(post("/signup")
-                .flashAttr("signupForm", signupForm)
-                .flashAttr("bindingResult", new BeanPropertyBindingResult(signupForm, "signupForm"))
+                .param("login", "login0")
+                .param("password", "password0")
+                .param("repeatPassword", "password0")
                 .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().isOk())

@@ -1,6 +1,7 @@
 package com.tonyp.onlinechess.tools;
 
 import com.tonyp.onlinechess.model.Color;
+import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.Move;
 import com.tonyp.onlinechess.model.User;
 
@@ -114,6 +115,11 @@ public final class GameUtil {
         }
         double expectedPointsForWhite = 1 / (1 + Math.pow(10.0, (black.getRating() - white.getRating()) / 400));
         return 20 * (actualPointsForWhite - expectedPointsForWhite);
+    }
+
+    public static boolean isIllegalMove(Game game, String notation) {
+        return notation == null || notation.isBlank()
+                || !Arrays.asList(game.getLegalMoves().split("\\s")).contains(notation);
     }
 
 }

@@ -5,10 +5,7 @@ import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.Move;
 import com.tonyp.onlinechess.model.User;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -119,7 +116,7 @@ public final class GameUtil {
 
     public static boolean isIllegalMove(Game game, String notation) {
         return notation == null || notation.isBlank()
-                || !Arrays.asList(game.getLegalMoves().split("\\s")).contains(notation);
+                || !Set.of(game.getLegalMoves().split("\\s")).contains(notation);
     }
 
 }

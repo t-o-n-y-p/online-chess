@@ -26,31 +26,15 @@ public final class StockfishUtil {
     }
 
     public static String getLegalMoves(String fen) throws ExecutionException, InterruptedException {
-        return client.submit(
-                new Query.Builder(QueryType.Legal_Moves)
-                        .setFen(fen)
-                        .build(),
-                result -> result
-        ).get();
+        return client.getLegalMoves(fen).get();
     }
 
     public static String getCheckers(String fen) throws ExecutionException, InterruptedException {
-        return client.submit(
-                new Query.Builder(QueryType.Checkers)
-                        .setFen(fen)
-                        .build(),
-                result -> result
-        ).get();
+        return client.getCheckers(fen).get();
     }
 
     public static String makeMove(String fen, String move) throws ExecutionException, InterruptedException {
-        return client.submit(
-                new Query.Builder(QueryType.Make_Move)
-                        .setFen(fen)
-                        .setMove(move)
-                        .build(),
-                result -> result
-        ).get();
+        return client.makeMove(fen, move).get();
     }
 
 }

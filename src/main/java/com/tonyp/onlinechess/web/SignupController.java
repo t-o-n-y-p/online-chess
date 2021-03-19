@@ -5,9 +5,13 @@ import com.tonyp.onlinechess.model.User;
 import com.tonyp.onlinechess.validation.SignupForm;
 import lombok.AllArgsConstructor;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
@@ -35,14 +40,18 @@ public class SignupController {
     }
 
     @PostMapping("/signup")
-    public String postSignup(Model model,
+    public String postSignup(HttpServletRequest request,
+                             Model model,
                              @Valid SignupForm signupForm,
                              BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "_signup";
         }
         try {
-            usersRepository.createNewUser(signupForm.getLogin(), passwordEncoder.encode(signupForm.getPassword()));
+            String username = signupForm.getLogin();
+            String password = passwordEncoder.encode(signupForm.getPassword());
+            usersRepository.createNewUser(username, password);
+            request.login(username, password);
             return "redirect:/app/main";
         } catch (JpaSystemException e) {
             bindingResult.addError(new FieldError("signupForm", "login", "User with this login already exists."));

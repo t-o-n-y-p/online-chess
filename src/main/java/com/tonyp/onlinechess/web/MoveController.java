@@ -5,6 +5,7 @@ import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.tools.GameUtil;
 import com.tonyp.onlinechess.web.services.GameService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,46 +19,36 @@ import java.util.List;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 @Controller
-@SessionAttributes("user-session")
 @AllArgsConstructor
 public class MoveController {
 
     private final GamesRepository gamesRepository;
     private final GameService gameService;
 
-    @PostMapping("/move")
+    @PostMapping("/app/move")
     public RedirectView makeMove(RedirectAttributes attributes, @RequestParam(name = "game_id") int gameId,
                                  @RequestParam String square1,
                                  @RequestParam String square2,
                                  @RequestParam String promotion,
-                                 @ModelAttribute("user-session") UserSession session) {
-        if (session.getLogin() == null) {
-            attributes.addAttribute("force_logout", true);
-            return new RedirectView("/login");
-        }
+                                 Authentication authentication) {
         try {
             Game game = gamesRepository.findById(gameId).get();
             String notation = square1 + square2 + promotion;
             if (GameUtil.isIllegalMove(game, notation)) {
                 attributes.addAttribute("id", gameId);
                 attributes.addAttribute("illegal_move", true);
-                return new RedirectView("/game");
+                return new RedirectView("/app/game");
             }
             gameService.makeMove(game, notation);
 
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("legal_move", true);
-            return new RedirectView("/game");
+            return new RedirectView("/app/game");
         } catch (Throwable e) {
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("error", true);
-            return new RedirectView("/game");
+            return new RedirectView("/app/game");
         }
-    }
-
-    @ModelAttribute("user-session")
-    public UserSession createUserSession() {
-        return new UserSession();
     }
 
 }

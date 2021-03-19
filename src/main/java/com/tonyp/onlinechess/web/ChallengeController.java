@@ -6,6 +6,7 @@ import com.tonyp.onlinechess.model.Challenge;
 import com.tonyp.onlinechess.model.Color;
 import com.tonyp.onlinechess.web.services.ChallengeService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 @Controller
-@SessionAttributes("user-session")
 @AllArgsConstructor
 public class ChallengeController {
 
@@ -24,17 +24,13 @@ public class ChallengeController {
     private final ChallengesRepository challengesRepository;
     private final ChallengeService challengeService;
 
-    @PostMapping("/challenge/accept")
+    @PostMapping("/app/challenge/accept")
     public RedirectView accept(RedirectAttributes attributes,
                                @RequestParam int id,
                                @RequestParam(defaultValue = "1") int page,
                                @RequestParam(defaultValue = "false", name = "to_previous_page") boolean toPreviousPage,
                                @RequestParam(defaultValue = "false", name = "from_challenges") boolean fromChallenges,
-                               @ModelAttribute("user-session") UserSession session) {
-        if (session.getLogin() == null) {
-            attributes.addAttribute("force_logout", true);
-            return new RedirectView("../login");
-        }
+                               Authentication authentication) {
         try {
             Challenge acceptedChallenge = challengesRepository.findById(id).get();
             challengeService.acceptChallenge(acceptedChallenge);
@@ -47,33 +43,24 @@ public class ChallengeController {
         }
     }
 
-    @PostMapping("/challenge")
+    @PostMapping("/app/challenge")
     public RedirectView create(RedirectAttributes attributes,
                                @RequestParam(name = "opponent_id") int opponentId,
                                @RequestParam(name = "target_color") Color targetColor,
-                               @ModelAttribute("user-session") UserSession session) {
-        if (session.getLogin() == null) {
-            attributes.addAttribute("force_logout", true);
-            return new RedirectView("/login");
-        }
+                               Authentication authentication) {
         try {
             challengesRepository.createNewChallenge(
-                    usersRepository.findByLogin(session.getLogin()),
+                    usersRepository.findByLogin(authentication.getName()),
                     usersRepository.findById(opponentId).get(),
                     targetColor
             );
 
             attributes.addAttribute("challenge_created", true);
-            return new RedirectView("/main");
+            return new RedirectView("/app/main");
         } catch (Throwable e) {
             attributes.addAttribute("error", true);
-            return new RedirectView("/main");
+            return new RedirectView("/app/main");
         }
-    }
-
-    @ModelAttribute("user-session")
-    public UserSession createUserSession() {
-        return new UserSession();
     }
 
     private RedirectView getAcceptChallengeRedirectView
@@ -84,9 +71,9 @@ public class ChallengeController {
             } else {
                 attributes.addAttribute("page", page);
             }
-            return new RedirectView("/challenges");
+            return new RedirectView("/app/challenges");
         } else {
-            return new RedirectView("/main");
+            return new RedirectView("/app/main");
         }
     }
 }

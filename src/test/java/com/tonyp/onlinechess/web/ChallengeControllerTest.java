@@ -18,6 +18,8 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlTemplate;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,27 +42,16 @@ public class ChallengeControllerTest {
     private ChallengesRepository challengesRepository;
 
     @Test
-    public void testAcceptIsNotLoggedIn() throws Exception {
-        mvc.perform(post("/challenge/accept")
-                .param("id", "1")
-        )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("../login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(usersRepository, gamesRepository, challengesRepository);
-    }
-
-    @Test
     public void testAcceptFromMainWhite() throws Exception {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
         Challenge challenge = new Challenge(from, to, Color.WHITE);
         when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login1");
         mvc.perform(post("/challenge/accept")
+                .with(user("login1"))
                 .param("id", "1")
-                .sessionAttr("user-session", userSession)
+                .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/main?challenge_accepted={accepted}", "true"));
@@ -77,12 +68,11 @@ public class ChallengeControllerTest {
         Challenge challenge = new Challenge(from, to, Color.BLACK);
         when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login1");
         mvc.perform(post("/challenge/accept")
+                .with(user("login1"))
                 .param("id", "1")
                 .param("from_challenges", "true")
-                .sessionAttr("user-session", userSession)
+                .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate(
@@ -100,14 +90,13 @@ public class ChallengeControllerTest {
         Challenge challenge = new Challenge(from, to, Color.WHITE);
         when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login1");
         mvc.perform(post("/challenge/accept")
+                .with(user("login1"))
                 .param("id", "1")
                 .param("page", "3")
                 .param("to_previous_page", "true")
                 .param("from_challenges", "true")
-                .sessionAttr("user-session", userSession)
+                .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate(
@@ -126,11 +115,10 @@ public class ChallengeControllerTest {
         when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
         when(gamesRepository.createNewGame(eq(from), eq(to))).thenThrow(RuntimeException.class);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login1");
         mvc.perform(post("/challenge/accept")
+                .with(user("login1"))
                 .param("id", "1")
-                .sessionAttr("user-session", userSession)
+                .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/main?error={error}", "true"));
@@ -141,29 +129,17 @@ public class ChallengeControllerTest {
     }
 
     @Test
-    public void testCreateIsNotLoggedIn() throws Exception {
-        mvc.perform(post("/challenge")
-                .param("opponent_id", "1")
-                .param("target_color", Color.WHITE.name())
-        )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(usersRepository, gamesRepository, challengesRepository);
-    }
-
-    @Test
     public void testCreateSuccessWhite() throws Exception {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(from);
         when(usersRepository.findById(eq(1))).thenReturn(Optional.of(to));
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(post("/challenge")
+                .with(user("login0"))
                 .param("opponent_id", "1")
                 .param("target_color", Color.WHITE.name())
-                .sessionAttr("user-session", userSession)
+                .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/main?challenge_created={created}", "true"));
@@ -180,12 +156,11 @@ public class ChallengeControllerTest {
         when(usersRepository.findById(eq(1))).thenReturn(Optional.of(to));
         when(challengesRepository.createNewChallenge(eq(from), eq(to), eq(Color.BLACK))).thenThrow(RuntimeException.class);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(post("/challenge")
+                .with(user("login0"))
                 .param("opponent_id", "1")
                 .param("target_color", Color.BLACK.name())
-                .sessionAttr("user-session", userSession)
+                .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/main?error={error}", "true"));

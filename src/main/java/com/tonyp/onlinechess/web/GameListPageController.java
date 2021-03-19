@@ -7,6 +7,7 @@ import com.tonyp.onlinechess.model.User;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@SessionAttributes("user-session")
 @AllArgsConstructor
 public class GameListPageController {
 
@@ -25,18 +25,14 @@ public class GameListPageController {
     private final UsersRepository usersRepository;
     private final GamesRepository gamesRepository;
 
-    @GetMapping("/games")
-    public String games(RedirectAttributes attributes, Model model,
+    @GetMapping("/app/games")
+    public String games(Model model,
                         @RequestParam(defaultValue = "1") int page,
                         @RequestParam(defaultValue = "") String search,
-                        @ModelAttribute("user-session") UserSession session) {
-        if (session.getLogin() == null) {
-            attributes.addAttribute("force_logout", true);
-            return "redirect:login";
-        }
+                        Authentication authentication) {
         model.addAttribute("search", search);
         model.addAttribute("page", page);
-        User user = usersRepository.findByLogin(session.getLogin());
+        User user = usersRepository.findByLogin(authentication.getName());
         model.addAttribute("user", user);
         Page<Game> games = gamesRepository.findByUserAndOpponentLoginInput(
                 user, search, PageRequest.of(page - 1, PAGE_RESULTS)
@@ -44,11 +40,6 @@ public class GameListPageController {
         model.addAttribute("games", games);
 
         return "_games";
-    }
-
-    @ModelAttribute("user-session")
-    public UserSession createUserSession() {
-        return new UserSession();
     }
 
 }

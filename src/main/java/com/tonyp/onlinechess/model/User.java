@@ -27,7 +27,7 @@ public class User {
     @Pattern(regexp = "[a-zA-Z0-9]{4,9}")
     private String login;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 60)
     @NotBlank
     private String password;
 

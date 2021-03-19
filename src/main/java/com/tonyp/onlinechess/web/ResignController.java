@@ -6,6 +6,7 @@ import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
 import com.tonyp.onlinechess.web.services.GameService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 @Controller
-@SessionAttributes("user-session")
 @AllArgsConstructor
 public class ResignController {
 
@@ -24,32 +24,22 @@ public class ResignController {
     private final GamesRepository gamesRepository;
     private final GameService gameService;
 
-    @PostMapping("/resign")
+    @PostMapping("/app/resign")
     public RedirectView resign(RedirectAttributes attributes,
                                @RequestParam(name = "game_id") int gameId,
-                               @ModelAttribute("user-session") UserSession session) {
-        if (session.getLogin() == null) {
-            attributes.addAttribute("force_logout", true);
-            return new RedirectView("/login");
-        }
+                               Authentication authentication) {
         try {
             Game game = gamesRepository.findById(gameId).get();
-            User user = usersRepository.findByLogin(session.getLogin());
+            User user = usersRepository.findByLogin(authentication.getName());
             gameService.resign(game, user);
 
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("resignation", true);
-            return new RedirectView("/game");
+            return new RedirectView("/app/game");
         } catch (Throwable e) {
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("error", true);
-            return new RedirectView("/game");
+            return new RedirectView("/app/game");
         }
     }
-
-    @ModelAttribute("user-session")
-    public UserSession createUserSession() {
-        return new UserSession();
-    }
-
 }

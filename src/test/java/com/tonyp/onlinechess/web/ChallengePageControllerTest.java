@@ -19,6 +19,7 @@ import static com.tonyp.onlinechess.web.ChallengePageController.PAGE_RESULTS;
 import static com.tonyp.onlinechess.web.ChallengePageController.RATING_THRESHOLD;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -37,14 +38,6 @@ public class ChallengePageControllerTest {
     private Page<User> opponents;
 
     @Test
-    public void testStep1NotLoggedIn() throws Exception {
-        mvc.perform(get("/challenge/step1"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("../login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(usersRepository);
-    }
-
-    @Test
     public void testStep1FirstPageDefault() throws Exception {
         User user = new User("login0", "pass0");
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
@@ -53,10 +46,8 @@ public class ChallengePageControllerTest {
                 eq(user.getRating() + RATING_THRESHOLD), eq(PageRequest.of(0, PAGE_RESULTS))
         )).thenReturn(opponents);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(get("/challenge/step1")
-                .sessionAttr("user-session", userSession)
+                .with(user("login0"))
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("search", ""))
@@ -78,12 +69,10 @@ public class ChallengePageControllerTest {
                 eq(user.getRating() + RATING_THRESHOLD), eq(PageRequest.of(3, PAGE_RESULTS))
         )).thenReturn(opponents);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(get("/challenge/step1")
+                .with(user("login0"))
                 .param("page", "4")
                 .param("search", "qwerty")
-                .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("search", "qwerty"))
@@ -97,25 +86,13 @@ public class ChallengePageControllerTest {
     }
 
     @Test
-    public void testStep2NotLoggedIn() throws Exception {
-        mvc.perform(get("/challenge/step2")
-                .param("opponent_id", "1")
-        )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("../login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(usersRepository);
-    }
-
-    @Test
     public void testStep2Success() throws Exception {
         User opponent = new User("login1", "pass1");
         when(usersRepository.findById(eq(1))).thenReturn(Optional.of(opponent));
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(get("/challenge/step2")
+                .with(user("login0"))
                 .param("opponent_id", "1")
-                .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("opponent", opponent));

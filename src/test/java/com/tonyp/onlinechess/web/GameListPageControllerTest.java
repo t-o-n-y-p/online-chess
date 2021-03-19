@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static com.tonyp.onlinechess.web.GameListPageController.PAGE_RESULTS;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -39,14 +40,6 @@ public class GameListPageControllerTest {
     private Page<Game> games;
 
     @Test
-    public void testGamesNotLoggedIn() throws Exception {
-        mvc.perform(get("/games"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(usersRepository, gamesRepository);
-    }
-
-    @Test
     public void testGamesFirstPageDefault() throws Exception {
         User user = new User("login0", "pass0");
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
@@ -54,10 +47,8 @@ public class GameListPageControllerTest {
                 eq(user), eq(""), eq(PageRequest.of(0, PAGE_RESULTS))
         )).thenReturn(games);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(get("/games")
-                .sessionAttr("user-session", userSession)
+                .with(user("login0"))
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("search", ""))
@@ -78,12 +69,10 @@ public class GameListPageControllerTest {
                 eq(user), eq("qwerty"), eq(PageRequest.of(3, PAGE_RESULTS))
         )).thenReturn(games);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(get("/games")
+                .with(user("login0"))
                 .param("page", "4")
                 .param("search", "qwerty")
-                .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("search", "qwerty"))

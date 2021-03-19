@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static com.tonyp.onlinechess.web.ChallengeListPageController.PAGE_RESULTS;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -39,14 +40,6 @@ public class ChallengeListPageControllerTest {
     private Page<Challenge> challenges;
 
     @Test
-    public void testChallengesNotLoggedIn() throws Exception {
-        mvc.perform(get("/challenges"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(usersRepository, challengesRepository);
-    }
-
-    @Test
     public void testChallengesFirstPageDefault() throws Exception {
         User user = new User("login0", "pass0");
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
@@ -54,10 +47,8 @@ public class ChallengeListPageControllerTest {
                 eq(user), eq(""), eq(PageRequest.of(0, PAGE_RESULTS))
         )).thenReturn(challenges);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(get("/challenges")
-                .sessionAttr("user-session", userSession)
+                .with(user("login0"))
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("challengeAccepted", false))
@@ -80,12 +71,10 @@ public class ChallengeListPageControllerTest {
                 eq(user), eq(""), eq(PageRequest.of(1, PAGE_RESULTS))
         )).thenReturn(challenges);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(get("/challenges")
+                .with(user("login0"))
                 .param("page", "2")
                 .param("challenge_accepted", "true")
-                .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("challengeAccepted", true))
@@ -103,19 +92,16 @@ public class ChallengeListPageControllerTest {
     @Test
     public void testChallengesLastPageWithSearchAndErrorFlag() throws Exception {
         User user = new User("login0", "pass0");
-        User sideUser = new User("login1", "pass1");
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
         when(challengesRepository.findIncomingChallengesByOpponentLoginInput(
                 eq(user), eq("qwerty"), eq(PageRequest.of(3, PAGE_RESULTS))
         )).thenReturn(challenges);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(get("/challenges")
+                .with(user("login0"))
                 .param("page", "4")
                 .param("search", "qwerty")
                 .param("error", "true")
-                .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("challengeAccepted", false))

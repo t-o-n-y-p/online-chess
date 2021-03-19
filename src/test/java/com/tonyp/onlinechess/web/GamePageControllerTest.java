@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -36,28 +37,16 @@ public class GamePageControllerTest {
     private GamesRepository gamesRepository;
 
     @Test
-    public void testGameNotLoggedIn() throws Exception {
-        mvc.perform(get("/game")
-                .param("id", "1")
-        )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(usersRepository);
-    }
-
-    @Test
     public void testGameLegalMoveAsWhite() throws Exception {
         User user = new User("login0", "pass0");
         Game game = new Game(user, new User("login1", "pass1"));
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(get("/game")
+                .with(user("login0"))
                 .param("id", "1")
                 .param("legal_move", "true")
-                .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("legalMove", true))
@@ -79,12 +68,10 @@ public class GamePageControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(get("/game")
+                .with(user("login0"))
                 .param("id", "1")
                 .param("illegal_move", "true")
-                .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("legalMove", false))
@@ -106,12 +93,10 @@ public class GamePageControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(get("/game")
+                .with(user("login0"))
                 .param("id", "1")
                 .param("resignation", "true")
-                .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("legalMove", false))
@@ -133,12 +118,10 @@ public class GamePageControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(get("/game")
+                .with(user("login0"))
                 .param("id", "1")
                 .param("error", "true")
-                .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("legalMove", false))

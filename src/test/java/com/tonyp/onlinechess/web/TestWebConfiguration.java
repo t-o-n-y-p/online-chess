@@ -8,15 +8,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "com.tonyp.onlinechess.web", excludeFilters = {
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
-                AppJpaConfiguration.class, OnlineChessApplication.class
+                AppJpaConfiguration.class, OnlineChessApplication.class, SecurityConfiguration.class
         })
 })
+@EnableWebSecurity
 public class TestWebConfiguration {
 
     @MockBean
@@ -30,5 +33,8 @@ public class TestWebConfiguration {
 
     @MockBean
     private MovesRepository movesRepository;
+
+    @MockBean
+    private UserDetailsService userDetailsService;
 
 }

@@ -17,6 +17,8 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlTemplate;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,11 +55,10 @@ public class ResignControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(white);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(post("/resign")
+                .with(user("login0"))
                 .param("game_id", "1")
-                .sessionAttr("user-session", userSession)
+                .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/game?id={id}&resignation={resignation}", "1", "true"));
@@ -78,11 +79,10 @@ public class ResignControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(usersRepository.findByLogin(eq("login1"))).thenReturn(black);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login1");
         mvc.perform(post("/resign")
+                .with(user("login1"))
                 .param("game_id", "1")
-                .sessionAttr("user-session", userSession)
+                .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/game?id={id}&resignation={resignation}", "1", "true"));
@@ -106,11 +106,10 @@ public class ResignControllerTest {
                 eq(game), eq(true), eq(Result.BLACK_WON_BY_RESIGNATION.getDescription())
         )).thenThrow(RuntimeException.class);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(post("/resign")
+                .with(user("login0"))
                 .param("game_id", "1")
-                .sessionAttr("user-session", userSession)
+                .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/game?id={id}&error={error}", "1", "true"));

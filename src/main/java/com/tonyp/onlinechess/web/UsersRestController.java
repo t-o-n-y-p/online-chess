@@ -1,7 +1,7 @@
 package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.UsersRepository;
-import com.tonyp.onlinechess.model.User;
+import com.tonyp.onlinechess.model.UserView;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +16,10 @@ public class UsersRestController {
 
     private final UsersRepository usersRepository;
 
-    @GetMapping("/api/user/{login}")
+    @GetMapping("/api/user/{login}/login")
     public Object getUser(@PathVariable String login) {
         try {
-            User found = usersRepository.findByLogin(login);
+            UserView found = usersRepository.getByLogin(login);
             return found == null ? new ResponseEntity<Void>(HttpStatus.NO_CONTENT) : found;
         } catch (Throwable e) {
             throw new ResponseStatusException(

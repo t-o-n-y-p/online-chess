@@ -27,12 +27,13 @@
             <div class="navbar-collapse collapse justify-content-stretch" id="navbar7" aria-controls="navbar7">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <form action="/challenge/step1" method="get">
+                        <form action="/app/challenge/step1" method="get">
                             <a class="nav-link" href="#" onclick="this.parentNode.submit();">Create challenge</a>
                         </form>
                     </li>
                     <li class="nav-item">
                         <form action="/logout" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <a class="nav-link" href="#" onclick="this.parentNode.submit();">Logout</a>
                         </form>
                     </li>
@@ -83,7 +84,8 @@
                                         </span>
                                     </td>
                                     <td style="width: 15%; vertical-align: middle">
-                                        <form action="/challenge/accept" method="post">
+                                        <form action="/app/challenge/accept" method="post">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                             <input type="hidden" name="id" th:value="${challenge.id}" />
                                             <button type="submit" class="btn btn-dark">Accept</button>
                                         </form>
@@ -91,7 +93,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <form action="/challenges" method="get" th:if="${incomingChallengesMobile.hasNext()}" style="margin: 16px">
+                        <form action="/app/challenges" method="get" th:if="${incomingChallengesMobile.hasNext()}" style="margin: 16px">
                             <button type="submit" class="btn btn-dark" style="width: 100%">View all incoming challenges</button>
                         </form>
                     </div>
@@ -117,7 +119,7 @@
                                         <span style="color: dimgrey" th:if="*{game.completed}">Completed</span>
                                     </td>
                                     <td style="width: 15%; vertical-align: middle">
-                                        <form action="/game" method="get">
+                                        <form action="/app/game" method="get">
                                             <input type="hidden" name="id" th:value="${game.id}" />
                                             <button type="submit" class="btn btn-dark">Open</button>
                                         </form>
@@ -125,7 +127,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <form action="/games" method="get" th:if="${gamesMobile.hasNext()}" style="margin: 16px">
+                        <form action="/app/games" method="get" th:if="${gamesMobile.hasNext()}" style="margin: 16px">
                             <button type="submit" class="btn btn-dark" style="width: 100%">View all games</button>
                         </form>
                     </div>
@@ -148,7 +150,8 @@
                                             </span>
                             </td>
                             <td style="width: 15%; vertical-align: middle">
-                                <form action="/challenge/accept" method="post">
+                                <form action="/app/challenge/accept" method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                     <input type="hidden" name="id" th:value="${challenge.id}" />
                                     <button type="submit" class="btn btn-dark">Accept</button>
                                 </form>
@@ -156,7 +159,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <form action="/challenges" method="get" th:if="${incomingChallenges.hasNext()}" style="margin: 16px">
+                <form action="/app/challenges" method="get" th:if="${incomingChallenges.hasNext()}" style="margin: 16px">
                     <button type="submit" class="btn btn-dark" style="width: 100%">View all incoming challenges</button>
                 </form>
             </div>
@@ -183,7 +186,7 @@
                                 <span style="color: dimgrey" th:if="*{game.completed}">Completed</span>
                             </td>
                             <td style="width: 15%; vertical-align: middle">
-                                <form action="/game" method="get">
+                                <form action="/app/game" method="get">
                                     <input type="hidden" name="id" th:value="${game.id}" />
                                     <button type="submit" class="btn btn-dark">Open</button>
                                 </form>
@@ -191,7 +194,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <form action="/games" method="get" th:if="${games.hasNext()}" style="margin: 16px">
+                <form action="/app/games" method="get" th:if="${games.hasNext()}" style="margin: 16px">
                     <button type="submit" class="btn btn-dark" style="width: 100%">View all games</button>
                 </form>
             </div>

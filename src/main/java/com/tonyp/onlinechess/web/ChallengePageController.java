@@ -5,6 +5,7 @@ import com.tonyp.onlinechess.model.User;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +16,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 @Controller
-@SessionAttributes("user-session")
 @AllArgsConstructor
 public class ChallengePageController {
 
@@ -24,18 +24,14 @@ public class ChallengePageController {
 
     private final UsersRepository usersRepository;
 
-    @GetMapping("/challenge/step1")
-    public String step1(RedirectAttributes attributes, Model model,
+    @GetMapping("/app/challenge/step1")
+    public String step1(Model model,
                         @RequestParam(defaultValue = "1") int page,
                         @RequestParam(defaultValue = "") String search,
-                        @ModelAttribute("user-session") UserSession session) {
-        if (session.getLogin() == null) {
-            attributes.addAttribute("force_logout", true);
-            return "redirect:../login";
-        }
+                        Authentication authentication) {
         model.addAttribute("search", search);
         model.addAttribute("page", page);
-        User user = usersRepository.findByLogin(session.getLogin());
+        User user = usersRepository.findByLogin(authentication.getName());
         Page<User> opponents = usersRepository.findOpponentsByRatingAndLoginInput(
                     user, search,
                 user.getRating() - RATING_THRESHOLD,
@@ -46,21 +42,12 @@ public class ChallengePageController {
         return "challenge/_step1";
     }
 
-    @GetMapping("/challenge/step2")
-    public String step2(RedirectAttributes attributes, Model model,
+    @GetMapping("/app/challenge/step2")
+    public String step2(Model model,
                         @RequestParam(name = "opponent_id") int opponentId,
-                        @ModelAttribute("user-session") UserSession session) {
-        if (session.getLogin() == null) {
-            attributes.addAttribute("force_logout", true);
-            return "redirect:../login";
-        }
+                        Authentication authentication) {
         User opponent = usersRepository.findById(opponentId).get();
         model.addAttribute("opponent", opponent);
         return "challenge/_step2";
-    }
-
-    @ModelAttribute("user-session")
-    public UserSession createUserSession() {
-        return new UserSession();
     }
 }

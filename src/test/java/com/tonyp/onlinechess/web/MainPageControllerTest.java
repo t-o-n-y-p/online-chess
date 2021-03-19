@@ -21,6 +21,7 @@ import static com.tonyp.onlinechess.web.MainPageController.MAIN_PAGE_RESULTS;
 import static com.tonyp.onlinechess.web.MainPageController.MAIN_PAGE_RESULTS_MOBILE;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -54,14 +55,6 @@ public class MainPageControllerTest {
     private Page<Game> gamesMobile;
 
     @Test
-    public void testMainNotLoggedIn() throws Exception {
-        mvc.perform(get("/main"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(usersRepository, challengesRepository, gamesRepository);
-    }
-
-    @Test
     public void testMainChallengeCreated() throws Exception {
         User user = new User("login0", "pass0");
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
@@ -74,11 +67,9 @@ public class MainPageControllerTest {
         when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS)))).thenReturn(games);
         when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE)))).thenReturn(gamesMobile);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(get("/main")
+                .with(user("login0"))
                 .param("challenge_created", "true")
-                .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("challengeCreated", true))
@@ -113,11 +104,9 @@ public class MainPageControllerTest {
         when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS)))).thenReturn(games);
         when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE)))).thenReturn(gamesMobile);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(get("/main")
+                .with(user("login0"))
                 .param("challenge_accepted", "true")
-                .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("challengeCreated", false))
@@ -152,11 +141,9 @@ public class MainPageControllerTest {
         when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS)))).thenReturn(games);
         when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE)))).thenReturn(gamesMobile);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(get("/main")
+                .with(user("login0"))
                 .param("error", "true")
-                .sessionAttr("user-session", userSession)
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("challengeCreated", false))

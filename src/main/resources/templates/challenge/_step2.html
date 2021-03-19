@@ -12,14 +12,15 @@
         <div class="container">
             <div class="row-fluid">
                 <div class="col-md-6 offset-md-3">
-                    <form action="/challenge/step1" method="get" style="margin: 16px">
+                    <form action="/app/challenge/step1" method="get" style="margin: 16px">
                         <p style="text-align: center">Your opponent:
                         <p style="text-align: center">
                             <b th:text="${opponent.login}"></b>
                         </p>
                         <button type="submit" class="btn btn-dark" style="width: 100%">Change opponent</button>
                     </form>
-                    <form action="/challenge" method="post" style="margin: 16px">
+                    <form action="/app/challenge" method="post" style="margin: 16px">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         <input type="hidden" name="opponent_id" th:value="${opponent.id}" />
                         <p style="text-align: center">Color of your opponent pieces:</p>
                         <p>

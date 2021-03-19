@@ -1,11 +1,13 @@
 package com.tonyp.onlinechess.dao;
 
 import com.tonyp.onlinechess.model.User;
+import com.tonyp.onlinechess.model.UserView;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,8 @@ public interface UsersRepository extends JpaRepository<User, Integer> {
     }
 
     User findByLogin(String login);
+
+    UserView getByLogin(String login);
 
     @Query("from User u where u.login like concat('%', :input, '%') and u.rating >= :start and u.rating <= :end " +
             "and u <> :user order by u.rating desc")

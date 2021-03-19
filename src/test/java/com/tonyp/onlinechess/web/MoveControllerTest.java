@@ -19,6 +19,8 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlTemplate;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,19 +43,6 @@ public class MoveControllerTest {
     private MovesRepository movesRepository;
 
     @Test
-    public void testMakeMoveIsNotLoggedIn() throws Exception {
-        mvc.perform(post("/move")
-                .param("game_id", "1")
-                .param("square1", "e2")
-                .param("square2", "e4")
-                .param("promotion", "")
-        )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(usersRepository, gamesRepository, movesRepository);
-    }
-
-    @Test
     public void testMakeMoveLegalMoveGameNotFinished() throws Exception {
         String newFen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1";
 
@@ -64,14 +53,13 @@ public class MoveControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(movesRepository.createNewMove(eq(game), eq("e2e4"), eq(newFen))).thenReturn(move);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(post("/move")
+                .with(user("login0"))
                 .param("game_id", "1")
                 .param("square1", "e2")
                 .param("square2", "e4")
                 .param("promotion", "")
-                .sessionAttr("user-session", userSession)
+                .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/game?id={id}&legal_move={legalMove}", "1", "true"));
@@ -100,14 +88,13 @@ public class MoveControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(movesRepository.createNewMove(eq(game), eq("d8h4"), eq(newFen))).thenReturn(move);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(post("/move")
+                .with(user("login0"))
                 .param("game_id", "1")
                 .param("square1", "d8")
                 .param("square2", "h4")
                 .param("promotion", "")
-                .sessionAttr("user-session", userSession)
+                .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/game?id={id}&legal_move={legalMove}", "1", "true"));
@@ -132,14 +119,13 @@ public class MoveControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(movesRepository.createNewMove(eq(game), eq("a1a1"), anyString())).thenReturn(move);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(post("/move")
+                .with(user("login0"))
                 .param("game_id", "1")
                 .param("square1", "a1")
                 .param("square2", "a1")
                 .param("promotion", "")
-                .sessionAttr("user-session", userSession)
+                .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/game?id={id}&illegal_move={illegalMove}", "1", "true"));
@@ -168,14 +154,13 @@ public class MoveControllerTest {
                 eq(false), eq(null), eq(move))
         ).thenThrow(RuntimeException.class);
 
-        UserSession userSession = new UserSession();
-        userSession.setLogin("login0");
         mvc.perform(post("/move")
+                .with(user("login0"))
                 .param("game_id", "1")
                 .param("square1", "e2")
                 .param("square2", "e4")
                 .param("promotion", "")
-                .sessionAttr("user-session", userSession)
+                .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate("/game?id={id}&error={error}", "1", "true"));

@@ -48,10 +48,8 @@ public class SignupController {
             return "_signup";
         }
         try {
-            String username = signupForm.getLogin();
-            String password = passwordEncoder.encode(signupForm.getPassword());
-            usersRepository.createNewUser(username, password);
-            request.login(username, password);
+            usersRepository.createNewUser(signupForm.getLogin(), passwordEncoder.encode(signupForm.getPassword()));
+            request.login(signupForm.getLogin(), signupForm.getPassword());
             return "redirect:/app/main";
         } catch (JpaSystemException e) {
             bindingResult.addError(new FieldError("signupForm", "login", "User with this login already exists."));

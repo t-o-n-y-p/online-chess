@@ -20,7 +20,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @AutoConfigureMockMvc
@@ -47,7 +48,7 @@ public class GameListPageControllerTest {
                 eq(user), eq(""), eq(PageRequest.of(0, PAGE_RESULTS))
         )).thenReturn(games);
 
-        mvc.perform(get("/games")
+        mvc.perform(get("/app/games")
                 .with(user("login0"))
         )
                 .andExpect(status().isOk())
@@ -69,7 +70,7 @@ public class GameListPageControllerTest {
                 eq(user), eq("qwerty"), eq(PageRequest.of(3, PAGE_RESULTS))
         )).thenReturn(games);
 
-        mvc.perform(get("/games")
+        mvc.perform(get("/app/games")
                 .with(user("login0"))
                 .param("page", "4")
                 .param("search", "qwerty")

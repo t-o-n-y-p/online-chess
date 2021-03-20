@@ -21,7 +21,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @AutoConfigureMockMvc
@@ -46,7 +47,7 @@ public class ChallengePageControllerTest {
                 eq(user.getRating() + RATING_THRESHOLD), eq(PageRequest.of(0, PAGE_RESULTS))
         )).thenReturn(opponents);
 
-        mvc.perform(get("/challenge/step1")
+        mvc.perform(get("/app/challenge/step1")
                 .with(user("login0"))
         )
                 .andExpect(status().isOk())
@@ -69,7 +70,7 @@ public class ChallengePageControllerTest {
                 eq(user.getRating() + RATING_THRESHOLD), eq(PageRequest.of(3, PAGE_RESULTS))
         )).thenReturn(opponents);
 
-        mvc.perform(get("/challenge/step1")
+        mvc.perform(get("/app/challenge/step1")
                 .with(user("login0"))
                 .param("page", "4")
                 .param("search", "qwerty")
@@ -90,7 +91,7 @@ public class ChallengePageControllerTest {
         User opponent = new User("login1", "pass1");
         when(usersRepository.findById(eq(1))).thenReturn(Optional.of(opponent));
 
-        mvc.perform(get("/challenge/step2")
+        mvc.perform(get("/app/challenge/step2")
                 .with(user("login0"))
                 .param("opponent_id", "1")
         )

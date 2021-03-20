@@ -23,7 +23,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @AutoConfigureMockMvc
@@ -67,7 +68,7 @@ public class MainPageControllerTest {
         when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS)))).thenReturn(games);
         when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE)))).thenReturn(gamesMobile);
 
-        mvc.perform(get("/main")
+        mvc.perform(get("/app/main")
                 .with(user("login0"))
                 .param("challenge_created", "true")
         )
@@ -104,7 +105,7 @@ public class MainPageControllerTest {
         when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS)))).thenReturn(games);
         when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE)))).thenReturn(gamesMobile);
 
-        mvc.perform(get("/main")
+        mvc.perform(get("/app/main")
                 .with(user("login0"))
                 .param("challenge_accepted", "true")
         )
@@ -141,7 +142,7 @@ public class MainPageControllerTest {
         when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS)))).thenReturn(games);
         when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE)))).thenReturn(gamesMobile);
 
-        mvc.perform(get("/main")
+        mvc.perform(get("/app/main")
                 .with(user("login0"))
                 .param("error", "true")
         )

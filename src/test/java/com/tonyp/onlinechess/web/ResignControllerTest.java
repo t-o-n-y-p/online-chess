@@ -38,16 +38,6 @@ public class ResignControllerTest {
     private GamesRepository gamesRepository;
 
     @Test
-    public void testResignIsNotLoggedIn() throws Exception {
-        mvc.perform(post("/resign")
-                .param("game_id", "1")
-        )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/login?force_logout={forceLogout}", "true"));
-        verifyNoInteractions(usersRepository, gamesRepository);
-    }
-
-    @Test
     public void testResignForWhite() throws Exception {
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
@@ -55,13 +45,13 @@ public class ResignControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(white);
 
-        mvc.perform(post("/resign")
+        mvc.perform(post("/app/resign")
                 .with(user("login0"))
                 .param("game_id", "1")
                 .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/game?id={id}&resignation={resignation}", "1", "true"));
+                .andExpect(redirectedUrlTemplate("/app/game?id={id}&resignation={resignation}", "1", "true"));
         verify(gamesRepository, times(1)).findById(1);
         verify(usersRepository, times(1)).findByLogin("login0");
         verify(gamesRepository, times(1)).updateGame(
@@ -79,13 +69,13 @@ public class ResignControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(usersRepository.findByLogin(eq("login1"))).thenReturn(black);
 
-        mvc.perform(post("/resign")
+        mvc.perform(post("/app/resign")
                 .with(user("login1"))
                 .param("game_id", "1")
                 .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/game?id={id}&resignation={resignation}", "1", "true"));
+                .andExpect(redirectedUrlTemplate("/app/game?id={id}&resignation={resignation}", "1", "true"));
         verify(gamesRepository, times(1)).findById(1);
         verify(usersRepository, times(1)).findByLogin("login1");
         verify(gamesRepository, times(1)).updateGame(
@@ -106,13 +96,13 @@ public class ResignControllerTest {
                 eq(game), eq(true), eq(Result.BLACK_WON_BY_RESIGNATION.getDescription())
         )).thenThrow(RuntimeException.class);
 
-        mvc.perform(post("/resign")
+        mvc.perform(post("/app/resign")
                 .with(user("login0"))
                 .param("game_id", "1")
                 .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/game?id={id}&error={error}", "1", "true"));
+                .andExpect(redirectedUrlTemplate("/app/game?id={id}&error={error}", "1", "true"));
         verify(gamesRepository, times(1)).findById(1);
         verify(usersRepository, times(1)).findByLogin("login0");
         verify(gamesRepository, times(1)).updateGame(

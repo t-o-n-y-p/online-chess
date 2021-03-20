@@ -11,7 +11,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,7 +33,7 @@ public class UsersRestControllerTest {
         user.setId(1);
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
-        assertEquals("{\"id\":1,\"login\":\"login0\",\"password\":\"password0\",\"rating\":1200.0}",
+        assertEquals("{\"id\":1,\"login\":\"login0\",\"rating\":1200.0}",
                 mvc.perform(get("/api/user/login0"))
                         .andExpect(status().isOk())
                         .andReturn()
@@ -47,13 +46,8 @@ public class UsersRestControllerTest {
     public void testFindByLoginNoUser() throws Exception {
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(null);
 
-        assertTrue(mvc.perform(get("/api/user/login0"))
-                .andExpect(status().isNoContent())
-                .andReturn()
-                .getResponse()
-                .getContentAsString()
-                .isBlank()
-        );
+        mvc.perform(get("/api/user/login0"))
+                .andExpect(status().isNoContent());
     }
 
     @Test

@@ -20,7 +20,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @AutoConfigureMockMvc
@@ -43,7 +44,7 @@ public class GamePageControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
-        mvc.perform(get("/game")
+        mvc.perform(get("/app/game")
                 .with(user("login0"))
                 .param("id", "1")
                 .param("legal_move", "true")
@@ -68,7 +69,7 @@ public class GamePageControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
-        mvc.perform(get("/game")
+        mvc.perform(get("/app/game")
                 .with(user("login0"))
                 .param("id", "1")
                 .param("illegal_move", "true")
@@ -93,7 +94,7 @@ public class GamePageControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
-        mvc.perform(get("/game")
+        mvc.perform(get("/app/game")
                 .with(user("login0"))
                 .param("id", "1")
                 .param("resignation", "true")
@@ -118,7 +119,7 @@ public class GamePageControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
-        mvc.perform(get("/game")
+        mvc.perform(get("/app/game")
                 .with(user("login0"))
                 .param("id", "1")
                 .param("error", "true")

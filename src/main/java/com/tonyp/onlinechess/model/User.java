@@ -1,5 +1,6 @@
 package com.tonyp.onlinechess.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class User {
 
     @Column(nullable = false, length = 60)
     @NotBlank
+    @JsonIgnore
     private String password;
 
     @Column(nullable = false)

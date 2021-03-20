@@ -53,7 +53,7 @@ public class MoveControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(movesRepository.createNewMove(eq(game), eq("e2e4"), eq(newFen))).thenReturn(move);
 
-        mvc.perform(post("/move")
+        mvc.perform(post("/app/move")
                 .with(user("login0"))
                 .param("game_id", "1")
                 .param("square1", "e2")
@@ -62,7 +62,7 @@ public class MoveControllerTest {
                 .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/game?id={id}&legal_move={legalMove}", "1", "true"));
+                .andExpect(redirectedUrlTemplate("/app/game?id={id}&legal_move={legalMove}", "1", "true"));
 
         verify(gamesRepository, times(1)).findById(1);
         verify(movesRepository, times(1)).createNewMove(game, "e2e4", newFen);
@@ -88,7 +88,7 @@ public class MoveControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(movesRepository.createNewMove(eq(game), eq("d8h4"), eq(newFen))).thenReturn(move);
 
-        mvc.perform(post("/move")
+        mvc.perform(post("/app/move")
                 .with(user("login0"))
                 .param("game_id", "1")
                 .param("square1", "d8")
@@ -97,7 +97,7 @@ public class MoveControllerTest {
                 .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/game?id={id}&legal_move={legalMove}", "1", "true"));
+                .andExpect(redirectedUrlTemplate("/app/game?id={id}&legal_move={legalMove}", "1", "true"));
 
         verify(gamesRepository, times(1)).findById(1);
         verify(movesRepository, times(1)).createNewMove(game, "d8h4", newFen);
@@ -119,7 +119,7 @@ public class MoveControllerTest {
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
         when(movesRepository.createNewMove(eq(game), eq("a1a1"), anyString())).thenReturn(move);
 
-        mvc.perform(post("/move")
+        mvc.perform(post("/app/move")
                 .with(user("login0"))
                 .param("game_id", "1")
                 .param("square1", "a1")
@@ -128,7 +128,7 @@ public class MoveControllerTest {
                 .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/game?id={id}&illegal_move={illegalMove}", "1", "true"));
+                .andExpect(redirectedUrlTemplate("/app/game?id={id}&illegal_move={illegalMove}", "1", "true"));
 
         verify(gamesRepository, times(1)).findById(1);
         verify(movesRepository, never()).createNewMove(any(Game.class), anyString(), anyString());
@@ -154,7 +154,7 @@ public class MoveControllerTest {
                 eq(false), eq(null), eq(move))
         ).thenThrow(RuntimeException.class);
 
-        mvc.perform(post("/move")
+        mvc.perform(post("/app/move")
                 .with(user("login0"))
                 .param("game_id", "1")
                 .param("square1", "e2")
@@ -163,7 +163,7 @@ public class MoveControllerTest {
                 .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/game?id={id}&error={error}", "1", "true"));
+                .andExpect(redirectedUrlTemplate("/app/game?id={id}&error={error}", "1", "true"));
 
         verify(gamesRepository, times(1)).findById(1);
         verify(movesRepository, times(1)).createNewMove(game, "e2e4", newFen);

@@ -48,13 +48,13 @@ public class ChallengeControllerTest {
         Challenge challenge = new Challenge(from, to, Color.WHITE);
         when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
 
-        mvc.perform(post("/challenge/accept")
+        mvc.perform(post("/app/challenge/accept")
                 .with(user("login1"))
                 .param("id", "1")
                 .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/main?challenge_accepted={accepted}", "true"));
+                .andExpect(redirectedUrlTemplate("/app/main?challenge_accepted={accepted}", "true"));
 
         verify(challengesRepository, times(1)).findById(1);
         verify(challengesRepository, times(1)).delete(challenge);
@@ -68,7 +68,7 @@ public class ChallengeControllerTest {
         Challenge challenge = new Challenge(from, to, Color.BLACK);
         when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
 
-        mvc.perform(post("/challenge/accept")
+        mvc.perform(post("/app/challenge/accept")
                 .with(user("login1"))
                 .param("id", "1")
                 .param("from_challenges", "true")
@@ -76,7 +76,7 @@ public class ChallengeControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate(
-                        "/challenges?challenge_accepted={accepted}&page={page}", "true", "1"));
+                        "/app/challenges?challenge_accepted={accepted}&page={page}", "true", "1"));
 
         verify(challengesRepository, times(1)).findById(1);
         verify(challengesRepository, times(1)).delete(challenge);
@@ -90,7 +90,7 @@ public class ChallengeControllerTest {
         Challenge challenge = new Challenge(from, to, Color.WHITE);
         when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
 
-        mvc.perform(post("/challenge/accept")
+        mvc.perform(post("/app/challenge/accept")
                 .with(user("login1"))
                 .param("id", "1")
                 .param("page", "3")
@@ -100,7 +100,7 @@ public class ChallengeControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlTemplate(
-                        "/challenges?challenge_accepted={accepted}&page={page}", "true", "2"));
+                        "/app/challenges?challenge_accepted={accepted}&page={page}", "true", "2"));
 
         verify(challengesRepository, times(1)).findById(1);
         verify(challengesRepository, times(1)).delete(challenge);
@@ -115,13 +115,13 @@ public class ChallengeControllerTest {
         when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
         when(gamesRepository.createNewGame(eq(from), eq(to))).thenThrow(RuntimeException.class);
 
-        mvc.perform(post("/challenge/accept")
+        mvc.perform(post("/app/challenge/accept")
                 .with(user("login1"))
                 .param("id", "1")
                 .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/main?error={error}", "true"));
+                .andExpect(redirectedUrlTemplate("/app/main?error={error}", "true"));
 
         verify(challengesRepository, times(1)).findById(1);
         verify(challengesRepository, times(1)).delete(challenge);
@@ -135,14 +135,14 @@ public class ChallengeControllerTest {
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(from);
         when(usersRepository.findById(eq(1))).thenReturn(Optional.of(to));
 
-        mvc.perform(post("/challenge")
+        mvc.perform(post("/app/challenge")
                 .with(user("login0"))
                 .param("opponent_id", "1")
                 .param("target_color", Color.WHITE.name())
                 .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/main?challenge_created={created}", "true"));
+                .andExpect(redirectedUrlTemplate("/app/main?challenge_created={created}", "true"));
         verify(usersRepository, times(1)).findById(1);
         verify(challengesRepository, times(1)).createNewChallenge(from, to, Color.WHITE);
         verify(usersRepository, times(1)).findByLogin("login0");
@@ -156,14 +156,14 @@ public class ChallengeControllerTest {
         when(usersRepository.findById(eq(1))).thenReturn(Optional.of(to));
         when(challengesRepository.createNewChallenge(eq(from), eq(to), eq(Color.BLACK))).thenThrow(RuntimeException.class);
 
-        mvc.perform(post("/challenge")
+        mvc.perform(post("/app/challenge")
                 .with(user("login0"))
                 .param("opponent_id", "1")
                 .param("target_color", Color.BLACK.name())
                 .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlTemplate("/main?error={error}", "true"));
+                .andExpect(redirectedUrlTemplate("/app/main?error={error}", "true"));
         verify(usersRepository, times(1)).findById(1);
         verify(challengesRepository, times(1)).createNewChallenge(from, to, Color.BLACK);
         verify(usersRepository, times(1)).findByLogin("login0");

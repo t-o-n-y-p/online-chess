@@ -39,7 +39,7 @@ function verifyLogin() {
                 }
             }
         }
-        request.open('get', '/api/user/' + login + '/login', true);
+        request.open('get', '/api/user/' + login, true);
         request.send();
     } else {
         loginElement.className = 'form-control is-invalid';

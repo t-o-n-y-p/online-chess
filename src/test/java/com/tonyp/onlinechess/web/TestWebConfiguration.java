@@ -9,14 +9,14 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "com.tonyp.onlinechess.web", excludeFilters = {
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
-                AppJpaConfiguration.class, OnlineChessApplication.class, SecurityConfiguration.class
+                AppJpaConfiguration.class, OnlineChessApplication.class
         })
 })
 @EnableWebSecurity
@@ -35,6 +35,6 @@ public class TestWebConfiguration {
     private MovesRepository movesRepository;
 
     @MockBean
-    private UserDetailsService userDetailsService;
+    private PasswordEncoder passwordEncoder;
 
 }

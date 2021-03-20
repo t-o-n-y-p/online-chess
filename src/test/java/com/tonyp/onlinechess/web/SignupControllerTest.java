@@ -8,10 +8,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.validation.BeanPropertyBindingResult;
 
 import java.util.List;
 
@@ -34,25 +38,40 @@ public class SignupControllerTest {
     @Autowired
     private UsersRepository usersRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @MockBean
+    private AuthenticationProvider authenticationProvider;
+
+    @Test
+    public void testGetSignupAlreadyLoggedIn() throws Exception {
+        mvc.perform(get("/signup")
+                .with(user("login0"))
+        )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/app/main"));
+    }
+
     @Test
     public void testGetSignupDefault() throws Exception {
         mvc.perform(get("/signup"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeDoesNotExist("error"))
                 .andExpect(model().attribute("signupForm", new SignupForm()));
-        verifyNoInteractions(usersRepository);
     }
 
     @Test
     public void testPostSignupExistingAccount() throws Exception {
-        when(usersRepository.createNewUser(eq("login0"), eq("password0"))).thenThrow(JpaSystemException.class);
+        when(passwordEncoder.encode(eq("password0"))).thenReturn("encodedPassword0");
+        when(usersRepository.createNewUser(eq("login0"), eq("encodedPassword0")))
+                .thenThrow(JpaSystemException.class);
 
         SignupForm signupForm = new SignupForm();
         signupForm.setLogin("login0");
         signupForm.setPassword("password0");
         signupForm.setRepeatPassword("password0");
         mvc.perform(post("/signup")
-                .with(user("login0"))
                 .param("login", "login0")
                 .param("password", "password0")
                 .param("repeatPassword", "password0")
@@ -61,7 +80,9 @@ public class SignupControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("signupForm", signupForm))
                 .andExpect(model().attributeHasFieldErrors("signupForm", "login"));
-        verify(usersRepository, times(1)).createNewUser("login0", "password0");
+        verify(usersRepository, times(1)).createNewUser("login0", "encodedPassword0");
+        verify(passwordEncoder, times(1)).encode("password0");
+
     }
 
     @Test
@@ -72,7 +93,6 @@ public class SignupControllerTest {
             signupForm.setPassword("password0");
             signupForm.setRepeatPassword("password0");
             mvc.perform(post("/signup")
-                    .with(user(login))
                     .param("login", login)
                     .param("password", "password0")
                     .param("repeatPassword", "password0")
@@ -93,7 +113,6 @@ public class SignupControllerTest {
             signupForm.setPassword("");
             signupForm.setRepeatPassword("");
             mvc.perform(post("/signup")
-                    .with(user(login))
                     .param("login", login)
                     .param("password", "")
                     .param("repeatPassword", "")
@@ -113,7 +132,6 @@ public class SignupControllerTest {
         signupForm.setPassword("");
         signupForm.setRepeatPassword("");
         mvc.perform(post("/signup")
-                .with(user("login0"))
                 .param("login", "login0")
                 .param("password", "")
                 .param("repeatPassword", "")
@@ -132,7 +150,6 @@ public class SignupControllerTest {
         signupForm.setPassword("qwerty");
         signupForm.setRepeatPassword("");
         mvc.perform(post("/signup")
-                .with(user("login0"))
                 .param("login", "login0")
                 .param("password", "qwerty")
                 .param("repeatPassword", "")
@@ -146,35 +163,39 @@ public class SignupControllerTest {
 
     @Test
     public void testPostSignupSuccess() throws Exception {
-        User user = new User("login0", "password0");
-        when(usersRepository.createNewUser(eq("login0"), eq("password0"))).thenReturn(user);
+        User user = new User("login0", "encodedPassword0");
+        when(passwordEncoder.encode(eq("password0"))).thenReturn("encodedPassword0");
+        when(usersRepository.createNewUser(eq("login0"), eq("encodedPassword0"))).thenReturn(user);
+        Authentication token = new UsernamePasswordAuthenticationToken("login0", "password0");
+        when(authenticationProvider.supports(eq(token.getClass()))).thenReturn(true);
+        when(authenticationProvider.authenticate(eq(token))).thenReturn(token);
 
         SignupForm signupForm = new SignupForm();
         signupForm.setLogin("login0");
         signupForm.setPassword("password0");
         signupForm.setRepeatPassword("password0");
         mvc.perform(post("/signup")
-                .with(user("login0"))
                 .param("login", "login0")
                 .param("password", "password0")
                 .param("repeatPassword", "password0")
                 .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/main"));
-        verify(usersRepository, times(1)).createNewUser("login0", "password0");
+                .andExpect(redirectedUrl("/app/main"));
+        verify(usersRepository, times(1)).createNewUser("login0", "encodedPassword0");
+        verify(passwordEncoder, times(1)).encode("password0");
     }
 
     @Test
     public void testPostSignupError() throws Exception {
-        when(usersRepository.createNewUser(eq("login0"), eq("password0"))).thenThrow(RuntimeException.class);
+        when(passwordEncoder.encode(eq("password0"))).thenReturn("encodedPassword0");
+        when(usersRepository.createNewUser(eq("login0"), eq("encodedPassword0"))).thenThrow(RuntimeException.class);
 
         SignupForm signupForm = new SignupForm();
         signupForm.setLogin("login0");
         signupForm.setPassword("password0");
         signupForm.setRepeatPassword("password0");
         mvc.perform(post("/signup")
-                .with(user("login0"))
                 .param("login", "login0")
                 .param("password", "password0")
                 .param("repeatPassword", "password0")
@@ -182,7 +203,8 @@ public class SignupControllerTest {
         )
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("error", true));
-        verify(usersRepository, times(1)).createNewUser("login0", "password0");
+        verify(usersRepository, times(1)).createNewUser("login0", "encodedPassword0");
+        verify(passwordEncoder, times(1)).encode("password0");
     }
 
 }

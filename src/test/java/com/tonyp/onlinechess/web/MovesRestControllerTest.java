@@ -1,7 +1,6 @@
 package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.MovesRepository;
-import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.model.*;
 import com.tonyp.onlinechess.tools.GameUtil;
 import com.tonyp.onlinechess.tools.StockfishUtil;
@@ -10,16 +9,13 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.json.JsonContentAssert;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static com.tonyp.onlinechess.web.AppJpaConfiguration.JSON_DATE_FORMAT;
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -59,7 +55,7 @@ public class MovesRestControllerTest {
         move.setId(5);
         Move nextMove = new Move(game, move, "g1f3", StockfishUtil.makeMove(fen, "e7e5"));
         nextMove.setId(6);
-        when(movesRepository.findByIdEquals(eq(5))).thenReturn(new MoveView() {
+        when(movesRepository.findByIdEquals(eq(5), eq(MoveRestView.class))).thenReturn(new MoveRestView() {
             @Override
             public int getId() {
                 return 5;
@@ -71,12 +67,12 @@ public class MovesRestControllerTest {
             }
 
             @Override
-            public PreviousNextMoveView getPreviousMove() {
+            public IdOnlyRestView getPreviousMove() {
                 return () -> 4;
             }
 
             @Override
-            public PreviousNextMoveView getNextMove() {
+            public IdOnlyRestView getNextMove() {
                 return () -> 6;
             }
 
@@ -133,7 +129,7 @@ public class MovesRestControllerTest {
 
     @Test
     public void testFindByIdNoMove() throws Exception {
-        when(movesRepository.findByIdEquals(eq(1))).thenReturn(null);
+        when(movesRepository.findByIdEquals(eq(1), eq(MoveRestView.class))).thenReturn(null);
 
         mvc.perform(get("/api/move/1")
                 .with(user("login0"))
@@ -143,7 +139,7 @@ public class MovesRestControllerTest {
 
     @Test
     public void testFindByIdError() throws Exception {
-        when(movesRepository.findByIdEquals(eq(1))).thenThrow(RuntimeException.class);
+        when(movesRepository.findByIdEquals(eq(1), eq(MoveRestView.class))).thenThrow(RuntimeException.class);
 
         mvc.perform(get("/api/move/1")
                 .with(user("login0"))

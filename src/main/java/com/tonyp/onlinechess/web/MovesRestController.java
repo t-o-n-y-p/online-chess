@@ -1,7 +1,7 @@
 package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.MovesRepository;
-import com.tonyp.onlinechess.model.MoveView;
+import com.tonyp.onlinechess.model.MoveRestView;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class MovesRestController {
     @GetMapping("/api/move/{moveId}")
     public ResponseEntity<?> getMove(@PathVariable int moveId) {
         try {
-            MoveView found = movesRepository.findByIdEquals(moveId);
+            MoveRestView found = movesRepository.findByIdEquals(moveId, MoveRestView.class);
             return found == null ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                     : new ResponseEntity<>(found, HttpStatus.OK);
         } catch (Throwable e) {

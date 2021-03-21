@@ -1,6 +1,6 @@
 package com.tonyp.onlinechess.model;
 
-public interface PreviousNextMoveView {
+public interface IdOnlyRestView {
 
     int getId();
 

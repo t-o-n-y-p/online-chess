@@ -2,12 +2,12 @@ package com.tonyp.onlinechess.model;
 
 import java.util.UUID;
 
-public interface MoveView {
+public interface MoveRestView {
 
     int getId();
     Game getGame();
-    PreviousNextMoveView getPreviousMove();
-    PreviousNextMoveView getNextMove();
+    IdOnlyRestView getPreviousMove();
+    IdOnlyRestView getNextMove();
     String getValue();
     String getRepetitionInfo();
     String getFen();

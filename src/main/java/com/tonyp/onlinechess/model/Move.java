@@ -9,6 +9,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.util.UUID;
 
 @Entity
 @Table(name = "moves")
@@ -24,7 +25,6 @@ public class Move {
     private int id;
 
     @ManyToOne(optional = false)
-    @EqualsAndHashCode.Include
     private Game game;
 
     @Column(nullable = false, length = 5)
@@ -39,11 +39,16 @@ public class Move {
     @NotBlank
     private String fen;
 
+    @Column(unique = true, nullable = false)
+    @EqualsAndHashCode.Include
+    private UUID uuid;
+
     public Move(Game game, String value, String fen) {
         this.game = game;
         this.value = value;
         this.fen = fen;
         repetitionInfo = GameUtil.getPositionFromFen(game.getFen());
+        uuid = UUID.randomUUID();
     }
 
 }

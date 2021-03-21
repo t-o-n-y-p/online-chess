@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -49,9 +50,9 @@ public class MoveControllerTest {
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
-        Move move = new Move(game, "e2e4", newFen);
+        Move move = new Move(game, null, "e2e4", newFen);
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(movesRepository.createNewMove(eq(game), eq("e2e4"), eq(newFen))).thenReturn(move);
+        when(movesRepository.createNewMove(eq(game), eq(null), eq("e2e4"), eq(newFen))).thenReturn(move);
 
         mvc.perform(post("/app/move")
                 .with(user("login0"))
@@ -65,7 +66,7 @@ public class MoveControllerTest {
                 .andExpect(redirectedUrlTemplate("/app/game?id={id}&legal_move={legalMove}", "1", "true"));
 
         verify(gamesRepository, times(1)).findById(1);
-        verify(movesRepository, times(1)).createNewMove(game, "e2e4", newFen);
+        verify(movesRepository, times(1)).createNewMove(game, null, "e2e4", newFen);
         verify(gamesRepository, times(1)).updateGame(
                 game, newFen,
                 "a7a6 b7b6 c7c6 d7d6 e7e6 f7f6 g7g6 h7h6 a7a5 b7b5 c7c5 d7d5 e7e5 f7f5 g7g5 h7h5 b8a6 b8c6 g8f6 g8h6 ",
@@ -84,9 +85,13 @@ public class MoveControllerTest {
         game.setFen("rnbqkbnr/pppp1ppp/8/4p3/5PP1/8/PPPPP2P/RNBQKBNR b KQkq - 0 2");
         game.setLegalMoves("d8h4");
         game.setPlayerToMove(black);
-        Move move = new Move(game, "d8h4", newFen);
+        Move previousMove = new Move(game, null, "g2g4",
+                "rnbqkbnr/pppp1ppp/8/4p3/5PP1/8/PPPPP2P/RNBQKBNR b KQkq - 0 2"
+        );
+        game.setMoves(List.of(previousMove));
+        Move move = new Move(game, previousMove, "d8h4", newFen);
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(movesRepository.createNewMove(eq(game), eq("d8h4"), eq(newFen))).thenReturn(move);
+        when(movesRepository.createNewMove(eq(game), eq(previousMove), eq("d8h4"), eq(newFen))).thenReturn(move);
 
         mvc.perform(post("/app/move")
                 .with(user("login0"))
@@ -100,7 +105,7 @@ public class MoveControllerTest {
                 .andExpect(redirectedUrlTemplate("/app/game?id={id}&legal_move={legalMove}", "1", "true"));
 
         verify(gamesRepository, times(1)).findById(1);
-        verify(movesRepository, times(1)).createNewMove(game, "d8h4", newFen);
+        verify(movesRepository, times(1)).createNewMove(game, previousMove, "d8h4", newFen);
         verify(gamesRepository, times(1)).updateGame(
                 game, newFen,
                 "",
@@ -115,9 +120,9 @@ public class MoveControllerTest {
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
-        Move move = new Move(game, "a1a1", "qwerty");
+        Move move = new Move(game, null, "a1a1", "qwerty");
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(movesRepository.createNewMove(eq(game), eq("a1a1"), anyString())).thenReturn(move);
+        when(movesRepository.createNewMove(eq(game), eq(null), eq("a1a1"), anyString())).thenReturn(move);
 
         mvc.perform(post("/app/move")
                 .with(user("login0"))
@@ -131,7 +136,7 @@ public class MoveControllerTest {
                 .andExpect(redirectedUrlTemplate("/app/game?id={id}&illegal_move={illegalMove}", "1", "true"));
 
         verify(gamesRepository, times(1)).findById(1);
-        verify(movesRepository, never()).createNewMove(any(Game.class), anyString(), anyString());
+        verify(movesRepository, never()).createNewMove(any(Game.class), eq(null), anyString(), anyString());
         verify(gamesRepository, never()).updateGame(
                 any(Game.class), anyString(), anyString(), anyBoolean(), anyString(), any(Move.class)
         );
@@ -145,9 +150,9 @@ public class MoveControllerTest {
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
-        Move move = new Move(game, "e2e4", newFen);
+        Move move = new Move(game, null, "e2e4", newFen);
         when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(movesRepository.createNewMove(eq(game), eq("e2e4"), eq(newFen))).thenReturn(move);
+        when(movesRepository.createNewMove(eq(game), eq(null), eq("e2e4"), eq(newFen))).thenReturn(move);
         when(gamesRepository.updateGame(
                 eq(game), eq(newFen),
                 eq("a7a6 b7b6 c7c6 d7d6 e7e6 f7f6 g7g6 h7h6 a7a5 b7b5 c7c5 d7d5 e7e5 f7f5 g7g5 h7h5 b8a6 b8c6 g8f6 g8h6 "),
@@ -166,7 +171,7 @@ public class MoveControllerTest {
                 .andExpect(redirectedUrlTemplate("/app/game?id={id}&error={error}", "1", "true"));
 
         verify(gamesRepository, times(1)).findById(1);
-        verify(movesRepository, times(1)).createNewMove(game, "e2e4", newFen);
+        verify(movesRepository, times(1)).createNewMove(game, null, "e2e4", newFen);
         verify(gamesRepository, times(1)).updateGame(
                 game, newFen,
                 "a7a6 b7b6 c7c6 d7d6 e7e6 f7f6 g7g6 h7h6 a7a5 b7b5 c7c5 d7d5 e7e5 f7f5 g7g5 h7h5 b8a6 b8c6 g8f6 g8h6 ",

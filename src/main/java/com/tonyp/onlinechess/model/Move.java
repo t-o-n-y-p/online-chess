@@ -27,6 +27,14 @@ public class Move {
     @ManyToOne(optional = false)
     private Game game;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "previous_move_id")
+    private Move previousMove;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "next_move_id")
+    private Move nextMove;
+
     @Column(nullable = false, length = 5)
     @Pattern(regexp = "([a-h][1-8]){2}[qrbn]?")
     private String value;
@@ -43,8 +51,9 @@ public class Move {
     @EqualsAndHashCode.Include
     private UUID uuid;
 
-    public Move(Game game, String value, String fen) {
+    public Move(Game game, Move lastMove, String value, String fen) {
         this.game = game;
+        this.previousMove = lastMove;
         this.value = value;
         this.fen = fen;
         repetitionInfo = GameUtil.getPositionFromFen(game.getFen());

@@ -1,5 +1,7 @@
 package com.tonyp.onlinechess.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tonyp.onlinechess.tools.GameUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,8 +13,11 @@ import javax.validation.constraints.NotBlank;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
+
+import static com.tonyp.onlinechess.web.AppJpaConfiguration.JSON_DATE_FORMAT;
 
 @Entity
 @Table(name = "games")
@@ -55,8 +60,10 @@ public class Game {
     private UUID uuid;
 
     @Column(name = "last_modified_timestamp", nullable = false)
+    @JsonFormat(pattern=JSON_DATE_FORMAT)
     private LocalDateTime lastModifiedTimestamp;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "game")
     private List<Move> moves;
 

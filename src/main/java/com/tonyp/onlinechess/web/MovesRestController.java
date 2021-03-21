@@ -1,7 +1,7 @@
 package com.tonyp.onlinechess.web;
 
-import com.tonyp.onlinechess.dao.UsersRepository;
-import com.tonyp.onlinechess.model.User;
+import com.tonyp.onlinechess.dao.MovesRepository;
+import com.tonyp.onlinechess.model.MoveView;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,14 +12,14 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @AllArgsConstructor
-public class UsersRestController {
+public class MovesRestController {
 
-    private final UsersRepository usersRepository;
+    private final MovesRepository movesRepository;
 
-    @GetMapping("/api/user/{login}")
-    public ResponseEntity<?> getUser(@PathVariable String login) {
+    @GetMapping("/api/move/{moveId}")
+    public ResponseEntity<?> getMove(@PathVariable int moveId) {
         try {
-            User found = usersRepository.findByLogin(login);
+            MoveView found = movesRepository.findByIdEquals(moveId);
             return found == null ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                     : new ResponseEntity<>(found, HttpStatus.OK);
         } catch (Throwable e) {

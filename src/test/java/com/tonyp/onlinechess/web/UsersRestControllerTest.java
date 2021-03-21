@@ -14,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -33,13 +34,11 @@ public class UsersRestControllerTest {
         user.setId(1);
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
 
-        assertEquals("{\"id\":1,\"login\":\"login0\",\"rating\":1200.0}",
-                mvc.perform(get("/api/user/login0"))
-                        .andExpect(status().isOk())
-                        .andReturn()
-                        .getResponse()
-                        .getContentAsString()
-        );
+        mvc.perform(get("/api/user/login0"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.login").value("login0"))
+                .andExpect(jsonPath("$.rating").value(1200.0));
     }
 
     @Test

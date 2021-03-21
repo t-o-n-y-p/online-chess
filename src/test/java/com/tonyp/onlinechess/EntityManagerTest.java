@@ -45,7 +45,7 @@ public class EntityManagerTest {
         gamesRepository.save(game);
         Challenge challenge = new Challenge(player1, player2, Color.WHITE);
         challengesRepository.save(challenge);
-        Move move = new Move(game, "e2e4", "qwerty");
+        Move move = new Move(game, null, "e2e4", "qwerty");
         movesRepository.save(move);
 
         Optional<User> foundUser = usersRepository.findById(player1.getId());

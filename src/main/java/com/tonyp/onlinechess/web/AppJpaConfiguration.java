@@ -16,6 +16,9 @@ import javax.sql.DataSource;
 @EnableJpaRepositories(basePackages = "com.tonyp.onlinechess.dao")
 @EnableTransactionManagement
 public class AppJpaConfiguration {
+
+    public static final String JSON_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS";
+
     @Bean
     public EntityManagerFactory entityManagerFactory() {
         return Persistence.createEntityManagerFactory("ProductionDatabase");

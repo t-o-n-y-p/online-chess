@@ -13,6 +13,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -41,14 +43,22 @@ public class GameService {
         String newLegalMoves = StockfishUtil.getLegalMoves(newFen);
         boolean isCompleted = false;
         String description = null;
-        Result currentResult = GameUtil.getResult(newFen, newLegalMoves, game.getMoves());
+        List<Move> previousMoves = game.getMoves();
+        Result currentResult = GameUtil.getResult(newFen, newLegalMoves, previousMoves);
         if (currentResult != Result.UNDEFINED) {
             isCompleted = true;
             description = currentResult.getDescription();
         }
 
-        Move newMove = movesRepository.createNewMove(game, notation, newFen);
+        Move lastMove = null;
+        if (previousMoves != null && !previousMoves.isEmpty()) {
+            lastMove = previousMoves.stream().max(Comparator.comparing(Move::getId)).get();
+        }
+        Move newMove = movesRepository.createNewMove(game, lastMove, notation, newFen);
         gamesRepository.updateGame(game, newFen, newLegalMoves, isCompleted, description, newMove);
+        if (lastMove != null) {
+            movesRepository.updateMove(lastMove, newMove);
+        }
         if (currentResult != Result.UNDEFINED) {
             double ratingDifference = GameUtil.getRatingDifference(game.getWhite(), game.getBlack(), currentResult);
             usersRepository.updateRating(game.getWhite(), ratingDifference);

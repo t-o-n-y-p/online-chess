@@ -22,7 +22,7 @@ public final class StockfishUtil {
                     .setVariant(Variant.BMI2)
                     .build();
         } catch (StockfishInitException e) {
-            throw new RuntimeException("StockfishInitException: " + e.getMessage());
+            throw new ExceptionInInitializerError("StockfishInitException: " + e.getMessage());
         }
     }
 

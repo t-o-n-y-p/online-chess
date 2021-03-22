@@ -17,7 +17,7 @@ public class MovesRestController {
     private final MovesRepository movesRepository;
 
     @GetMapping("/api/move/{moveId}")
-    public ResponseEntity<?> getMove(@PathVariable int moveId) {
+    public ResponseEntity<Object> getMove(@PathVariable int moveId) {
         try {
             MoveRestView found = movesRepository.findByIdEquals(moveId, MoveRestView.class);
             return found == null ? new ResponseEntity<>(HttpStatus.NO_CONTENT)

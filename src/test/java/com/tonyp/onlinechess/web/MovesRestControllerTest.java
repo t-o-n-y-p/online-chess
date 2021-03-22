@@ -1,7 +1,11 @@
 package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.MovesRepository;
-import com.tonyp.onlinechess.model.*;
+import com.tonyp.onlinechess.model.Game;
+import com.tonyp.onlinechess.model.IdOnlyRestView;
+import com.tonyp.onlinechess.model.Move;
+import com.tonyp.onlinechess.model.MoveRestView;
+import com.tonyp.onlinechess.model.User;
 import com.tonyp.onlinechess.tools.GameUtil;
 import com.tonyp.onlinechess.tools.StockfishUtil;
 import org.junit.Test;

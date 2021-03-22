@@ -17,7 +17,7 @@ public class UsersRestController {
     private final UsersRepository usersRepository;
 
     @GetMapping("/api/user/{login}")
-    public ResponseEntity<?> getUser(@PathVariable String login) {
+    public ResponseEntity<Object> getUser(@PathVariable String login) {
         try {
             User found = usersRepository.findByLogin(login);
             return found == null ? new ResponseEntity<>(HttpStatus.NO_CONTENT)

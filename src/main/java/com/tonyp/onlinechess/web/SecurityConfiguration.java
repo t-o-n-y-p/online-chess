@@ -18,10 +18,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        String loginUrl = "/login";
+
         http.csrf();
 
         http.authorizeRequests()
-                .antMatchers("/api/user/*", "/login", "/signup").permitAll()
+                .antMatchers("/api/user/*", loginUrl, "/signup").permitAll()
                 .antMatchers(HttpMethod.GET, "/**/*.js", "/**/*.css").permitAll()
                 .antMatchers("/", "/app/**", "/api/move/*").authenticated()
                 .anyRequest().denyAll();
@@ -31,8 +33,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         new AntPathRequestMatcher("/api/**"));
 
         http.formLogin()
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
+                .loginPage(loginUrl)
+                .loginProcessingUrl(loginUrl)
                 .defaultSuccessUrl("/app/main", true)
                 .usernameParameter("login")
                 .passwordParameter("password")
@@ -40,7 +42,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         http.logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/login")
+                .logoutSuccessUrl(loginUrl)
                 .permitAll();
     }
 

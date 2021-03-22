@@ -7,6 +7,7 @@ import java.util.Objects;
 public class PasswordsMatchValidator implements ConstraintValidator<PasswordsMatch, SignupForm> {
     @Override
     public void initialize(PasswordsMatch constraintAnnotation) {
+        // nothing to do here
     }
 
     @Override

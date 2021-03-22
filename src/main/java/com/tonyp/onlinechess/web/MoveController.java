@@ -27,23 +27,24 @@ public class MoveController {
                                  @RequestParam String square2,
                                  @RequestParam String promotion,
                                  Authentication authentication) {
+        String gamePageUrl = "/app/game";
         try {
             Game game = gamesRepository.findById(gameId).orElseThrow(NoSuchElementException::new);
             String notation = square1 + square2 + promotion;
             if (GameUtil.isIllegalMove(game, notation)) {
                 attributes.addAttribute("id", gameId);
                 attributes.addAttribute("illegal_move", true);
-                return new RedirectView("/app/game");
+                return new RedirectView(gamePageUrl);
             }
             gameService.makeMove(game, notation);
 
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("legal_move", true);
-            return new RedirectView("/app/game");
+            return new RedirectView(gamePageUrl);
         } catch (Throwable e) {
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("error", true);
-            return new RedirectView("/app/game");
+            return new RedirectView(gamePageUrl);
         }
     }
 

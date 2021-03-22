@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
-@SuppressWarnings("OptionalGetWithoutIsPresent")
+import java.util.NoSuchElementException;
+
 @Controller
 @AllArgsConstructor
 public class ResignController {
@@ -27,7 +28,7 @@ public class ResignController {
                                @RequestParam(name = "game_id") int gameId,
                                Authentication authentication) {
         try {
-            Game game = gamesRepository.findById(gameId).get();
+            Game game = gamesRepository.findById(gameId).orElseThrow(NoSuchElementException::new);
             User user = usersRepository.findByLogin(authentication.getName());
             gameService.resign(game, user);
 

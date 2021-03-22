@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -52,7 +53,7 @@ public class GameService {
 
         Move lastMove = null;
         if (previousMoves != null && !previousMoves.isEmpty()) {
-            lastMove = previousMoves.stream().max(Comparator.comparing(Move::getId)).get();
+            lastMove = previousMoves.stream().max(Comparator.comparing(Move::getId)).orElseThrow(NoSuchElementException::new);
         }
         Move newMove = movesRepository.createNewMove(game, lastMove, notation, newFen);
         gamesRepository.updateGame(game, newFen, newLegalMoves, isCompleted, description, newMove);

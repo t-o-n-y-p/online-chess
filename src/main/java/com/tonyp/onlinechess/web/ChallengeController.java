@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
-@SuppressWarnings("OptionalGetWithoutIsPresent")
+import java.util.NoSuchElementException;
+
 @Controller
 @AllArgsConstructor
 public class ChallengeController {
@@ -30,7 +31,7 @@ public class ChallengeController {
                                @RequestParam(defaultValue = "false", name = "from_challenges") boolean fromChallenges,
                                Authentication authentication) {
         try {
-            Challenge acceptedChallenge = challengesRepository.findById(id).get();
+            Challenge acceptedChallenge = challengesRepository.findById(id).orElseThrow(NoSuchElementException::new);
             challengeService.acceptChallenge(acceptedChallenge);
 
             attributes.addAttribute("challenge_accepted", true);
@@ -49,7 +50,7 @@ public class ChallengeController {
         try {
             challengesRepository.createNewChallenge(
                     usersRepository.findByLogin(authentication.getName()),
-                    usersRepository.findById(opponentId).get(),
+                    usersRepository.findById(opponentId).orElseThrow(NoSuchElementException::new),
                     targetColor
             );
 

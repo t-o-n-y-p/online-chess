@@ -11,7 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@SuppressWarnings("OptionalGetWithoutIsPresent")
+import java.util.NoSuchElementException;
+
 @Controller
 @AllArgsConstructor
 public class ChallengePageController {
@@ -43,7 +44,7 @@ public class ChallengePageController {
     public String step2(Model model,
                         @RequestParam(name = "opponent_id") int opponentId,
                         Authentication authentication) {
-        User opponent = usersRepository.findById(opponentId).get();
+        User opponent = usersRepository.findById(opponentId).orElseThrow(NoSuchElementException::new);
         model.addAttribute("opponent", opponent);
         return "challenge/_step2";
     }

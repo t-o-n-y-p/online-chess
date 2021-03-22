@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
-@SuppressWarnings("OptionalGetWithoutIsPresent")
+import java.util.NoSuchElementException;
+
 @Controller
 @AllArgsConstructor
 public class MoveController {
@@ -27,7 +28,7 @@ public class MoveController {
                                  @RequestParam String promotion,
                                  Authentication authentication) {
         try {
-            Game game = gamesRepository.findById(gameId).get();
+            Game game = gamesRepository.findById(gameId).orElseThrow(NoSuchElementException::new);
             String notation = square1 + square2 + promotion;
             if (GameUtil.isIllegalMove(game, notation)) {
                 attributes.addAttribute("id", gameId);

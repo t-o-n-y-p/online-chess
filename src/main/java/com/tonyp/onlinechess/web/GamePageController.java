@@ -13,7 +13,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@SuppressWarnings("OptionalGetWithoutIsPresent")
+import java.util.NoSuchElementException;
+
 @Controller
 @AllArgsConstructor
 public class GamePageController {
@@ -34,7 +35,7 @@ public class GamePageController {
         model.addAttribute("resignation", resignation);
         model.addAttribute("error", error);
         User user = usersRepository.findByLogin(authentication.getName());
-        Game game = gamesRepository.findById(id).get();
+        Game game = gamesRepository.findById(id).orElseThrow(NoSuchElementException::new);
         model.addAttribute("user", user);
         model.addAttribute("game", game);
         model.addAttribute("board", GameUtil.getBoard(

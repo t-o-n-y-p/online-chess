@@ -9,6 +9,9 @@ import java.util.concurrent.ExecutionException;
 
 public final class StockfishUtil {
 
+    private StockfishUtil(){
+    }
+
     private static final StockfishClient client;
 
     static {

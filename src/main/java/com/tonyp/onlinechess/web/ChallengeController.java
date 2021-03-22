@@ -23,7 +23,7 @@ public class ChallengeController {
     private final ChallengesRepository challengesRepository;
     private final ChallengeService challengeService;
 
-    private static final String mainPageUrl = "/app/main";
+    private static final String MAIN_PAGE_URL = "/app/main";
 
     @PostMapping("/app/challenge/accept")
     public RedirectView accept(RedirectAttributes attributes,
@@ -57,10 +57,10 @@ public class ChallengeController {
             );
 
             attributes.addAttribute("challenge_created", true);
-            return new RedirectView(mainPageUrl);
+            return new RedirectView(MAIN_PAGE_URL);
         } catch (Exception e) {
             attributes.addAttribute("error", true);
-            return new RedirectView(mainPageUrl);
+            return new RedirectView(MAIN_PAGE_URL);
         }
     }
 
@@ -74,7 +74,7 @@ public class ChallengeController {
             }
             return new RedirectView("/app/challenges");
         } else {
-            return new RedirectView(mainPageUrl);
+            return new RedirectView(MAIN_PAGE_URL);
         }
     }
 }

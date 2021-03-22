@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.Thread.sleep;
 
@@ -42,7 +43,7 @@ public class EntityManagerTest {
     public void smokeTest() throws InterruptedException {
         User player1 = new User("test" + System.currentTimeMillis(), "aaa");
         usersRepository.save(player1);
-        sleep(10);
+        TimeUnit.MILLISECONDS.sleep(10);
         User player2 = new User("test" + System.currentTimeMillis(), "aaa");
         usersRepository.save(player2);
         Game game = new Game(player1, player2);

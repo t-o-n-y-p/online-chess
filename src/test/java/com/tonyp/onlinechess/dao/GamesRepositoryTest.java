@@ -19,9 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static java.lang.Thread.sleep;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -65,7 +65,7 @@ public class GamesRepositoryTest {
                     allCreatedGames.add(game);
                     gamesRepository.save(game);
                 }
-                sleep(100);
+                TimeUnit.MILLISECONDS.sleep(100);
             }
         }
         for (User player1 : allCreatedUsers.subList(0, 16)) {
@@ -74,13 +74,13 @@ public class GamesRepositoryTest {
                     Game game = new Game(player1, player2);
                     allCreatedGames.add(game);
                     gamesRepository.save(game);
-                    sleep(100);
+                    TimeUnit.MILLISECONDS.sleep(100);
                     game = new Game(player2, player1);
                     game.setPlayerToMove(player1);
                     allCreatedGames.add(game);
                     gamesRepository.save(game);
                 }
-                sleep(100);
+                TimeUnit.MILLISECONDS.sleep(100);
             }
         }
         for (User player1 : allCreatedUsers.subList(0, 20)) {
@@ -97,7 +97,7 @@ public class GamesRepositoryTest {
                     allCreatedGames.add(game);
                     gamesRepository.save(game);
                 }
-                sleep(100);
+                TimeUnit.MILLISECONDS.sleep(100);
             }
         }
     }

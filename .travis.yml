@@ -6,4 +6,5 @@ addons:
     organization: "t-o-n-y-p"
 
 script:
+  - mvn install:install-file -Dfile=${project.basedir}/src/lib/Stockfish-Java-2.0.2_2.jar -DgroupId=xyz.niflheim -DartifactId=stockfish -Dversion=2.0.2 -Dpackaging=jar
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=t-o-n-y-p_online-chess

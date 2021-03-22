@@ -87,8 +87,6 @@
             <groupId>xyz.niflheim</groupId>
             <artifactId>stockfish</artifactId>
             <version>2.0.2</version>
-            <scope>system</scope>
-            <systemPath>${pom.basedir}/src/lib/Stockfish-Java-2.0.2_2.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>

@@ -17,6 +17,9 @@ import java.util.stream.IntStream;
 
 public final class GameUtil {
 
+    private GameUtil(){
+    }
+
     public static final String STARTING_POSITION_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     public static final String STARTING_POSITION_LEGAL_MOVES
             = "a2a3 b2b3 c2c3 d2d3 e2e3 f2f3 g2g3 h2h3 a2a4 b2b4 c2c4 d2d4 e2e4 f2f4 g2g4 h2h4 b1a3 b1c3 g1f3 g1h3";

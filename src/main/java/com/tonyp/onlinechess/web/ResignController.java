@@ -35,7 +35,7 @@ public class ResignController {
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("resignation", true);
             return new RedirectView("/app/game");
-        } catch (Throwable e) {
+        } catch (Exception e) {
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("error", true);
             return new RedirectView("/app/game");

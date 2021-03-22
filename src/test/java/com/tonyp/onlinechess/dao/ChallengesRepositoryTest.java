@@ -19,9 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static java.lang.Thread.sleep;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -63,7 +63,7 @@ public class ChallengesRepositoryTest {
                         currentColor = Color.WHITE;
                     }
                 }
-                sleep(100);
+                TimeUnit.MILLISECONDS.sleep(100);
             }
         }
     }

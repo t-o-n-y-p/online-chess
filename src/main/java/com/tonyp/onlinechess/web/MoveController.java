@@ -41,7 +41,7 @@ public class MoveController {
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("legal_move", true);
             return new RedirectView(gamePageUrl);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("error", true);
             return new RedirectView(gamePageUrl);

@@ -134,7 +134,7 @@ public class ChallengeControllerTest {
     public void testCreateSuccessWhite() throws Exception {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(from);
+        when(usersRepository.findByLogin("login0")).thenReturn(from);
         when(usersRepository.findById(1)).thenReturn(Optional.of(to));
 
         mvc.perform(post("/app/challenge")
@@ -154,7 +154,7 @@ public class ChallengeControllerTest {
     public void testCreateErrorBlack() throws Exception {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(from);
+        when(usersRepository.findByLogin("login0")).thenReturn(from);
         when(usersRepository.findById(1)).thenReturn(Optional.of(to));
         when(challengesRepository.createNewChallenge(from, to, Color.BLACK)).thenThrow(RuntimeException.class);
 

@@ -22,7 +22,7 @@ public class MovesRestController {
             MoveRestView found = movesRepository.findByIdEquals(moveId, MoveRestView.class);
             return found == null ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                     : new ResponseEntity<>(found, HttpStatus.OK);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     "An unexpected error occurred. Please try again later.",

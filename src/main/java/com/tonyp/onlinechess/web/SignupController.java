@@ -48,7 +48,7 @@ public class SignupController {
         } catch (JpaSystemException e) {
             bindingResult.addError(new FieldError("signupForm", "login", "User with this login already exists."));
             return signupPage;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             model.addAttribute("error", true);
             return signupPage;
         }

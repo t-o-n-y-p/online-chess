@@ -38,7 +38,7 @@ public class ChallengeController {
 
             attributes.addAttribute("challenge_accepted", true);
             return getAcceptChallengeRedirectView(attributes, page, toPreviousPage, fromChallenges);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             attributes.addAttribute("error", true);
             return getAcceptChallengeRedirectView(attributes, page, toPreviousPage, fromChallenges);
         }
@@ -58,7 +58,7 @@ public class ChallengeController {
 
             attributes.addAttribute("challenge_created", true);
             return new RedirectView(mainPageUrl);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             attributes.addAttribute("error", true);
             return new RedirectView(mainPageUrl);
         }

@@ -1,3 +1,9 @@
 language: java
 jdk:
   - oraclejdk15
+addons:
+  sonarcloud:
+    organization: "t-o-n-y-p"
+
+script:
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=t-o-n-y-p_online-chess

@@ -9,4 +9,4 @@ before_install:
   - mvn install:install-file -Dfile=/home/travis/build/t-o-n-y-p/online-chess/src/lib/Stockfish-Java-2.0.2_2.jar -DgroupId=xyz.niflheim -DartifactId=stockfish -Dversion=2.0.2 -Dpackaging=jar
 
 script:
-  - mvn clean verify sonar:sonar -Pcoverage
+  - mvn clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=t-o-n-y-p_online-chess

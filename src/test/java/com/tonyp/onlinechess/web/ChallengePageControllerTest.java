@@ -43,10 +43,10 @@ public class ChallengePageControllerTest {
     @Test
     public void testStep1FirstPageDefault() throws Exception {
         User user = new User("login0", "pass0");
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
         when(usersRepository.findOpponentsByRatingAndLoginInput(
-                eq(user), eq(""), eq(user.getRating() - RATING_THRESHOLD),
-                eq(user.getRating() + RATING_THRESHOLD), eq(PageRequest.of(0, PAGE_RESULTS))
+                user, "", user.getRating() - RATING_THRESHOLD,
+                user.getRating() + RATING_THRESHOLD, PageRequest.of(0, PAGE_RESULTS)
         )).thenReturn(opponents);
 
         mvc.perform(get("/app/challenge/step1")
@@ -66,10 +66,10 @@ public class ChallengePageControllerTest {
     @Test
     public void testStep1LastPageWithSearch() throws Exception {
         User user = new User("login0", "pass0");
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
         when(usersRepository.findOpponentsByRatingAndLoginInput(
-                eq(user), eq("qwerty"), eq(user.getRating() - RATING_THRESHOLD),
-                eq(user.getRating() + RATING_THRESHOLD), eq(PageRequest.of(3, PAGE_RESULTS))
+                user, "qwerty", user.getRating() - RATING_THRESHOLD,
+                user.getRating() + RATING_THRESHOLD, PageRequest.of(3, PAGE_RESULTS)
         )).thenReturn(opponents);
 
         mvc.perform(get("/app/challenge/step1")
@@ -91,7 +91,7 @@ public class ChallengePageControllerTest {
     @Test
     public void testStep2Success() throws Exception {
         User opponent = new User("login1", "pass1");
-        when(usersRepository.findById(eq(1))).thenReturn(Optional.of(opponent));
+        when(usersRepository.findById(1)).thenReturn(Optional.of(opponent));
 
         mvc.perform(get("/app/challenge/step2")
                 .with(user("login0"))

@@ -43,8 +43,8 @@ public class GamePageControllerTest {
     public void testGameLegalMoveAsWhite() throws Exception {
         User user = new User("login0", "pass0");
         Game game = new Game(user, new User("login1", "pass1"));
-        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(gamesRepository.findById(1)).thenReturn(Optional.of(game));
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
 
         mvc.perform(get("/app/game")
                 .with(user("login0"))
@@ -68,8 +68,8 @@ public class GamePageControllerTest {
     public void testGameIllegalMoveAsBlack() throws Exception {
         User user = new User("login0", "pass0");
         Game game = new Game(new User("login1", "pass1"), user);
-        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(gamesRepository.findById(1)).thenReturn(Optional.of(game));
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
 
         mvc.perform(get("/app/game")
                 .with(user("login0"))
@@ -93,8 +93,8 @@ public class GamePageControllerTest {
     public void testGameResignation() throws Exception {
         User user = new User("login0", "pass0");
         Game game = new Game(user, new User("login1", "pass1"));
-        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(gamesRepository.findById(1)).thenReturn(Optional.of(game));
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
 
         mvc.perform(get("/app/game")
                 .with(user("login0"))
@@ -118,8 +118,8 @@ public class GamePageControllerTest {
     public void testGameError() throws Exception {
         User user = new User("login0", "pass0");
         Game game = new Game(user, new User("login1", "pass1"));
-        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(gamesRepository.findById(1)).thenReturn(Optional.of(game));
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
 
         mvc.perform(get("/app/game")
                 .with(user("login0"))

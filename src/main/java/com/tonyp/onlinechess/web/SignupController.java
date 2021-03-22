@@ -23,14 +23,14 @@ public class SignupController {
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private final String SIGNUP_PAGE = "_signup";
+    private static final String signupPage = "_signup";
 
     @GetMapping("/signup")
     public String getSignup(SignupForm signupForm, Authentication authentication) {
         if (authentication != null) {
             return "redirect:/app/main";
         }
-        return SIGNUP_PAGE;
+        return signupPage;
     }
 
     @PostMapping("/signup")
@@ -39,7 +39,7 @@ public class SignupController {
                              @Valid SignupForm signupForm,
                              BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return SIGNUP_PAGE;
+            return signupPage;
         }
         try {
             usersRepository.createNewUser(signupForm.getLogin(), passwordEncoder.encode(signupForm.getPassword()));
@@ -47,10 +47,10 @@ public class SignupController {
             return "redirect:/app/main";
         } catch (JpaSystemException e) {
             bindingResult.addError(new FieldError("signupForm", "login", "User with this login already exists."));
-            return SIGNUP_PAGE;
+            return signupPage;
         } catch (Throwable e) {
             model.addAttribute("error", true);
-            return SIGNUP_PAGE;
+            return signupPage;
         }
     }
 }

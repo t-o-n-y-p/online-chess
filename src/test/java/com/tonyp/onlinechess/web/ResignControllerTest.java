@@ -46,8 +46,8 @@ public class ResignControllerTest {
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
-        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(white);
+        when(gamesRepository.findById(1)).thenReturn(Optional.of(game));
+        when(usersRepository.findByLogin("login0")).thenReturn(white);
 
         mvc.perform(post("/app/resign")
                 .with(user("login0"))
@@ -70,8 +70,8 @@ public class ResignControllerTest {
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
-        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(usersRepository.findByLogin(eq("login1"))).thenReturn(black);
+        when(gamesRepository.findById(1)).thenReturn(Optional.of(game));
+        when(usersRepository.findByLogin("login1")).thenReturn(black);
 
         mvc.perform(post("/app/resign")
                 .with(user("login1"))
@@ -94,10 +94,10 @@ public class ResignControllerTest {
         User white = new User("login0", "pass0");
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
-        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(white);
+        when(gamesRepository.findById(1)).thenReturn(Optional.of(game));
+        when(usersRepository.findByLogin("login0")).thenReturn(white);
         when(gamesRepository.updateGame(
-                eq(game), eq(true), eq(Result.BLACK_WON_BY_RESIGNATION.getDescription())
+                game, true, Result.BLACK_WON_BY_RESIGNATION.getDescription()
         )).thenThrow(RuntimeException.class);
 
         mvc.perform(post("/app/resign")

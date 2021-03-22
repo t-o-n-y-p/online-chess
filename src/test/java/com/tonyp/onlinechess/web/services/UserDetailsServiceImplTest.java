@@ -30,7 +30,7 @@ public class UserDetailsServiceImplTest {
     public void testExistingUser() {
         com.tonyp.onlinechess.model.User user
                 = new com.tonyp.onlinechess.model.User("login0", "encryptedPassword0");
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
 
         UserDetails expectedResult = User.withUsername("login0")
                 .password("encryptedPassword0")

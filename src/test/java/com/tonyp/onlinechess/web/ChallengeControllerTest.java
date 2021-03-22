@@ -48,7 +48,7 @@ public class ChallengeControllerTest {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
         Challenge challenge = new Challenge(from, to, Color.WHITE);
-        when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
+        when(challengesRepository.findById(1)).thenReturn(Optional.of(challenge));
 
         mvc.perform(post("/app/challenge/accept")
                 .with(user("login1"))
@@ -68,7 +68,7 @@ public class ChallengeControllerTest {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
         Challenge challenge = new Challenge(from, to, Color.BLACK);
-        when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
+        when(challengesRepository.findById(1)).thenReturn(Optional.of(challenge));
 
         mvc.perform(post("/app/challenge/accept")
                 .with(user("login1"))
@@ -90,7 +90,7 @@ public class ChallengeControllerTest {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
         Challenge challenge = new Challenge(from, to, Color.WHITE);
-        when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
+        when(challengesRepository.findById(1)).thenReturn(Optional.of(challenge));
 
         mvc.perform(post("/app/challenge/accept")
                 .with(user("login1"))
@@ -114,8 +114,8 @@ public class ChallengeControllerTest {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
         Challenge challenge = new Challenge(from, to, Color.BLACK);
-        when(challengesRepository.findById(eq(1))).thenReturn(Optional.of(challenge));
-        when(gamesRepository.createNewGame(eq(from), eq(to))).thenThrow(RuntimeException.class);
+        when(challengesRepository.findById(1)).thenReturn(Optional.of(challenge));
+        when(gamesRepository.createNewGame(from, to)).thenThrow(RuntimeException.class);
 
         mvc.perform(post("/app/challenge/accept")
                 .with(user("login1"))
@@ -135,7 +135,7 @@ public class ChallengeControllerTest {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(from);
-        when(usersRepository.findById(eq(1))).thenReturn(Optional.of(to));
+        when(usersRepository.findById(1)).thenReturn(Optional.of(to));
 
         mvc.perform(post("/app/challenge")
                 .with(user("login0"))
@@ -155,8 +155,8 @@ public class ChallengeControllerTest {
         User from = new User("login0", "pass0");
         User to = new User("login1", "pass1");
         when(usersRepository.findByLogin(eq("login0"))).thenReturn(from);
-        when(usersRepository.findById(eq(1))).thenReturn(Optional.of(to));
-        when(challengesRepository.createNewChallenge(eq(from), eq(to), eq(Color.BLACK))).thenThrow(RuntimeException.class);
+        when(usersRepository.findById(1)).thenReturn(Optional.of(to));
+        when(challengesRepository.createNewChallenge(from, to, Color.BLACK)).thenThrow(RuntimeException.class);
 
         mvc.perform(post("/app/challenge")
                 .with(user("login0"))

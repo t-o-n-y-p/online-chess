@@ -31,7 +31,7 @@ public class UsersRestControllerTest {
     public void testFindByLoginSuccess() throws Exception {
         User user = new User("login0", "password0");
         user.setId(1);
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
 
         mvc.perform(get("/api/user/login0"))
                 .andExpect(status().isOk())
@@ -42,7 +42,7 @@ public class UsersRestControllerTest {
 
     @Test
     public void testFindByLoginNoUser() throws Exception {
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(null);
+        when(usersRepository.findByLogin("login0")).thenReturn(null);
 
         mvc.perform(get("/api/user/login0"))
                 .andExpect(status().isNoContent());
@@ -50,7 +50,7 @@ public class UsersRestControllerTest {
 
     @Test
     public void testFindByLoginError() throws Exception {
-        when(usersRepository.findByLogin(eq("login0"))).thenThrow(RuntimeException.class);
+        when(usersRepository.findByLogin("login0")).thenThrow(RuntimeException.class);
 
         mvc.perform(get("/api/user/login0"))
                 .andExpect(status().isInternalServerError());

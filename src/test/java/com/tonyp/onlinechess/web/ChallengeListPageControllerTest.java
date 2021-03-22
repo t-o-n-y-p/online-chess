@@ -45,9 +45,9 @@ public class ChallengeListPageControllerTest {
     @Test
     public void testChallengesFirstPageDefault() throws Exception {
         User user = new User("login0", "pass0");
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
         when(challengesRepository.findIncomingChallengesByOpponentLoginInput(
-                eq(user), eq(""), eq(PageRequest.of(0, PAGE_RESULTS))
+                user, "", PageRequest.of(0, PAGE_RESULTS)
         )).thenReturn(challenges);
 
         mvc.perform(get("/app/challenges")
@@ -69,9 +69,9 @@ public class ChallengeListPageControllerTest {
     @Test
     public void testChallengesSecondPageWithChallengeAccepted() throws Exception {
         User user = new User("login0", "pass0");
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
         when(challengesRepository.findIncomingChallengesByOpponentLoginInput(
-                eq(user), eq(""), eq(PageRequest.of(1, PAGE_RESULTS))
+                user, "", PageRequest.of(1, PAGE_RESULTS)
         )).thenReturn(challenges);
 
         mvc.perform(get("/app/challenges")
@@ -95,9 +95,9 @@ public class ChallengeListPageControllerTest {
     @Test
     public void testChallengesLastPageWithSearchAndErrorFlag() throws Exception {
         User user = new User("login0", "pass0");
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
         when(challengesRepository.findIncomingChallengesByOpponentLoginInput(
-                eq(user), eq("qwerty"), eq(PageRequest.of(3, PAGE_RESULTS))
+                user, "qwerty", PageRequest.of(3, PAGE_RESULTS)
         )).thenReturn(challenges);
 
         mvc.perform(get("/app/challenges")

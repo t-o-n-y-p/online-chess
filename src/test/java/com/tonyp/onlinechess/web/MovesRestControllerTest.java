@@ -59,7 +59,7 @@ public class MovesRestControllerTest {
         move.setId(5);
         Move nextMove = new Move(game, move, "g1f3", StockfishUtil.makeMove(fen, "e7e5"));
         nextMove.setId(6);
-        when(movesRepository.findByIdEquals(eq(5), eq(MoveRestView.class))).thenReturn(new MoveRestView() {
+        when(movesRepository.findByIdEquals(5, MoveRestView.class)).thenReturn(new MoveRestView() {
             @Override
             public int getId() {
                 return 5;
@@ -133,7 +133,7 @@ public class MovesRestControllerTest {
 
     @Test
     public void testFindByIdNoMove() throws Exception {
-        when(movesRepository.findByIdEquals(eq(1), eq(MoveRestView.class))).thenReturn(null);
+        when(movesRepository.findByIdEquals(1, MoveRestView.class)).thenReturn(null);
 
         mvc.perform(get("/api/move/1")
                 .with(user("login0"))
@@ -143,7 +143,7 @@ public class MovesRestControllerTest {
 
     @Test
     public void testFindByIdError() throws Exception {
-        when(movesRepository.findByIdEquals(eq(1), eq(MoveRestView.class))).thenThrow(RuntimeException.class);
+        when(movesRepository.findByIdEquals(1, MoveRestView.class)).thenThrow(RuntimeException.class);
 
         mvc.perform(get("/api/move/1")
                 .with(user("login0"))

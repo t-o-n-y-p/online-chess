@@ -58,8 +58,8 @@ public class MoveControllerTest {
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
         Move move = new Move(game, null, "e2e4", newFen);
-        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(movesRepository.createNewMove(eq(game), eq(null), eq("e2e4"), eq(newFen))).thenReturn(move);
+        when(gamesRepository.findById(1)).thenReturn(Optional.of(game));
+        when(movesRepository.createNewMove(game, null, "e2e4", newFen)).thenReturn(move);
 
         mvc.perform(post("/app/move")
                 .with(user("login0"))
@@ -97,8 +97,8 @@ public class MoveControllerTest {
         );
         game.setMoves(List.of(previousMove));
         Move move = new Move(game, previousMove, "d8h4", newFen);
-        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(movesRepository.createNewMove(eq(game), eq(previousMove), eq("d8h4"), eq(newFen))).thenReturn(move);
+        when(gamesRepository.findById(1)).thenReturn(Optional.of(game));
+        when(movesRepository.createNewMove(game, previousMove, "d8h4", newFen)).thenReturn(move);
 
         mvc.perform(post("/app/move")
                 .with(user("login0"))
@@ -128,7 +128,7 @@ public class MoveControllerTest {
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
         Move move = new Move(game, null, "a1a1", "qwerty");
-        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
+        when(gamesRepository.findById(1)).thenReturn(Optional.of(game));
         when(movesRepository.createNewMove(eq(game), eq(null), eq("a1a1"), anyString())).thenReturn(move);
 
         mvc.perform(post("/app/move")
@@ -158,12 +158,12 @@ public class MoveControllerTest {
         User black = new User("login1", "pass1");
         Game game = new Game(white, black);
         Move move = new Move(game, null, "e2e4", newFen);
-        when(gamesRepository.findById(eq(1))).thenReturn(Optional.of(game));
-        when(movesRepository.createNewMove(eq(game), eq(null), eq("e2e4"), eq(newFen))).thenReturn(move);
+        when(gamesRepository.findById(1)).thenReturn(Optional.of(game));
+        when(movesRepository.createNewMove(game, null, "e2e4", newFen)).thenReturn(move);
         when(gamesRepository.updateGame(
-                eq(game), eq(newFen),
-                eq("a7a6 b7b6 c7c6 d7d6 e7e6 f7f6 g7g6 h7h6 a7a5 b7b5 c7c5 d7d5 e7e5 f7f5 g7g5 h7h5 b8a6 b8c6 g8f6 g8h6 "),
-                eq(false), eq(null), eq(move))
+                game, newFen,
+                "a7a6 b7b6 c7c6 d7d6 e7e6 f7f6 g7g6 h7h6 a7a5 b7b5 c7c5 d7d5 e7e5 f7f5 g7g5 h7h5 b8a6 b8c6 g8f6 g8h6 ",
+                false, null, move)
         ).thenThrow(RuntimeException.class);
 
         mvc.perform(post("/app/move")

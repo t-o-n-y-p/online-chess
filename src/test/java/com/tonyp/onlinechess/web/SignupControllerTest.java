@@ -68,8 +68,8 @@ public class SignupControllerTest {
 
     @Test
     public void testPostSignupExistingAccount() throws Exception {
-        when(passwordEncoder.encode(eq("password0"))).thenReturn("encodedPassword0");
-        when(usersRepository.createNewUser(eq("login0"), eq("encodedPassword0")))
+        when(passwordEncoder.encode("password0")).thenReturn("encodedPassword0");
+        when(usersRepository.createNewUser("login0", "encodedPassword0"))
                 .thenThrow(JpaSystemException.class);
 
         SignupForm signupForm = new SignupForm();
@@ -169,11 +169,11 @@ public class SignupControllerTest {
     @Test
     public void testPostSignupSuccess() throws Exception {
         User user = new User("login0", "encodedPassword0");
-        when(passwordEncoder.encode(eq("password0"))).thenReturn("encodedPassword0");
-        when(usersRepository.createNewUser(eq("login0"), eq("encodedPassword0"))).thenReturn(user);
+        when(passwordEncoder.encode("password0")).thenReturn("encodedPassword0");
+        when(usersRepository.createNewUser("login0", "encodedPassword0")).thenReturn(user);
         Authentication token = new UsernamePasswordAuthenticationToken("login0", "password0");
-        when(authenticationProvider.supports(eq(token.getClass()))).thenReturn(true);
-        when(authenticationProvider.authenticate(eq(token))).thenReturn(token);
+        when(authenticationProvider.supports(token.getClass())).thenReturn(true);
+        when(authenticationProvider.authenticate(token)).thenReturn(token);
 
         SignupForm signupForm = new SignupForm();
         signupForm.setLogin("login0");
@@ -193,8 +193,8 @@ public class SignupControllerTest {
 
     @Test
     public void testPostSignupError() throws Exception {
-        when(passwordEncoder.encode(eq("password0"))).thenReturn("encodedPassword0");
-        when(usersRepository.createNewUser(eq("login0"), eq("encodedPassword0"))).thenThrow(RuntimeException.class);
+        when(passwordEncoder.encode("password0")).thenReturn("encodedPassword0");
+        when(usersRepository.createNewUser("login0", "encodedPassword0")).thenThrow(RuntimeException.class);
 
         SignupForm signupForm = new SignupForm();
         signupForm.setLogin("login0");

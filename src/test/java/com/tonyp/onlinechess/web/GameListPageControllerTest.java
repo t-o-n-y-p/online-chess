@@ -45,9 +45,9 @@ public class GameListPageControllerTest {
     @Test
     public void testGamesFirstPageDefault() throws Exception {
         User user = new User("login0", "pass0");
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
         when(gamesRepository.findByUserAndOpponentLoginInput(
-                eq(user), eq(""), eq(PageRequest.of(0, PAGE_RESULTS))
+                user, "", PageRequest.of(0, PAGE_RESULTS)
         )).thenReturn(games);
 
         mvc.perform(get("/app/games")
@@ -67,9 +67,9 @@ public class GameListPageControllerTest {
     @Test
     public void testGamesLastPageWithSearch() throws Exception {
         User user = new User("login0", "pass0");
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
         when(gamesRepository.findByUserAndOpponentLoginInput(
-                eq(user), eq("qwerty"), eq(PageRequest.of(3, PAGE_RESULTS))
+                user, "qwerty", PageRequest.of(3, PAGE_RESULTS)
         )).thenReturn(games);
 
         mvc.perform(get("/app/games")

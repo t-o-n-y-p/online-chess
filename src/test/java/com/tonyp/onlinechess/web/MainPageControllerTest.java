@@ -60,15 +60,15 @@ public class MainPageControllerTest {
     @Test
     public void testMainChallengeCreated() throws Exception {
         User user = new User("login0", "pass0");
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
         when(challengesRepository.findByToOrderByTimestampDesc(
-                eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS))
+                user, PageRequest.of(0, MAIN_PAGE_RESULTS)
         )).thenReturn(challenges);
         when(challengesRepository.findByToOrderByTimestampDesc(
-                eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE))
+                user, PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE)
         )).thenReturn(challengesMobile);
-        when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS)))).thenReturn(games);
-        when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE)))).thenReturn(gamesMobile);
+        when(gamesRepository.findByUser(user, PageRequest.of(0, MAIN_PAGE_RESULTS))).thenReturn(games);
+        when(gamesRepository.findByUser(user, PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE))).thenReturn(gamesMobile);
 
         mvc.perform(get("/app/main")
                 .with(user("login0"))
@@ -97,15 +97,15 @@ public class MainPageControllerTest {
     @Test
     public void testMainChallengeAccepted() throws Exception {
         User user = new User("login0", "pass0");
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
         when(challengesRepository.findByToOrderByTimestampDesc(
-                eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS))
+                user, PageRequest.of(0, MAIN_PAGE_RESULTS)
         )).thenReturn(challenges);
         when(challengesRepository.findByToOrderByTimestampDesc(
-                eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE))
+                user, PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE)
         )).thenReturn(challengesMobile);
-        when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS)))).thenReturn(games);
-        when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE)))).thenReturn(gamesMobile);
+        when(gamesRepository.findByUser(user, PageRequest.of(0, MAIN_PAGE_RESULTS))).thenReturn(games);
+        when(gamesRepository.findByUser(user, PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE))).thenReturn(gamesMobile);
 
         mvc.perform(get("/app/main")
                 .with(user("login0"))
@@ -134,15 +134,15 @@ public class MainPageControllerTest {
     @Test
     public void testMainError() throws Exception {
         User user = new User("login0", "pass0");
-        when(usersRepository.findByLogin(eq("login0"))).thenReturn(user);
+        when(usersRepository.findByLogin("login0")).thenReturn(user);
         when(challengesRepository.findByToOrderByTimestampDesc(
-                eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS))
+                user, PageRequest.of(0, MAIN_PAGE_RESULTS)
         )).thenReturn(challenges);
         when(challengesRepository.findByToOrderByTimestampDesc(
-                eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE))
+                user, PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE)
         )).thenReturn(challengesMobile);
-        when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS)))).thenReturn(games);
-        when(gamesRepository.findByUser(eq(user), eq(PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE)))).thenReturn(gamesMobile);
+        when(gamesRepository.findByUser(user, PageRequest.of(0, MAIN_PAGE_RESULTS))).thenReturn(games);
+        when(gamesRepository.findByUser(user, PageRequest.of(0, MAIN_PAGE_RESULTS_MOBILE))).thenReturn(gamesMobile);
 
         mvc.perform(get("/app/main")
                 .with(user("login0"))

@@ -26,6 +26,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlTemplate;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -56,6 +58,21 @@ public class MainPageControllerTest {
 
     @Mock
     private Page<Game> gamesMobile;
+
+    @Test
+    public void testRedirect() throws Exception {
+        mvc.perform(get("/")
+                .with(user("login0"))
+        )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("app/main"));
+
+        mvc.perform(get("/app")
+                .with(user("login0"))
+        )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("app/main"));
+    }
 
     @Test
     public void testMainChallengeCreated() throws Exception {

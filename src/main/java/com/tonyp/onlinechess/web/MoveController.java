@@ -26,7 +26,7 @@ public class MoveController {
                                  @RequestParam String square1,
                                  @RequestParam String square2,
                                  @RequestParam String promotion,
-                                 Authentication authentication) {
+                                 Authentication authentication) throws InterruptedException {
         String gamePageUrl = "/app/game";
         try {
             Game game = gamesRepository.findById(gameId).orElseThrow(NoSuchElementException::new);
@@ -41,6 +41,8 @@ public class MoveController {
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("legal_move", true);
             return new RedirectView(gamePageUrl);
+        } catch (InterruptedException e) {
+            throw e;
         } catch (Exception e) {
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("error", true);

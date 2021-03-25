@@ -8,13 +8,18 @@ import com.tonyp.onlinechess.model.Move;
 import com.tonyp.onlinechess.model.User;
 import com.tonyp.onlinechess.tools.GameUtil;
 import com.tonyp.onlinechess.tools.Result;
+import com.tonyp.onlinechess.tools.StockfishUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.util.NestedServletException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,10 +27,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -414,5 +423,27 @@ public class MoveControllerTest {
                 false, null, move
         );
         verifyNoInteractions(usersRepository);
+    }
+
+    @Test
+    public void testMakeMoveInterruptedException() throws Exception {
+        String newFen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1";
+
+        User white = new User("login0", "pass0");
+        User black = new User("login1", "pass1");
+        Game game = new Game(white, black);
+        game.setMoves(Collections.emptyList());
+        when(gamesRepository.findById(1)).thenReturn(Optional.of(game));
+        MockedStatic<StockfishUtil> mockedStockfish = mockStatic(StockfishUtil.class);
+        mockedStockfish.when(() -> StockfishUtil.makeMove(anyString(), anyString())).thenThrow(InterruptedException.class);
+
+        assertThrows(NestedServletException.class, () -> mvc.perform(post("/app/move")
+                .with(user("login0"))
+                .param("game_id", "1")
+                .param("square1", "e2")
+                .param("square2", "e4")
+                .param("promotion", "")
+                .with(csrf())
+        ));
     }
 }

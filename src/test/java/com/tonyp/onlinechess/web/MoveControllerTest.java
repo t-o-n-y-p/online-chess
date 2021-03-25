@@ -445,6 +445,8 @@ public class MoveControllerTest {
                 .param("promotion", "")
                 .with(csrf())
         ));
+
+        mockedStockfish.close();
         verify(gamesRepository, times(1)).findById(1);
         verify(gamesRepository, never()).updateGame(
                 eq(game), anyString(),
@@ -452,6 +454,5 @@ public class MoveControllerTest {
                 eq(false), eq(null), any(Move.class)
         );
         verifyNoInteractions(usersRepository, movesRepository);
-        mockedStockfish.close();
     }
 }

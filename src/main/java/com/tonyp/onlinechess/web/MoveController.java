@@ -46,7 +46,6 @@ public class MoveController {
         } catch (Exception e) {
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("error", true);
-            attributes.addAttribute("message", e.getMessage());
             return new RedirectView(gamePageUrl);
         }
     }

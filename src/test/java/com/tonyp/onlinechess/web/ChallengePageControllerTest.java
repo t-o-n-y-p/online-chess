@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import static com.tonyp.onlinechess.web.ChallengePageController.PAGE_RESULTS;
 import static com.tonyp.onlinechess.web.ChallengePageController.RATING_THRESHOLD;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

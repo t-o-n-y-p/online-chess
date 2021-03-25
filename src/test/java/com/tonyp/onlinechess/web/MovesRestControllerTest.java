@@ -20,7 +20,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static com.tonyp.onlinechess.web.AppJpaConfiguration.JSON_DATE_FORMAT;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

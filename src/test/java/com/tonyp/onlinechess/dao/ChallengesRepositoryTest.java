@@ -139,7 +139,9 @@ public class ChallengesRepositoryTest {
                 .findAny()
                 .get();
         assertEquals(0, challengesRepository
-                .findIncomingChallengesByOpponentLoginInput(noChallenges, "login",  PageRequest.of(0, 1000))
+                .findByToAndFrom_LoginContainingOrderByTimestampDesc(
+                        noChallenges, "login",  PageRequest.of(0, 1000)
+                )
                 .getNumberOfElements()
         );
         User toNegative = allCreatedUsers.stream()
@@ -147,7 +149,9 @@ public class ChallengesRepositoryTest {
                 .findAny()
                 .get();
         assertEquals(0, challengesRepository
-                .findIncomingChallengesByOpponentLoginInput(toNegative, "login_test",  PageRequest.of(0, 1000))
+                .findByToAndFrom_LoginContainingOrderByTimestampDesc(
+                        toNegative, "login_test",  PageRequest.of(0, 1000)
+                )
                 .getNumberOfElements()
         );
 
@@ -159,7 +163,7 @@ public class ChallengesRepositoryTest {
                         .filter(u -> u.getLogin().matches(toLogin + "[0-9]$"))
                         .findAny()
                         .get();
-                actualResult = challengesRepository.findIncomingChallengesByOpponentLoginInput(
+                actualResult = challengesRepository.findByToAndFrom_LoginContainingOrderByTimestampDesc(
                         to, input, PageRequest.of(0, 1000)
                 );
                 expectedResult = allCreatedChallenges.stream()
@@ -175,7 +179,7 @@ public class ChallengesRepositoryTest {
                 .findAny()
                 .get();
         actualResult = challengesRepository
-                .findIncomingChallengesByOpponentLoginInput(to, "test", PageRequest.of(0, 3));
+                .findByToAndFrom_LoginContainingOrderByTimestampDesc(to, "test", PageRequest.of(0, 3));
         expectedResult = allCreatedChallenges.stream()
                 .filter(c -> c.getTo().equals(to) && c.getFrom().getLogin().contains("test"))
                 .sorted(Comparator.comparing(Challenge::getTimestamp).reversed())
@@ -183,7 +187,7 @@ public class ChallengesRepositoryTest {
                 .collect(Collectors.toList());
         assertEquals(expectedResult, actualResult.stream().collect(Collectors.toList()));
         actualResult = challengesRepository
-                .findIncomingChallengesByOpponentLoginInput(to, "test", PageRequest.of(2, 3));
+                .findByToAndFrom_LoginContainingOrderByTimestampDesc(to, "test", PageRequest.of(2, 3));
         expectedResult = allCreatedChallenges.stream()
                 .filter(c -> c.getTo().equals(to) && c.getFrom().getLogin().contains("test"))
                 .sorted(Comparator.comparing(Challenge::getTimestamp).reversed())
@@ -193,12 +197,12 @@ public class ChallengesRepositoryTest {
         assertEquals(expectedResult, actualResult.stream().collect(Collectors.toList()));
 
         assertEquals(0, challengesRepository
-                .findIncomingChallengesByOpponentLoginInput(to, "test",  PageRequest.of(100, 10))
+                .findByToAndFrom_LoginContainingOrderByTimestampDesc(to, "test",  PageRequest.of(100, 10))
                 .getNumberOfElements()
         );
 
         actualResult = challengesRepository
-                .findIncomingChallengesByOpponentLoginInput(to, "test", PageRequest.of(0, 5));
+                .findByToAndFrom_LoginContainingOrderByTimestampDesc(to, "test", PageRequest.of(0, 5));
         expectedResult = allCreatedChallenges.stream()
                 .filter(c -> c.getTo().equals(to) && c.getFrom().getLogin().contains("test"))
                 .sorted(Comparator.comparing(Challenge::getTimestamp).reversed())
@@ -206,7 +210,7 @@ public class ChallengesRepositoryTest {
                 .collect(Collectors.toList());
         assertEquals(expectedResult, actualResult.stream().collect(Collectors.toList()));
         actualResult = challengesRepository
-                .findIncomingChallengesByOpponentLoginInput(to, "test", PageRequest.of(2, 5));
+                .findByToAndFrom_LoginContainingOrderByTimestampDesc(to, "test", PageRequest.of(2, 5));
         expectedResult = allCreatedChallenges.stream()
                 .filter(c -> c.getTo().equals(to) && c.getFrom().getLogin().contains("test"))
                 .sorted(Comparator.comparing(Challenge::getTimestamp).reversed())

@@ -17,6 +17,8 @@ public interface MovesRepository extends JpaRepository<Move, Integer> {
         return save(move);
     }
 
+    <T> T findFirstByGame_IdOrderByIdDesc(int gameId, Class<T> view);
+
     <T> T findByIdEquals(int id, Class<T> view);
 
 }

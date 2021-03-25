@@ -45,7 +45,7 @@ public class ChallengeListPageControllerTest {
     public void testChallengesFirstPageDefault() throws Exception {
         User user = new User("login0", "pass0");
         when(usersRepository.findByLogin("login0")).thenReturn(user);
-        when(challengesRepository.findIncomingChallengesByOpponentLoginInput(
+        when(challengesRepository.findByToAndFrom_LoginContainingOrderByTimestampDesc(
                 user, "", PageRequest.of(0, PAGE_RESULTS)
         )).thenReturn(challenges);
 
@@ -60,7 +60,7 @@ public class ChallengeListPageControllerTest {
                 .andExpect(model().attribute("user", user))
                 .andExpect(model().attribute("challenges", challenges));
         verify(usersRepository, times(1)).findByLogin("login0");
-        verify(challengesRepository, times(1)).findIncomingChallengesByOpponentLoginInput(
+        verify(challengesRepository, times(1)).findByToAndFrom_LoginContainingOrderByTimestampDesc(
                 user, "", PageRequest.of(0, PAGE_RESULTS)
         );
     }
@@ -69,7 +69,7 @@ public class ChallengeListPageControllerTest {
     public void testChallengesSecondPageWithChallengeAccepted() throws Exception {
         User user = new User("login0", "pass0");
         when(usersRepository.findByLogin("login0")).thenReturn(user);
-        when(challengesRepository.findIncomingChallengesByOpponentLoginInput(
+        when(challengesRepository.findByToAndFrom_LoginContainingOrderByTimestampDesc(
                 user, "", PageRequest.of(1, PAGE_RESULTS)
         )).thenReturn(challenges);
 
@@ -86,7 +86,7 @@ public class ChallengeListPageControllerTest {
                 .andExpect(model().attribute("user", user))
                 .andExpect(model().attribute("challenges", challenges));
         verify(usersRepository, times(1)).findByLogin("login0");
-        verify(challengesRepository, times(1)).findIncomingChallengesByOpponentLoginInput(
+        verify(challengesRepository, times(1)).findByToAndFrom_LoginContainingOrderByTimestampDesc(
                 user, "", PageRequest.of(1, PAGE_RESULTS)
         );
     }
@@ -95,7 +95,7 @@ public class ChallengeListPageControllerTest {
     public void testChallengesLastPageWithSearchAndErrorFlag() throws Exception {
         User user = new User("login0", "pass0");
         when(usersRepository.findByLogin("login0")).thenReturn(user);
-        when(challengesRepository.findIncomingChallengesByOpponentLoginInput(
+        when(challengesRepository.findByToAndFrom_LoginContainingOrderByTimestampDesc(
                 user, "qwerty", PageRequest.of(3, PAGE_RESULTS)
         )).thenReturn(challenges);
 
@@ -113,7 +113,7 @@ public class ChallengeListPageControllerTest {
                 .andExpect(model().attribute("user", user))
                 .andExpect(model().attribute("challenges", challenges));
         verify(usersRepository, times(1)).findByLogin("login0");
-        verify(challengesRepository, times(1)).findIncomingChallengesByOpponentLoginInput(
+        verify(challengesRepository, times(1)).findByToAndFrom_LoginContainingOrderByTimestampDesc(
                 user, "qwerty", PageRequest.of(3, PAGE_RESULTS)
         );
     }

@@ -35,7 +35,7 @@ public class ChallengeListPageController {
         model.addAttribute("page", page);
         User user = usersRepository.findByLogin(authentication.getName());
         model.addAttribute("user", user);
-        Page<Challenge> challenges = challengesRepository.findIncomingChallengesByOpponentLoginInput(
+        Page<Challenge> challenges = challengesRepository.findByToAndFrom_LoginContainingOrderByTimestampDesc(
                 user, search, PageRequest.of(page - 1, PAGE_RESULTS)
         );
         model.addAttribute("challenges", challenges);

@@ -17,7 +17,7 @@ public class UsersRestController {
     private final UsersRepository usersRepository;
 
     @GetMapping("/api/user/{login}")
-    public ResponseEntity<Object> getUser(@PathVariable String login) {
+    public ResponseEntity<User> getUser(@PathVariable String login) {
         try {
             User found = usersRepository.findByLogin(login);
             return found == null ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
@@ -25,8 +25,7 @@ public class UsersRestController {
         } catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "An unexpected error occurred. Please try again later.",
-                    e
+                    "An unexpected error occurred. Please try again later."
             );
         }
     }

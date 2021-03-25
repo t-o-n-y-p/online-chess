@@ -17,7 +17,7 @@ public class MovesRestController {
     private final MovesRepository movesRepository;
 
     @GetMapping("/api/move/{moveId}")
-    public ResponseEntity<Object> getMove(@PathVariable int moveId) {
+    public ResponseEntity<MoveRestView> getMove(@PathVariable int moveId) {
         try {
             MoveRestView found = movesRepository.findByIdEquals(moveId, MoveRestView.class);
             return found == null ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
@@ -25,8 +25,7 @@ public class MovesRestController {
         } catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "An unexpected error occurred. Please try again later.",
-                    e
+                    "An unexpected error occurred. Please try again later."
             );
         }
     }

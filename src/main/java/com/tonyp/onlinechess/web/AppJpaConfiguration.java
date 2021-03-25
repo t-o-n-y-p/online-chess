@@ -1,6 +1,7 @@
 package com.tonyp.onlinechess.web;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -15,17 +16,9 @@ import javax.sql.DataSource;
 @ComponentScan(basePackages = "com.tonyp.onlinechess.dao")
 @EnableJpaRepositories(basePackages = "com.tonyp.onlinechess.dao")
 @EnableTransactionManagement
+@EntityScan("com.tonyp.onlinechess.model")
 public class AppJpaConfiguration {
 
     public static final String JSON_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS";
 
-    @Bean
-    public EntityManagerFactory entityManagerFactory() {
-        return Persistence.createEntityManagerFactory("ProductionDatabase");
-    }
-
-    @Bean
-    public DataSource dataSource() {
-        return new HikariDataSource();
-    }
 }

@@ -1,6 +1,7 @@
 package com.tonyp.onlinechess;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -15,9 +16,6 @@ import javax.persistence.Persistence;
 @ComponentScan(basePackages = "com.tonyp.onlinechess.dao")
 @EnableJpaRepositories(basePackages = "com.tonyp.onlinechess.dao")
 @EnableTransactionManagement
+@EntityScan("com.tonyp.onlinechess.model")
 public class TestConfiguration {
-    @Bean
-    public EntityManagerFactory entityManagerFactory() {
-        return Persistence.createEntityManagerFactory("TestDatabase");
-    }
 }

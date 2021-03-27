@@ -23,7 +23,11 @@ function drawInitialBoard(gameId, isBlack) {
             let chessBoardTable = document.getElementById('chess-board');
             chessBoardTable.firstChild.remove();
             if (request.status === 200) {
-                chessBoardTable.appendChild(createBoard(JSON.parse(request.responseText).board, isBlack));
+                let response = JSON.parse(request.responseText);
+                chessBoardTable.appendChild(createBoard(response.board, isBlack));
+                document.getElementById('chess-board-navigation').prepend(
+                    createNavigation(response.notation, response.previousMove, response.nextMove, isBlack)
+                );
             } else if (request.status === 204) {
                 chessBoardTable.appendChild(createBoard(DEFAULT_BOARD, isBlack));
             }
@@ -37,9 +41,13 @@ function drawNewBoard(moveId, isBlack) {
     let request = new XMLHttpRequest();
     request.onreadystatechange = function () {
         if (request.readyState === 4) {
+            let response = JSON.parse(request.responseText);
             let chessBoardTable = document.getElementById('chess-board');
             chessBoardTable.firstChild.remove();
-            chessBoardTable.appendChild(createBoard(JSON.parse(request.responseText).board, isBlack));
+            chessBoardTable.appendChild(createBoard(response.board, isBlack));
+            document.getElementById('move-notation').textContent = response.notation;
+            updatePreviousMove(document.getElementById('previous-move'), response.previousMove);
+            updateNextMove(document.getElementById('next-move'), response.nextMove);
         }
     }
     request.open('get', '/api/move/' + moveId, true);
@@ -105,4 +113,66 @@ function createSquare(piece, file, rank) {
     }
     square.textContent = piece;
     return square;
+}
+
+function createNavigation(notation, previousMove, nextMove, isBlack) {
+    let panel = document.createElement('div');
+    panel.className = 'row';
+    panel.style.margin = '8px auto auto';
+    let buttons = document.createElement('div');
+    buttons.className = 'btn-group';
+    buttons.role = 'group';
+    buttons.style.width = '100%';
+    let previousMoveButton = document.createElement('button');
+    previousMoveButton.id = 'previous-move'
+    previousMoveButton.type = 'button';
+    previousMoveButton.className = 'btn btn-dark';
+    previousMoveButton.textContent = '<<';
+    previousMoveButton.isBlack = isBlack;
+    updatePreviousMove(previousMoveButton, previousMove);
+    previousMoveButton.addEventListener('click', function (e) {
+        drawNewBoard(e.currentTarget.previousMoveId, e.currentTarget.isBlack);
+    });
+    let middleFakeButton = document.createElement('button');
+    middleFakeButton.id = 'move-notation';
+    middleFakeButton.type = 'button';
+    middleFakeButton.className = 'btn btn-outline-dark';
+    middleFakeButton.style.width = '70%';
+    middleFakeButton.disabled = true;
+    middleFakeButton.textContent = notation;
+
+    let nextMoveButton = document.createElement('button');
+    nextMoveButton.id = 'next-move'
+    nextMoveButton.type = 'button';
+    nextMoveButton.className = 'btn btn-dark';
+    nextMoveButton.textContent = '>>';
+    nextMoveButton.isBlack = isBlack;
+    updateNextMove(nextMoveButton, nextMove);
+    nextMoveButton.addEventListener('click', function (e) {
+        drawNewBoard(e.currentTarget.nextMoveId, e.currentTarget.isBlack);
+    });
+
+    buttons.appendChild(previousMoveButton);
+    buttons.appendChild(middleFakeButton);
+    buttons.appendChild(nextMoveButton);
+    panel.appendChild(buttons);
+    return panel;
+}
+
+function updatePreviousMove(button, move) {
+    if (move) {
+        button.disabled = false;
+        button.previousMoveId = move.id;
+    } else {
+        button.disabled = true;
+    }
+}
+
+function updateNextMove(button, move) {
+    if (move) {
+        button.disabled = false;
+        button.nextMoveId = move.id;
+    } else {
+        button.disabled = true;
+    }
 }

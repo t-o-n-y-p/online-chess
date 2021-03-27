@@ -4,7 +4,7 @@ import com.tonyp.onlinechess.dao.MovesRepository;
 import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.IdOnlyRestView;
 import com.tonyp.onlinechess.model.Move;
-import com.tonyp.onlinechess.model.MoveRestView;
+import com.tonyp.onlinechess.model.LastMoveRestView;
 import com.tonyp.onlinechess.model.User;
 import com.tonyp.onlinechess.tools.GameUtil;
 import com.tonyp.onlinechess.tools.StockfishUtil;
@@ -57,7 +57,7 @@ public class GamesRestControllerTest {
         game.setFen("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
         Move move = new Move(game, previousMove, "e7e5", fen);
         move.setId(5);
-        when(movesRepository.findFirstByGame_IdOrderByIdDesc(3, MoveRestView.class)).thenReturn(new MoveRestView() {
+        when(movesRepository.findFirstByGame_IdOrderByIdDesc(3, LastMoveRestView.class)).thenReturn(new LastMoveRestView() {
             @Override
             public int getId() {
                 return 5;
@@ -131,7 +131,7 @@ public class GamesRestControllerTest {
 
     @Test
     public void testFindLastMoveNoMove() throws Exception {
-        when(movesRepository.findFirstByGame_IdOrderByIdDesc(1, MoveRestView.class)).thenReturn(null);
+        when(movesRepository.findFirstByGame_IdOrderByIdDesc(1, LastMoveRestView.class)).thenReturn(null);
 
         mvc.perform(get("/api/game/1/lastMove")
                 .with(user("login0"))
@@ -141,7 +141,7 @@ public class GamesRestControllerTest {
 
     @Test
     public void testFindLastMoveError() throws Exception {
-        when(movesRepository.findFirstByGame_IdOrderByIdDesc(1, MoveRestView.class)).thenThrow(RuntimeException.class);
+        when(movesRepository.findFirstByGame_IdOrderByIdDesc(1, LastMoveRestView.class)).thenThrow(RuntimeException.class);
 
         mvc.perform(get("/api/game/1/lastMove")
                 .with(user("login0"))

@@ -32,7 +32,7 @@ public class Move {
     @EqualsAndHashCode.Include
     private int id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Game game;
 
     @OneToOne(fetch = FetchType.LAZY)

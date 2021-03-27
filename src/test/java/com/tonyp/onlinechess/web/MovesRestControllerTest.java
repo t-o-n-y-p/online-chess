@@ -1,10 +1,11 @@
 package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.MovesRepository;
+import com.tonyp.onlinechess.model.MoveRestView;
 import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.IdOnlyRestView;
 import com.tonyp.onlinechess.model.Move;
-import com.tonyp.onlinechess.model.MoveRestView;
+import com.tonyp.onlinechess.model.LastMoveRestView;
 import com.tonyp.onlinechess.model.User;
 import com.tonyp.onlinechess.tools.GameUtil;
 import com.tonyp.onlinechess.tools.StockfishUtil;
@@ -16,10 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
-import static com.tonyp.onlinechess.web.AppJpaConfiguration.JSON_DATE_FORMAT;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -66,11 +65,6 @@ public class MovesRestControllerTest {
             }
 
             @Override
-            public Game getGame() {
-                return game;
-            }
-
-            @Override
             public IdOnlyRestView getPreviousMove() {
                 return () -> 4;
             }
@@ -111,29 +105,12 @@ public class MovesRestControllerTest {
                 .andExpect(jsonPath("$.repetitionInfo").value(move.getRepetitionInfo()))
                 .andExpect(jsonPath("$.notation").value("1. ... e7e5"))
                 .andExpect(jsonPath("$.nextMove.id").value(6))
-                .andExpect(jsonPath("$.previousMove.id").value(4))
-                .andExpect(jsonPath("$.game.id").value(3))
-                .andExpect(jsonPath("$.game.completed").value(false))
-                .andExpect(jsonPath("$.game.description").isEmpty())
-                .andExpect(jsonPath("$.game.legalMoves").value(game.getLegalMoves()))
-                .andExpect(jsonPath("$.game.lastModifiedTimestamp")
-                        .value(game.getLastModifiedTimestamp().format(DateTimeFormatter.ofPattern(JSON_DATE_FORMAT))))
-                .andExpect(jsonPath("$.game.uuid").value(game.getUuid().toString()))
-                .andExpect(jsonPath("$.game.fen").value(game.getFen()))
-                .andExpect(jsonPath("$.game.white.id").value(1))
-                .andExpect(jsonPath("$.game.white.login").value("login0"))
-                .andExpect(jsonPath("$.game.white.rating").value(1200.0))
-                .andExpect(jsonPath("$.game.black.id").value(2))
-                .andExpect(jsonPath("$.game.black.login").value("login1"))
-                .andExpect(jsonPath("$.game.black.rating").value(1200.0))
-                .andExpect(jsonPath("$.game.playerToMove.id").value(1))
-                .andExpect(jsonPath("$.game.playerToMove.login").value("login0"))
-                .andExpect(jsonPath("$.game.playerToMove.rating").value(1200.0));
+                .andExpect(jsonPath("$.previousMove.id").value(4));
     }
 
     @Test
     public void testFindByIdNoMove() throws Exception {
-        when(movesRepository.findByIdEquals(1, MoveRestView.class)).thenReturn(null);
+        when(movesRepository.findByIdEquals(1, LastMoveRestView.class)).thenReturn(null);
 
         mvc.perform(get("/api/move/1")
                 .with(user("login0"))

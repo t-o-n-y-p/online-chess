@@ -44,6 +44,7 @@ public class MoveController {
         } catch (InterruptedException e) {
             throw e;
         } catch (Exception e) {
+            AppJpaConfiguration.printStackTrace(e);
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("error", true);
             return new RedirectView(gamePageUrl);

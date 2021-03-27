@@ -46,9 +46,11 @@ public class SignupController {
             request.login(signupForm.getLogin(), signupForm.getPassword());
             return "redirect:/app/main";
         } catch (JpaSystemException e) {
+            AppJpaConfiguration.printStackTrace(e);
             bindingResult.addError(new FieldError("signupForm", "login", "User with this login already exists."));
             return SIGNUP_PAGE;
         } catch (Exception e) {
+            AppJpaConfiguration.printStackTrace(e);
             model.addAttribute("error", true);
             return SIGNUP_PAGE;
         }

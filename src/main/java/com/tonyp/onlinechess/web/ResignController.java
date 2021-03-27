@@ -36,6 +36,7 @@ public class ResignController {
             attributes.addAttribute("resignation", true);
             return new RedirectView("/app/game");
         } catch (Exception e) {
+            AppJpaConfiguration.printStackTrace(e);
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("error", true);
             return new RedirectView("/app/game");

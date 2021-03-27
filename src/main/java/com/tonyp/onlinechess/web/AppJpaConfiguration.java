@@ -15,4 +15,15 @@ public class AppJpaConfiguration {
 
     public static final String JSON_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS";
 
+    public static void printStackTrace(Throwable e) {
+        System.out.println(e.getClass().getSimpleName() + ": " + e.getMessage());
+        for (StackTraceElement element : e.getStackTrace()) {
+            System.out.println("\t" + element);
+        }
+        if (e.getCause() != null) {
+            System.out.print("Caused by: ");
+            printStackTrace(e.getCause());
+        }
+    }
+
 }

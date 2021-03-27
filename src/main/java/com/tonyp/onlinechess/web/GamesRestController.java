@@ -23,6 +23,7 @@ public class GamesRestController {
             return found == null ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                     : new ResponseEntity<>(found, HttpStatus.OK);
         } catch (Exception e) {
+            AppJpaConfiguration.printStackTrace(e);
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     "An unexpected error occurred. Please try again later."

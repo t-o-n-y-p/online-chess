@@ -39,6 +39,7 @@ public class ChallengeController {
             attributes.addAttribute("challenge_accepted", true);
             return getAcceptChallengeRedirectView(attributes, page, toPreviousPage, fromChallenges);
         } catch (Exception e) {
+            AppJpaConfiguration.printStackTrace(e);
             attributes.addAttribute("error", true);
             return getAcceptChallengeRedirectView(attributes, page, toPreviousPage, fromChallenges);
         }
@@ -59,6 +60,7 @@ public class ChallengeController {
             attributes.addAttribute("challenge_created", true);
             return new RedirectView(MAIN_PAGE_URL);
         } catch (Exception e) {
+            AppJpaConfiguration.printStackTrace(e);
             attributes.addAttribute("error", true);
             return new RedirectView(MAIN_PAGE_URL);
         }

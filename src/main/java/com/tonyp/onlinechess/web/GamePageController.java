@@ -2,7 +2,6 @@ package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.GamesRepository;
 import com.tonyp.onlinechess.dao.UsersRepository;
-import com.tonyp.onlinechess.model.Color;
 import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
 import com.tonyp.onlinechess.tools.GameUtil;
@@ -38,9 +37,6 @@ public class GamePageController {
         Game game = gamesRepository.findById(id).orElseThrow(NoSuchElementException::new);
         model.addAttribute("user", user);
         model.addAttribute("game", game);
-        model.addAttribute("board", GameUtil.getBoard(
-                game.getFen(), game.getWhite().equals(user) ? Color.WHITE : Color.BLACK
-        ));
         model.addAttribute("squares", GameUtil.SQUARES);
         return "_game";
     }

@@ -327,7 +327,6 @@ public class MoveControllerTest {
         }
         game.setMoves(moves);
         Move previousMove = moves.get(moves.size() - 1);
-        previousMove.setFen("rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPPKPPP/RNBQ1BNR b - - 9 6");
         Move move = new Move(game, previousMove, "e8e7", newFen);
         when(gamesRepository.findById(1)).thenReturn(Optional.of(game));
         when(movesRepository.createNewMove(game, previousMove, "e8e7", newFen)).thenReturn(move);

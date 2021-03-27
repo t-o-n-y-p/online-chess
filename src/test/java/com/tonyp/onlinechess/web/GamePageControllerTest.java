@@ -2,7 +2,6 @@ package com.tonyp.onlinechess.web;
 
 import com.tonyp.onlinechess.dao.GamesRepository;
 import com.tonyp.onlinechess.dao.UsersRepository;
-import com.tonyp.onlinechess.model.Color;
 import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
 import com.tonyp.onlinechess.tools.GameUtil;
@@ -57,7 +56,6 @@ public class GamePageControllerTest {
                 .andExpect(model().attribute("error", false))
                 .andExpect(model().attribute("user", user))
                 .andExpect(model().attribute("game", game))
-                .andExpect(model().attribute("board", GameUtil.getBoard(game.getFen(), Color.WHITE)))
                 .andExpect(model().attribute("squares", GameUtil.SQUARES));
         verify(gamesRepository, times(1)).findById(1);
         verify(usersRepository, times(1)).findByLogin("login0");
@@ -82,7 +80,6 @@ public class GamePageControllerTest {
                 .andExpect(model().attribute("error", false))
                 .andExpect(model().attribute("user", user))
                 .andExpect(model().attribute("game", game))
-                .andExpect(model().attribute("board", GameUtil.getBoard(game.getFen(), Color.BLACK)))
                 .andExpect(model().attribute("squares", GameUtil.SQUARES));
         verify(gamesRepository, times(1)).findById(1);
         verify(usersRepository, times(1)).findByLogin("login0");
@@ -107,7 +104,6 @@ public class GamePageControllerTest {
                 .andExpect(model().attribute("error", false))
                 .andExpect(model().attribute("user", user))
                 .andExpect(model().attribute("game", game))
-                .andExpect(model().attribute("board", GameUtil.getBoard(game.getFen(), Color.WHITE)))
                 .andExpect(model().attribute("squares", GameUtil.SQUARES));
         verify(gamesRepository, times(1)).findById(1);
         verify(usersRepository, times(1)).findByLogin("login0");
@@ -132,7 +128,6 @@ public class GamePageControllerTest {
                 .andExpect(model().attribute("error", true))
                 .andExpect(model().attribute("user", user))
                 .andExpect(model().attribute("game", game))
-                .andExpect(model().attribute("board", GameUtil.getBoard(game.getFen(), Color.WHITE)))
                 .andExpect(model().attribute("squares", GameUtil.SQUARES));
         verify(gamesRepository, times(1)).findById(1);
         verify(usersRepository, times(1)).findByLogin("login0");

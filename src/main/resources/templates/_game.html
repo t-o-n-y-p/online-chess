@@ -8,8 +8,9 @@
         <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.6.0/css/bootstrap.css" />
         <script type="text/javascript" src="/webjars/jquery/3.6.0/jquery.js"></script>
         <script type="text/javascript" src="/webjars/bootstrap/4.6.0/js/bootstrap.js"></script>
+        <script type="text/javascript" src="/chess_board.js"></script>
     </head>
-    <body style="background-color:antiquewhite">
+    <body style="background-color:antiquewhite" th:onload="'drawInitialBoard(' + ${game.id} + ', ' + ${user.id == game.black.id} + ')'">
         <nav class="navbar navbar-expand-md navbar-dark bg-dark">
             <a class="navbar-brand mb-0 h1">
                 Game&nbsp;vs&nbsp;<span th:text="*{game.white.equals(user)} ? ${game.black.login} : ${game.white.login}"></span>
@@ -57,41 +58,10 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-7 col-lg-8">
-                    <table style="border-spacing: 0; border-collapse: collapse; margin: 8px auto auto; font-family: sans-serif">
-                        <tbody>
-                            <tr th:each="rank : ${#numbers.sequence(1, 8)}">
-                                <td style="line-height: 0" th:text="*{user.equals(game.white)} ? 9 - ${rank} : ${rank}">
-                                <td th:each="file : ${#numbers.sequence(1, 8)}"
-                                    th:style="'width: 1.5em; height: 1.5em; text-align: center; font-size: 32px; line-height: 0; ' +
-                                        (${rank} % 2 == ${file} % 2
-                                            ? 'background: #eee'
-                                            : 'background: #aaa')"
-                                    th:text="${board.get(rank - 1).get(file - 1)}">
-                            </tr>
-                            <tr th:if="${user.equals(game.white)}">
-                                <td style="height: 1em; line-height: 0; text-align: center">
-                                <td style="height: 1em; line-height: 0; text-align: center">a
-                                <td style="height: 1em; line-height: 0; text-align: center">b
-                                <td style="height: 1em; line-height: 0; text-align: center">c
-                                <td style="height: 1em; line-height: 0; text-align: center">d
-                                <td style="height: 1em; line-height: 0; text-align: center">e
-                                <td style="height: 1em; line-height: 0; text-align: center">f
-                                <td style="height: 1em; line-height: 0; text-align: center">g
-                                <td style="height: 1em; line-height: 0; text-align: center">h
-                            </tr>
-                            <tr th:if="${user.equals(game.black)}">
-                                <td style="height: 1em; line-height: 0; text-align: center">
-                                <td style="height: 1em; line-height: 0; text-align: center">h
-                                <td style="height: 1em; line-height: 0; text-align: center">g
-                                <td style="height: 1em; line-height: 0; text-align: center">f
-                                <td style="height: 1em; line-height: 0; text-align: center">e
-                                <td style="height: 1em; line-height: 0; text-align: center">d
-                                <td style="height: 1em; line-height: 0; text-align: center">c
-                                <td style="height: 1em; line-height: 0; text-align: center">b
-                                <td style="height: 1em; line-height: 0; text-align: center">a
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="row">
+                        <table id="chess-board" style="border-spacing: 0; border-collapse: collapse; margin: 8px auto auto; font-family: sans-serif">
+                        </table>
+                    </div>
                 </div>
                 <div class="col-md-5 col-lg-4">
                     <p style="text-align: center" th:if="${game.completed}" th:text="${game.description}"><br /></p>

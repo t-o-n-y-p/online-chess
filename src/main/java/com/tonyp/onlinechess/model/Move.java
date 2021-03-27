@@ -43,17 +43,16 @@ public class Move {
     @JoinColumn(name = "next_move_id")
     private Move nextMove;
 
-    @Column(nullable = false, length = 5)
-    @Pattern(regexp = "([a-h][1-8]){2}[qrbn]?")
-    private String value;
+    @Column(nullable = false, length = 20)
+    private String notation;
 
     @Column(name = "repetition_info", nullable = false, length = 100)
     @NotBlank
     private String repetitionInfo;
 
-    @Column(nullable = false, length = 100)
-    @NotBlank
-    private String fen;
+    @Column(nullable = false, length = 64)
+    @Pattern(regexp = "[\\spPrRnNbBqQkK]{64}")
+    private String board;
 
     @Column(unique = true, nullable = false)
     @EqualsAndHashCode.Include
@@ -62,11 +61,10 @@ public class Move {
     public Move(Game game, Move lastMove, String value, String fen) {
         this.game = game;
         this.previousMove = lastMove;
-        this.value = value;
-        this.fen = fen;
+        notation = GameUtil.getNotation(game.getFen(), value);
+        board = GameUtil.getBoard(fen);
         repetitionInfo = GameUtil.getPositionFromFen(game.getFen());
         uuid = UUID.randomUUID();
     }
-
 }
 

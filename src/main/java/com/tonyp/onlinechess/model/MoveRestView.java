@@ -8,9 +8,9 @@ public interface MoveRestView {
     Game getGame();
     IdOnlyRestView getPreviousMove();
     IdOnlyRestView getNextMove();
-    String getValue();
+    String getNotation();
     String getRepetitionInfo();
-    String getFen();
+    String getBoard();
     UUID getUuid();
 
 }

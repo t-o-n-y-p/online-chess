@@ -8,7 +8,6 @@ import com.tonyp.onlinechess.model.User;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
@@ -30,37 +29,20 @@ public final class GameUtil {
             .flatMap(e -> e)
             .collect(Collectors.toList());
 
-    private static final Map<String, String> CHESS_PIECES = Map.ofEntries(
-            Map.entry(" ", ""),
-            Map.entry("K", "♔"),
-            Map.entry("Q", "♕"),
-            Map.entry("R", "♖"),
-            Map.entry("B", "♗"),
-            Map.entry("N", "♘"),
-            Map.entry("P", "♙"),
-            Map.entry("k", "♚"),
-            Map.entry("q", "♛"),
-            Map.entry("r", "♜"),
-            Map.entry("b", "♝"),
-            Map.entry("n", "♞"),
-            Map.entry("p", "♟")
-    );
+    public static String getBoard(String fen) {
+        return Pattern.compile("[1-8]")
+                .matcher(fen.replaceAll("[\\s].*", ""))
+                .replaceAll(mr -> " ".repeat(Integer.parseInt(mr.group())))
+                .replace("/", "");
+    }
 
-    public static List<List<String>> getBoard(String fen, Color color) {
-        List<List<String>> board = Arrays.stream(
-                Pattern.compile("[1-8]")
-                        .matcher(fen.replaceAll("[\\s].*", ""))
-                        .replaceAll(mr -> " ".repeat(Integer.parseInt(mr.group())))
-                        .split("/"))
-                .map(r -> Arrays.stream(r.split("(?!^)"))
-                        .map(CHESS_PIECES::get)
-                        .collect(Collectors.toList()))
-                .collect(Collectors.toList());
-        if (color == Color.BLACK) {
-            Collections.reverse(board);
-            board.forEach(Collections::reverse);
+    public static String getNotation(String fen, String value) {
+        String result = fen.substring(fen.lastIndexOf(" ") + 1) + ". ";
+        if (!whiteToMove(fen)) {
+            result += "... ";
         }
-        return board;
+        result += value;
+        return result;
     }
 
     public static String getPositionFromFen(String fen) {

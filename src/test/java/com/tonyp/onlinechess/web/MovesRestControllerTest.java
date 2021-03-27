@@ -54,6 +54,7 @@ public class MovesRestControllerTest {
         Move previousMove = new Move(game, null, "e2e4", game.getFen());
         previousMove.setId(4);
         String fen = StockfishUtil.makeMove(GameUtil.STARTING_POSITION_FEN, "e2e4");
+        game.setFen("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
         Move move = new Move(game, previousMove, "e7e5", fen);
         move.setId(5);
         Move nextMove = new Move(game, move, "g1f3", StockfishUtil.makeMove(fen, "e7e5"));
@@ -80,8 +81,8 @@ public class MovesRestControllerTest {
             }
 
             @Override
-            public String getValue() {
-                return move.getValue();
+            public String getNotation() {
+                return move.getNotation();
             }
 
             @Override
@@ -90,8 +91,8 @@ public class MovesRestControllerTest {
             }
 
             @Override
-            public String getFen() {
-                return move.getFen();
+            public String getBoard() {
+                return move.getBoard();
             }
 
             @Override
@@ -106,9 +107,9 @@ public class MovesRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(5))
                 .andExpect(jsonPath("$.uuid").value(move.getUuid().toString()))
-                .andExpect(jsonPath("$.fen").value(move.getFen()))
+                .andExpect(jsonPath("$.board").value(move.getBoard()))
                 .andExpect(jsonPath("$.repetitionInfo").value(move.getRepetitionInfo()))
-                .andExpect(jsonPath("$.value").value("e7e5"))
+                .andExpect(jsonPath("$.notation").value("1. ... e7e5"))
                 .andExpect(jsonPath("$.nextMove.id").value(6))
                 .andExpect(jsonPath("$.previousMove.id").value(4))
                 .andExpect(jsonPath("$.game.id").value(3))

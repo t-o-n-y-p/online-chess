@@ -33,102 +33,103 @@
                 </ul>
             </div>
         </nav>
-        <div class="row" style="width: 100%; margin: auto">
-            <div class="col-xl" th:if="${legalMove}" style="padding-left: 0; padding-right: 0">
-                <div class="alert alert-success" role="alert" style="margin: 0; text-align: center">
+        <div style="width: 100%" id="alerts">
+            <div class="row" th:if="${legalMove}" style="width: 100%; margin: auto">
+                <div class="alert alert-success" role="alert" style="width: 100%; margin-bottom: 0; text-align: center">
                     The move has been made.
                 </div>
             </div>
-            <div class="col-xl" th:if="${illegalMove}" style="padding-left: 0; padding-right: 0">
-                <div class="alert alert-warning" role="alert" style="margin: 0; text-align: center">
+            <div class="row" th:if="${illegalMove}" style="width: 100%; margin: auto">
+                <div class="alert alert-warning" role="alert" style="width: 100%; margin-bottom: 0; text-align: center">
                     The move you made is illegal. Please make a legal move.
                 </div>
             </div>
-            <div class="col-xl" th:if="${resignation}" style="padding-left: 0; padding-right: 0">
-                <div class="alert alert-info" role="alert" style="margin: 0; text-align: center">
-                    You have resigned the game.
+            <div class="row" th:if="${game.completed}" style="width: 100%; margin: auto">
+                <div class="alert alert-info" role="alert" style="width: 100%; margin-bottom: 0; text-align: center"
+                     th:text="${game.description}">
                 </div>
             </div>
-            <div class="col-xl" th:if="${error}" style="padding-left: 0; padding-right: 0">
-                <div class="alert alert-danger" role="alert" style="margin: 0; text-align: center">
+            <div class="row" th:if="${!game.completed && !game.playerToMove.equals(user)}" style="width: 100%; margin: auto">
+                <div class="alert alert-info" role="alert" style="width: 100%; margin-bottom: 0; text-align: center">
+                    Opponent to move.
+                </div>
+            </div>
+            <div class="row" th:if="${error}" style="width: 100%; margin: auto">
+                <div class="alert alert-danger" role="alert" style="width: 100%; margin-bottom: 0; text-align: center">
                     An unexpected error occurred. Please try again later.
                 </div>
             </div>
         </div>
         <div class="container">
             <div class="row">
-                <div class="col-md-7 col-lg-8" id="chess-board-navigation">
+                <div class="col-md-8 offset-md-2" id="chess-board-navigation">
                     <div class="row">
                         <table id="chess-board" style="border-spacing: 0; border-collapse: collapse; margin: 8px auto auto; font-family: sans-serif">
                         </table>
                     </div>
-                </div>
-                <div class="col-md-5 col-lg-4">
-                    <p style="text-align: center" th:if="${game.completed}" th:text="${game.description}"><br /></p>
-                    <p style="text-align: center" th:if="${!user.equals(game.playerToMove) && !game.completed}">
-                        <br />Opponent to move.
-                    </p>
-                    <div th:if="${game.playerToMove.equals(user) && !game.completed}" style="margin: 8px">
-                        <div class="form-row">
-                            <div class="form-group col-6">
-                                <label for="square1">From&nbsp;square:</label>
-                                <select id="square1" name="square1" class="form-control" form="make-move">
-                                    <option th:each="square : ${squares}" th:value="${square}" th:text="${square}"></option>
-                                </select>
+                    <div class="row" style="margin: 8px auto auto">
+                        <div th:if="${game.playerToMove.equals(user) && !game.completed}" style="width: 100%">
+                            <div class="form-row">
+                                <div class="form-group col-3">
+                                    <label for="square1">From:</label>
+                                    <select id="square1" name="square1" class="form-control" form="make-move">
+                                        <option th:each="square : ${squares}" th:value="${square}" th:text="${square}"></option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-3">
+                                    <label for="square2">To:</label>
+                                    <select id="square2" name="square2" class="form-control" form="make-move">
+                                        <option th:each="square : ${squares}" th:value="${square}" th:text="${square}"></option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label for="promotion">Promotion&nbsp;piece:</label>
+                                    <select id="promotion" name="promotion" class="form-control" form="make-move">
+                                        <option></option>
+                                        <option value="q">Queen</option>
+                                        <option value="r">Rook</option>
+                                        <option value="b">Bishop</option>
+                                        <option value="n">Knight</option>
+                                    </select>
+                                    <small class="form-text text-muted">Leave empty if not a pawn promotion.</small>
+                                </div>
                             </div>
-                            <div class="form-group col-6">
-                                <label for="square2">To&nbsp;square:</label>
-                                <select id="square2" name="square2" class="form-control" form="make-move">
-                                    <option th:each="square : ${squares}" th:value="${square}" th:text="${square}"></option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="promotion">Piece for promotion:</label>
-                            <select id="promotion" name="promotion" class="form-control" form="make-move">
-                                <option></option>
-                                <option value="q">Queen</option>
-                                <option value="r">Rook</option>
-                                <option value="b">Bishop</option>
-                                <option value="n">Knight</option>
-                            </select>
-                            <small class="form-text text-muted">Leave empty if not a pawn promotion.</small>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-6">
-                                <form action="/app/move" method="post" id="make-move">
-                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                    <input type="hidden" name="game_id" th:value="${game.id}" />
-                                    <button type="submit" class="btn btn-dark" style="width: 100%">Make a move</button>
-                                </form>
-                            </div>
-                            <div class="form-group col-6">
-                                <form action="/app/resign" method="post" id="resign">
-                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                    <input type="hidden" name="game_id" th:value="${game.id}" />
-                                    <button type="button" class="btn btn-danger" style="width: 100%"
-                                            data-toggle="modal" data-target="#resign-modal">Resign</button>
-                                    <div class="modal fade" id="resign-modal" data-backdrop="static" data-keyboard="false"
-                                         tabindex="-1" aria-labelledby="resign-modal-label" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="resign-modal-label">Confirm resignation</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    Are you sure?
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                    <button type="submit" class="btn btn-danger">Resign the game</button>
+                            <div class="form-row">
+                                <div class="form-group col-6">
+                                    <form action="/app/move" method="post" id="make-move">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                        <input type="hidden" name="game_id" th:value="${game.id}" />
+                                        <button type="submit" class="btn btn-dark" style="width: 100%">Make a move</button>
+                                    </form>
+                                </div>
+                                <div class="form-group col-6">
+                                    <form action="/app/resign" method="post" id="resign">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                        <input type="hidden" name="game_id" th:value="${game.id}" />
+                                        <button type="button" class="btn btn-danger" style="width: 100%"
+                                                data-toggle="modal" data-target="#resign-modal">Resign</button>
+                                        <div class="modal fade" id="resign-modal" data-backdrop="static" data-keyboard="false"
+                                             tabindex="-1" aria-labelledby="resign-modal-label" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="resign-modal-label">Confirm resignation</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        Are you sure?
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-danger">Resign the game</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>

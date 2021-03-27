@@ -30,6 +30,8 @@ function drawInitialBoard(gameId, isBlack) {
                 );
             } else if (request.status === 204) {
                 chessBoardTable.appendChild(createBoard(DEFAULT_BOARD, isBlack));
+            } else {
+                pushErrorAlert();
             }
         }
     }
@@ -41,13 +43,19 @@ function drawNewBoard(moveId, isBlack) {
     let request = new XMLHttpRequest();
     request.onreadystatechange = function () {
         if (request.readyState === 4) {
-            let response = JSON.parse(request.responseText);
-            let chessBoardTable = document.getElementById('chess-board');
-            chessBoardTable.firstChild.remove();
-            chessBoardTable.appendChild(createBoard(response.board, isBlack));
-            document.getElementById('move-notation').textContent = response.notation;
-            updatePreviousMove(document.getElementById('previous-move'), response.previousMove);
-            updateNextMove(document.getElementById('next-move'), response.nextMove);
+            if (request.status === 200) {
+                let response = JSON.parse(request.responseText);
+                let chessBoardTable = document.getElementById('chess-board');
+                chessBoardTable.firstChild.remove();
+                chessBoardTable.appendChild(createBoard(response.board, isBlack));
+                document.getElementById('move-notation').textContent = response.notation;
+                updatePreviousMove(document.getElementById('previous-move'), response.previousMove);
+                updateNextMove(document.getElementById('next-move'), response.nextMove);
+            } else {
+                updatePreviousMove(document.getElementById('previous-move'), null);
+                updateNextMove(document.getElementById('next-move'), null);
+                pushErrorAlert();
+            }
         }
     }
     request.open('get', '/api/move/' + moveId, true);
@@ -175,4 +183,20 @@ function updateNextMove(button, move) {
     } else {
         button.disabled = true;
     }
+}
+
+function pushErrorAlert() {
+    let alertGroup = document.getElementById('alerts');
+    let boardErrorAlertContainer = document.createElement('div');
+    boardErrorAlertContainer.style.width = '100%';
+    boardErrorAlertContainer.style.margin = 'auto';
+    let boardErrorAlert = document.createElement('div');
+    boardErrorAlert.className = 'alert alert-danger';
+    boardErrorAlert.role = 'alert';
+    boardErrorAlert.style.width = '100%';
+    boardErrorAlert.style.marginBottom = '0';
+    boardErrorAlert.style.textAlign = 'center';
+    boardErrorAlert.textContent = 'An unexpected error with the board occurred. Please reload the page.'
+    boardErrorAlertContainer.appendChild(boardErrorAlert);
+    alertGroup.appendChild(boardErrorAlertContainer);
 }

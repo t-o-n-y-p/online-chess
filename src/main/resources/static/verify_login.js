@@ -33,7 +33,7 @@ function verifyLogin() {
                     if (request.status === 200) {
                         error.textContent = 'User with this login already exists.';
                     } else {
-                        error.textContent = 'An unexpected error occurred. Please refresh the page.';
+                        error.textContent = 'An unexpected error occurred. Please reload the page.';
                     }
                     loginFormGroup.appendChild(error);
                 }

@@ -20,16 +20,13 @@ function drawInitialBoard(gameId, isBlack) {
     let request = new XMLHttpRequest();
     request.onreadystatechange = function () {
         if (request.readyState === 4) {
-            let chessBoardTable = document.getElementById('chess-board');
-            chessBoardTable.firstChild.remove();
+            let container = document.getElementById('container');
             if (request.status === 200) {
                 let response = JSON.parse(request.responseText);
-                chessBoardTable.appendChild(createBoard(response.board, isBlack));
-                document.getElementById('chess-board-navigation').prepend(
-                    createNavigation(response.notation, response.previousMove, response.nextMove, isBlack)
-                );
+                container.prepend(createChessBoardTableWithContainer(response.board, isBlack));
+                container.prepend(createNavigation(response.notation, response.previousMove, response.nextMove, isBlack));
             } else if (request.status === 204) {
-                chessBoardTable.appendChild(createBoard(DEFAULT_BOARD, isBlack));
+                container.prepend(createChessBoardTableWithContainer(DEFAULT_BOARD, isBlack));
             } else {
                 pushErrorAlert();
             }
@@ -64,9 +61,6 @@ function drawNewBoard(moveId, isBlack) {
 
 function createBoard(board, isBlack) {
     let boardArray = board.split('');
-    boardArray.forEach(function (item, i) {
-        boardArray[i] = PIECES.get(item);
-    });
     if (isBlack) {
         boardArray = boardArray.reverse();
     }
@@ -107,7 +101,7 @@ function createRankHeader(rankCode) {
     return rank;
 }
 
-function createSquare(piece, file, rank) {
+function createSquare(pieceCode, file, rank) {
     let square = document.createElement('td');
     square.style.width = '1.5em';
     square.style.height = '1.5em';
@@ -119,7 +113,7 @@ function createSquare(piece, file, rank) {
     } else {
         square.style.background = '#aaa';
     }
-    square.textContent = piece;
+    square.textContent = PIECES.get(pieceCode);
     return square;
 }
 
@@ -199,4 +193,18 @@ function pushErrorAlert() {
     boardErrorAlert.textContent = 'An unexpected error with the board occurred. Please reload the page.'
     boardErrorAlertContainer.appendChild(boardErrorAlert);
     alertGroup.appendChild(boardErrorAlertContainer);
+}
+
+function createChessBoardTableWithContainer(board, isBlack) {
+    let chessBoardTableContainer = document.createElement('div');
+    chessBoardTableContainer.className = 'row';
+    let chessBoardTable = document.createElement('table');
+    chessBoardTable.id = 'chess-board';
+    chessBoardTable.style.borderSpacing = '0';
+    chessBoardTable.style.borderCollapse = 'collapse';
+    chessBoardTable.style.margin = '8px auto auto';
+    chessBoardTable.style.fontFamily = 'sans-serif';
+    chessBoardTable.appendChild(createBoard(board, isBlack));
+    chessBoardTableContainer.appendChild(chessBoardTable);
+    return chessBoardTableContainer;
 }

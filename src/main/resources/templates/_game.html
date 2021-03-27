@@ -10,7 +10,7 @@
         <script type="text/javascript" src="/webjars/bootstrap/4.6.0/js/bootstrap.js"></script>
         <script type="text/javascript" src="/chess_board.js"></script>
     </head>
-    <body style="background-color:antiquewhite" th:onload="'drawInitialBoard(' + ${game.id} + ', ' + ${user.id == game.black.id} + ')'">
+    <body style="background-color:antiquewhite" th:onload="'drawInitialBoard(' + ${game.id} + ', ' + ${user.equals(game.black)} + ')'">
         <nav class="navbar navbar-expand-md navbar-dark bg-dark">
             <a class="navbar-brand mb-0 h1">
                 Game&nbsp;vs&nbsp;<span th:text="*{game.white.equals(user)} ? ${game.black.login} : ${game.white.login}"></span>
@@ -62,13 +62,9 @@
         </div>
         <div class="container">
             <div class="row">
-                <div class="col-md-8 offset-md-2" id="chess-board-navigation">
-                    <div class="row">
-                        <table id="chess-board" style="border-spacing: 0; border-collapse: collapse; margin: 8px auto auto; font-family: sans-serif">
-                        </table>
-                    </div>
-                    <div class="row" style="margin: 8px auto auto">
-                        <div th:if="${game.playerToMove.equals(user) && !game.completed}" style="width: 100%">
+                <div class="col-md-8 offset-md-2" id="container">
+                    <div class="row" style="margin: 8px auto auto" th:if="${game.playerToMove.equals(user) && !game.completed}">
+                        <div style="width: 100%">
                             <div class="form-row">
                                 <div class="form-group col-3">
                                     <label for="square1">From:</label>

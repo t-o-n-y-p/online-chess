@@ -3,6 +3,7 @@ package com.tonyp.onlinechess.web;
 import com.tonyp.onlinechess.dao.UsersRepository;
 import com.tonyp.onlinechess.validation.SignupForm;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +19,7 @@ import javax.validation.Valid;
 
 @Controller
 @AllArgsConstructor
+@Slf4j
 public class SignupController {
 
     private final UsersRepository usersRepository;
@@ -46,11 +48,11 @@ public class SignupController {
             request.login(signupForm.getLogin(), signupForm.getPassword());
             return "redirect:/app/main";
         } catch (JpaSystemException e) {
-            AppJpaConfiguration.printStackTrace(e);
+            log.error("Sign up error", e);
             bindingResult.addError(new FieldError("signupForm", "login", "User with this login already exists."));
             return SIGNUP_PAGE;
         } catch (Exception e) {
-            AppJpaConfiguration.printStackTrace(e);
+            log.error("Sign up error", e);
             model.addAttribute("error", true);
             return SIGNUP_PAGE;
         }

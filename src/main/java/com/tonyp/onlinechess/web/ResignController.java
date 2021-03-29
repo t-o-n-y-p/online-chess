@@ -6,6 +6,7 @@ import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.model.User;
 import com.tonyp.onlinechess.web.services.GameService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import java.util.NoSuchElementException;
 
 @Controller
 @AllArgsConstructor
+@Slf4j
 public class ResignController {
 
     private final UsersRepository usersRepository;
@@ -36,7 +38,7 @@ public class ResignController {
             attributes.addAttribute("resignation", true);
             return new RedirectView("/app/game");
         } catch (Exception e) {
-            AppJpaConfiguration.printStackTrace(e);
+            log.error("Resign error", e);
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("error", true);
             return new RedirectView("/app/game");

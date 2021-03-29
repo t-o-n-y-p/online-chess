@@ -6,6 +6,7 @@ import com.tonyp.onlinechess.model.Challenge;
 import com.tonyp.onlinechess.model.Color;
 import com.tonyp.onlinechess.web.services.ChallengeService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import java.util.NoSuchElementException;
 
 @Controller
 @AllArgsConstructor
+@Slf4j
 public class ChallengeController {
 
     private final UsersRepository usersRepository;
@@ -39,7 +41,7 @@ public class ChallengeController {
             attributes.addAttribute("challenge_accepted", true);
             return getAcceptChallengeRedirectView(attributes, page, toPreviousPage, fromChallenges);
         } catch (Exception e) {
-            AppJpaConfiguration.printStackTrace(e);
+            log.error("Accept challenge error", e);
             attributes.addAttribute("error", true);
             return getAcceptChallengeRedirectView(attributes, page, toPreviousPage, fromChallenges);
         }
@@ -60,7 +62,7 @@ public class ChallengeController {
             attributes.addAttribute("challenge_created", true);
             return new RedirectView(MAIN_PAGE_URL);
         } catch (Exception e) {
-            AppJpaConfiguration.printStackTrace(e);
+            log.error("Create challenge error", e);
             attributes.addAttribute("error", true);
             return new RedirectView(MAIN_PAGE_URL);
         }

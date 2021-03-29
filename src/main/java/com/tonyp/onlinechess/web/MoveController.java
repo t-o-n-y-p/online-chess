@@ -5,6 +5,7 @@ import com.tonyp.onlinechess.model.Game;
 import com.tonyp.onlinechess.tools.GameUtil;
 import com.tonyp.onlinechess.web.services.GameService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import java.util.NoSuchElementException;
 
 @Controller
 @AllArgsConstructor
+@Slf4j
 public class MoveController {
 
     private final GamesRepository gamesRepository;
@@ -44,7 +46,7 @@ public class MoveController {
         } catch (InterruptedException e) {
             throw e;
         } catch (Exception e) {
-            AppJpaConfiguration.printStackTrace(e);
+            log.error("Make move error", e);
             attributes.addAttribute("id", gameId);
             attributes.addAttribute("error", true);
             return new RedirectView(gamePageUrl);
